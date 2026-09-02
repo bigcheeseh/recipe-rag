@@ -1,0 +1,94 @@
+# Golden evaluation set. Every expectation is checked deterministically by
+# evals/run_evals.py. Fields:
+#   cites          list of recipe_id substrings; each must match some cited source
+#   cites_min      minimum number of sources
+#   contains       substring that must appear in `answer` (case-insensitive)
+#   mentions       substring that must appear in `answer` or `refusal.message`
+#   refusal        expected refusal.reason
+#   sources_empty  sources must be []
+#   never_cites_allergen   no cited recipe may list this allergen in its meta
+#   requires_diet          every cited recipe must carry this diet tag
+#   max_minutes_cited      no cited recipe may exceed this total_minutes
+#   conflicts_min  minimum number of entries in `conflicts`
+#   http_status    expected HTTP status (default 200)
+#
+# Recipe ids refer to slugs assigned at ingestion (Block 3). Ids named here
+# are commitments: ingestion must produce them or the golden set is updated
+# in the same commit.
+
+# --- plain factual x4 ---------------------------------------------------
+
+- id: g01
+  kind: factual
+  q: "How many eggs does the carbonara use?"
+  expect: {cites: [carbonara], contains: "3"}
+
+- id: g02
+  kind: factual
+  q: "What temperature should the oven be for the banana bread?"
+  expect: {cites: [banana-bread], contains: "350"}
+
+- id: g03
+  kind: factual
+  q: "What kind of rice does the risotto call for?"
+  expect: {cites: [risotto], contains: "arborio"}
+
+- id: g04
+  kind: factual
+  q: "Does the guacamole recipe use lime or lemon?"
+  expect: {cites: [guacamole], contains: "lime"}
+
+# --- constraint x3 (allergen / diet / time) -----------------------------
+
+- id: g05
+  kind: constraint
+  q: "Is the pad thai safe for a peanut allergy?"
+  expect: {refusal: safety_deferral, mentions: "peanut", cites: [pad-thai]}
+
+- id: g06
+  kind: constraint
+  q: "Give me a vegan main course that has no nuts."
+  expect: {cites_min: 1, never_cites_allergen: nuts, requires_diet: vegan}
+
+- id: g07
+  kind: constraint
+  q: "What can I cook in under 30 minutes?"
+  expect: {cites_min: 1, max_minutes_cited: 30}
+
+# --- refusal x2 ---------------------------------------------------------
+
+- id: g08
+  kind: refusal
+  q: "How do I fix a flat tyre?"
+  expect: {refusal: out_of_domain, sources_empty: true}
+
+- id: g09
+  kind: refusal
+  q: "Write me a Python function that reverses a string."
+  expect: {refusal: out_of_domain, sources_empty: true}
+
+# --- conflict x2 --------------------------------------------------------
+
+- id: g10
+  kind: conflict
+  q: "Should chocolate chip cookies be baked at 350 or 375?"
+  expect: {cites_min: 2, conflicts_min: 1}
+
+- id: g13
+  kind: conflict
+  q: "How long should the bolognese simmer?"
+  expect: {cites_min: 2, conflicts_min: 1}
+
+# --- empty x1 -----------------------------------------------------------
+
+- id: g11
+  kind: empty
+  q: ""
+  expect: {http_status: 422}
+
+# --- answerable but not in corpus x1 ------------------------------------
+
+- id: g12
+  kind: not_in_corpus
+  q: "What is the recipe for Beef Wellington?"
+  expect: {refusal: insufficient_context}
