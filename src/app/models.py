@@ -68,3 +68,14 @@ class Query(BaseModel):
     exclude_allergens: list[Allergen] = []
     diet: list[DietTag] = []
     max_minutes: int | None = None
+
+
+class Recipe(BaseModel):
+    id: str
+    title: str
+    url: str
+    revid: int
+    ingredients: list[str]
+    steps: list[str]
+    infobox: dict[str, str] = {}
+    meta: Meta | None = None
