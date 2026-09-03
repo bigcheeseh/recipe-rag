@@ -1,0 +1,75 @@
+# Curated Wikibooks Cookbook titles for the corpus. One per line, '#' comments.
+# Includes every dish the golden set names, with 2+ variants for conflict cases.
+
+# Italian
+Cookbook:Spaghetti alla Carbonara
+Cookbook:Carbonara Pasta
+Cookbook:Risotto (Basic)
+Cookbook:Risotto alla Milanese
+Cookbook:Risotto ai Funghi
+Cookbook:Bolognese Sauce
+Cookbook:Spaghetti with Bolognese Meat Sauce
+Cookbook:Lasagne
+Cookbook:Pesto
+Cookbook:Bruschetta
+Cookbook:Tomato Sauce
+
+# Baking
+Cookbook:Banana Bread I
+Cookbook:Banana Bread II
+Cookbook:Banana Bread with Walnuts
+Cookbook:Chocolate Chip Cookies I
+Cookbook:Chocolate Chip Cookies II
+Cookbook:Chocolate Chip Cookies III
+Cookbook:Chocolate Chip Cookies (Vegan)
+Cookbook:Chocolate Chip Cookies (Gluten-Free)
+Cookbook:Brownies
+Cookbook:Chocolate Cake
+Cookbook:Apple Pie
+Cookbook:Pancakes (North American)
+Cookbook:Pancakes (Vegan)
+Cookbook:Blueberry Pancakes
+
+# Mexican / American
+Cookbook:Guacamole I
+Cookbook:Guacamole II
+Cookbook:Guacamole (Chile-Free)
+Cookbook:Pico de Gallo
+Cookbook:Salsa
+Cookbook:Chili con Carne
+Cookbook:Chili (Vegan)
+Cookbook:Macaroni and Cheese
+Cookbook:Grilled Cheese Sandwich
+Cookbook:Potato Salad
+Cookbook:Coleslaw I
+Cookbook:Mashed Potatoes
+Cookbook:Beef Stew I
+Cookbook:Caesar Salad
+
+# Asian
+Cookbook:Pad Thai
+Cookbook:Khao Pad (Thai Fried Rice)
+Cookbook:Pad Kra Pao Gai (Thai Basil Chicken Stir Fry)
+Cookbook:Fried Rice
+Cookbook:Miso Soup
+Cookbook:Chicken Curry
+
+# Middle Eastern / Indian / Mediterranean
+Cookbook:Hummus
+Cookbook:Hummus I
+Cookbook:Falafel
+Cookbook:Tabbouleh
+Cookbook:Tzatziki
+Cookbook:Greek Salad
+Cookbook:Shakshuka
+Cookbook:Gazpacho
+Cookbook:Dal
+Cookbook:Dal Makhani (Black Gram with Cream)
+Cookbook:Indian Moong Dal
+Cookbook:Red Lentil Soup
+Cookbook:French Onion Soup
+
+# Eggs
+Cookbook:Basic Scrambled Eggs
+Cookbook:Omelet Recipes
+Cookbook:Asparagus Frittata
