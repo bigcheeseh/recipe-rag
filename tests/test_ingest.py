@@ -92,3 +92,14 @@ def test_paragraph_procedure_is_split_into_steps():
     assert r.steps[0].startswith("Whisk")
     assert r.steps[2].endswith("pancakes.")
     assert not any("Leftover" in s for s in r.steps)  # Notes section is not procedure
+
+
+def test_table_ingredients_become_one_line_per_row():
+    r = parse_recipe(load("table_ingredients.html"), title="Cookbook:Table Bread", url="u", revid=3)
+    assert isinstance(r, Recipe), r
+    assert r.ingredients == [
+        "White sugar, 1 cup, 200 g, 80%",
+        "Butter, softened, ½ cup, 113 g, 45.4%",
+        "Eggs, 2",
+    ]
+    assert r.steps == ["Cream the butter and sugar.", "Beat in the eggs."]
