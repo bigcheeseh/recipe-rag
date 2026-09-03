@@ -60,6 +60,10 @@ def _list_items(blocks: list[Tag]) -> list[str]:
             text = _clean(li.get_text(" "))
             if text:
                 items.append(text)
+        for tr in b.find_all("tr"):  # some pages tabulate ingredients: one row = one item
+            cells = [_clean(td.get_text(" ")) for td in tr.find_all("td")]
+            if any(cells):
+                items.append(", ".join(c for c in cells if c))
     return items
 
 
