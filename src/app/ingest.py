@@ -2,16 +2,19 @@
 
 import argparse
 import json
+import os
 import re
 import time
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 
+import anthropic
 import httpx
 from bs4 import BeautifulSoup, Tag
+from dotenv import load_dotenv
 
-from app.models import Recipe
+from app.models import Meta, Recipe
 
 
 @dataclass
@@ -177,7 +180,10 @@ def main(argv: list[str] | None = None) -> None:
     src.add_argument("--category", help="e.g. Category:Recipes")
     ap.add_argument("--limit", type=int, default=100, help="max pages when using --category")
     ap.add_argument("--out", type=Path, default=Path("data"))
+    ap.add_argument("--no-enrich", action="store_true", help="skip the LLM metadata call")
     args = ap.parse_args(argv)
+    load_dotenv()
+    model = os.environ.get("MODEL", "claude-sonnet-5")
 
     fetcher = Fetcher(args.out / "html_cache")
     if args.titles:
@@ -200,9 +206,25 @@ def main(argv: list[str] | None = None) -> None:
             rejected.append(r)
             print(f"reject  {t} ({r.reason})")
 
+    tokens_in = tokens_out = 0
+    if not args.no_enrich:
+        client = anthropic.Anthropic()
+        for r in accepted:
+            r.meta, u = enrich(client, model, r)
+            tokens_in += u["tokens_in"]
+            tokens_out += u["tokens_out"]
+            print(f"meta    {r.id}: {r.meta.model_dump()}")
+    enrich_usage = {
+        "model": model,
+        "calls": 0 if args.no_enrich else len(accepted),
+        "tokens_in": tokens_in,
+        "tokens_out": tokens_out,
+    }
+
     manifest = {
         "fetched_at": datetime.now(UTC).isoformat(timespec="seconds"),
         "source": str(args.titles or args.category),
+        "enrichment": enrich_usage,
         "accepted": [{"id": r.id, "title": r.title, "revid": r.revid} for r in accepted],
         "rejected": [{"title": r.title, "reason": r.reason} for r in rejected],
     }
@@ -210,6 +232,38 @@ def main(argv: list[str] | None = None) -> None:
     (args.out / "corpus.json").write_text(corpus, encoding="utf-8")
     (args.out / "ingest_manifest.json").write_text(json.dumps(manifest, indent=1), encoding="utf-8")
     print(f"\naccepted {len(accepted)}, rejected {len(rejected)}")
+
+
+
+# --- enrichment -------------------------------------------------------------
+
+PROMPT_PATH = Path(__file__).resolve().parents[2] / "prompts" / "enrich.md"
+
+
+def render_recipe(r: Recipe) -> str:
+    box = "\n".join(f"{k}: {v}" for k, v in r.infobox.items())
+    return (
+        f"Title: {r.title}\n{box}\n\nIngredients:\n"
+        + "\n".join(f"- {i}" for i in r.ingredients)
+        + "\n\nSteps:\n"
+        + "\n".join(f"{n}. {s}" for n, s in enumerate(r.steps, 1))
+    )
+
+
+def enrich(client: anthropic.Anthropic, model: str, r: Recipe) -> tuple[Meta, dict]:
+    """One structured-output call per recipe. Returns (meta, usage)."""
+    prompt = PROMPT_PATH.read_text(encoding="utf-8").replace("{recipe}", render_recipe(r))
+    resp = client.messages.parse(
+        model=model,
+        max_tokens=1024,
+        output_config={"effort": "low"},
+        messages=[{"role": "user", "content": prompt}],
+        output_format=Meta,
+    )
+    if resp.parsed_output is None:
+        raise RuntimeError(f"no parsed output for {r.id}: stop_reason={resp.stop_reason}")
+    usage = {"tokens_in": resp.usage.input_tokens, "tokens_out": resp.usage.output_tokens}
+    return resp.parsed_output, usage
 
 
 if __name__ == "__main__":
