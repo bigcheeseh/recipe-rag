@@ -2,7 +2,7 @@
 name = "recipe-rag"
 version = "0.1.0"
 description = "RAG question answering over Wikibooks Cookbook recipes"
-requires-python = ">=3.12"
+requires-python = ">=3.11"
 dependencies = [
     "fastapi",
     "uvicorn",
@@ -31,7 +31,7 @@ pythonpath = ["src"]
 addopts = "-q"
 
 [tool.ruff]
-target-version = "py312"
+target-version = "py311"
 line-length = 100
 src = ["src", "tests", "evals"]
 
