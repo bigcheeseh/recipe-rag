@@ -27,3 +27,23 @@ chose to stay on 3.11 rather than install another interpreter.
 say 3.11. No 3.12-only features are used. The package is installed into the
 venv in editable mode (`pip install -e .`) so `app` imports resolve outside
 pytest as well.
+
+## 2026-09-03 — corpus review and conflict variants
+
+Ingestion: 61 curated titles, 48 accepted, 13 rejected (all index or
+disambiguation pages). Enrichment 48 calls, 67,529 tokens in, 2,639 out,
+~USD 0.16. Hand review found 3 metadata errors in 48 records (6%): one
+false gluten, one false shellfish (fish confused with shellfish), one
+total_minutes that ignored an overnight soak. All corrected and logged in
+the manifest.
+
+Conflict variants present in the corpus without adding anything:
+- carbonara: 5 egg yolks vs 4 whole eggs; 60 vs 30 minutes
+- chocolate chip cookies: 375°F (I, II) vs 350°F (III, vegan, gluten-free)
+- banana bread ×3, guacamole ×3, risotto ×3 with smaller differences
+
+The bolognese pair I originally chose for g13 both simmer for one hour, so
+there was no conflict to detect. g13 now asks about carbonara eggs. g01
+and g03 were narrowed to a specific recipe so they stay plain factual
+questions rather than accidental conflict cases. tests/test_corpus.py pins
+these facts so a corpus refresh that breaks the golden set fails CI.

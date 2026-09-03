@@ -20,8 +20,8 @@
 
 - id: g01
   kind: factual
-  q: "How many eggs does the carbonara use?"
-  expect: {cites: [carbonara], contains: "3"}
+  q: "How many egg yolks does the Spaghetti alla Carbonara use?"
+  expect: {cites: [spaghetti-alla-carbonara], contains: "5"}
 
 - id: g02
   kind: factual
@@ -30,8 +30,8 @@
 
 - id: g03
   kind: factual
-  q: "What kind of rice does the risotto call for?"
-  expect: {cites: [risotto], contains: "arborio"}
+  q: "What kind of rice does the Risotto ai Funghi call for?"
+  expect: {cites: [risotto-ai-funghi], contains: "arborio"}
 
 - id: g04
   kind: factual
@@ -76,7 +76,7 @@
 
 - id: g13
   kind: conflict
-  q: "How long should the bolognese simmer?"
+  q: "How many eggs go into carbonara?"
   expect: {cites_min: 2, conflicts_min: 1}
 
 # --- empty x1 -----------------------------------------------------------
