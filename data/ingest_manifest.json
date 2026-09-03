@@ -1,0 +1,347 @@
+{
+ "fetched_at": "2026-09-03T00:51:33+00:00",
+ "source": "data\\titles.txt",
+ "enrichment": {
+  "model": "claude-sonnet-5",
+  "calls": 48,
+  "tokens_in": 67529,
+  "tokens_out": 2639
+ },
+ "accepted": [
+  {
+   "id": "spaghetti-alla-carbonara",
+   "title": "Spaghetti alla Carbonara",
+   "revid": 4640105
+  },
+  {
+   "id": "carbonara-pasta",
+   "title": "Carbonara Pasta",
+   "revid": 4627110
+  },
+  {
+   "id": "risotto-basic",
+   "title": "Risotto (Basic)",
+   "revid": 4525537
+  },
+  {
+   "id": "risotto-alla-milanese",
+   "title": "Risotto alla Milanese",
+   "revid": 4517968
+  },
+  {
+   "id": "risotto-ai-funghi",
+   "title": "Risotto ai Funghi",
+   "revid": 4610401
+  },
+  {
+   "id": "bolognese-sauce",
+   "title": "Bolognese Sauce",
+   "revid": 4518860
+  },
+  {
+   "id": "spaghetti-with-bolognese-meat-sauce",
+   "title": "Spaghetti with Bolognese Meat Sauce",
+   "revid": 4630833
+  },
+  {
+   "id": "bruschetta",
+   "title": "Bruschetta",
+   "revid": 4523487
+  },
+  {
+   "id": "banana-bread-i",
+   "title": "Banana Bread I",
+   "revid": 4658357
+  },
+  {
+   "id": "banana-bread-ii",
+   "title": "Banana Bread II",
+   "revid": 4658354
+  },
+  {
+   "id": "banana-bread-with-walnuts",
+   "title": "Banana Bread with Walnuts",
+   "revid": 4541035
+  },
+  {
+   "id": "chocolate-chip-cookies-i",
+   "title": "Chocolate Chip Cookies I",
+   "revid": 4630845
+  },
+  {
+   "id": "chocolate-chip-cookies-ii",
+   "title": "Chocolate Chip Cookies II",
+   "revid": 4519184
+  },
+  {
+   "id": "chocolate-chip-cookies-iii",
+   "title": "Chocolate Chip Cookies III",
+   "revid": 4519185
+  },
+  {
+   "id": "chocolate-chip-cookies-vegan",
+   "title": "Chocolate Chip Cookies (Vegan)",
+   "revid": 4519182
+  },
+  {
+   "id": "chocolate-chip-cookies-gluten-free",
+   "title": "Chocolate Chip Cookies (Gluten-Free)",
+   "revid": 4519181
+  },
+  {
+   "id": "pancakes-north-american",
+   "title": "Pancakes (North American)",
+   "revid": 4585403
+  },
+  {
+   "id": "pancakes-vegan",
+   "title": "Pancakes (Vegan)",
+   "revid": 4530551
+  },
+  {
+   "id": "blueberry-pancakes",
+   "title": "Blueberry Pancakes",
+   "revid": 4519106
+  },
+  {
+   "id": "guacamole-i",
+   "title": "Guacamole I",
+   "revid": 4636788
+  },
+  {
+   "id": "guacamole-ii",
+   "title": "Guacamole II",
+   "revid": 4517629
+  },
+  {
+   "id": "guacamole-chile-free",
+   "title": "Guacamole (Chile-Free)",
+   "revid": 4517631
+  },
+  {
+   "id": "pico-de-gallo",
+   "title": "Pico de Gallo",
+   "revid": 4518154
+  },
+  {
+   "id": "chili-vegan",
+   "title": "Chili (Vegan)",
+   "revid": 4599150
+  },
+  {
+   "id": "grilled-cheese-sandwich",
+   "title": "Grilled Cheese Sandwich",
+   "revid": 4518251
+  },
+  {
+   "id": "potato-salad",
+   "title": "Potato Salad",
+   "revid": 4525019
+  },
+  {
+   "id": "coleslaw-i",
+   "title": "Coleslaw I",
+   "revid": 4630331
+  },
+  {
+   "id": "mashed-potatoes",
+   "title": "Mashed Potatoes",
+   "revid": 4502781
+  },
+  {
+   "id": "beef-stew-i",
+   "title": "Beef Stew I",
+   "revid": 4518573
+  },
+  {
+   "id": "caesar-salad",
+   "title": "Caesar Salad",
+   "revid": 4518113
+  },
+  {
+   "id": "pad-thai",
+   "title": "Pad Thai",
+   "revid": 4581549
+  },
+  {
+   "id": "khao-pad-thai-fried-rice",
+   "title": "Khao Pad (Thai Fried Rice)",
+   "revid": 4512943
+  },
+  {
+   "id": "pad-kra-pao-gai-thai-basil-chicken-stir-fry",
+   "title": "Pad Kra Pao Gai (Thai Basil Chicken Stir Fry)",
+   "revid": 4535146
+  },
+  {
+   "id": "fried-rice",
+   "title": "Fried Rice",
+   "revid": 4523476
+  },
+  {
+   "id": "miso-soup",
+   "title": "Miso Soup",
+   "revid": 4610543
+  },
+  {
+   "id": "chicken-curry",
+   "title": "Chicken Curry",
+   "revid": 4615182
+  },
+  {
+   "id": "hummus-i",
+   "title": "Hummus I",
+   "revid": 4515548
+  },
+  {
+   "id": "falafel",
+   "title": "Falafel",
+   "revid": 4515539
+  },
+  {
+   "id": "tzatziki",
+   "title": "Tzatziki",
+   "revid": 4519035
+  },
+  {
+   "id": "greek-salad",
+   "title": "Greek Salad",
+   "revid": 4518144
+  },
+  {
+   "id": "shakshuka",
+   "title": "Shakshuka",
+   "revid": 4634493
+  },
+  {
+   "id": "gazpacho",
+   "title": "Gazpacho",
+   "revid": 4518408
+  },
+  {
+   "id": "dal-makhani-black-gram-with-cream",
+   "title": "Dal Makhani (Black Gram with Cream)",
+   "revid": 4517540
+  },
+  {
+   "id": "indian-moong-dal",
+   "title": "Indian Moong Dal",
+   "revid": 4515496
+  },
+  {
+   "id": "red-lentil-soup",
+   "title": "Red Lentil Soup",
+   "revid": 4518501
+  },
+  {
+   "id": "french-onion-soup",
+   "title": "French Onion Soup",
+   "revid": 4518404
+  },
+  {
+   "id": "basic-scrambled-eggs",
+   "title": "Basic Scrambled Eggs",
+   "revid": 4523414
+  },
+  {
+   "id": "asparagus-frittata",
+   "title": "Asparagus Frittata",
+   "revid": 4522469
+  }
+ ],
+ "rejected": [
+  {
+   "title": "Cookbook:Lasagne",
+   "reason": "no Ingredients section"
+  },
+  {
+   "title": "Cookbook:Pesto",
+   "reason": "no Ingredients section"
+  },
+  {
+   "title": "Cookbook:Tomato Sauce",
+   "reason": "no Ingredients section"
+  },
+  {
+   "title": "Cookbook:Brownies",
+   "reason": "no Ingredients section"
+  },
+  {
+   "title": "Cookbook:Chocolate Cake",
+   "reason": "no Ingredients section"
+  },
+  {
+   "title": "Cookbook:Apple Pie",
+   "reason": "no Ingredients section"
+  },
+  {
+   "title": "Cookbook:Salsa",
+   "reason": "no Ingredients section"
+  },
+  {
+   "title": "Cookbook:Chili con Carne",
+   "reason": "no Ingredients section"
+  },
+  {
+   "title": "Cookbook:Macaroni and Cheese",
+   "reason": "no Ingredients section"
+  },
+  {
+   "title": "Cookbook:Hummus",
+   "reason": "no Ingredients section"
+  },
+  {
+   "title": "Cookbook:Tabbouleh",
+   "reason": "no Ingredients section"
+  },
+  {
+   "title": "Cookbook:Dal",
+   "reason": "no Ingredients section"
+  },
+  {
+   "title": "Cookbook:Omelet Recipes",
+   "reason": "no Ingredients section"
+  }
+ ],
+ "manual_corrections": [
+  {
+   "id": "pad-thai",
+   "field": "allergens",
+   "from": [
+    "nuts",
+    "eggs",
+    "gluten",
+    "shellfish",
+    "soy"
+   ],
+   "to": [
+    "nuts",
+    "eggs",
+    "shellfish",
+    "soy"
+   ],
+   "why": "rice noodles and fish sauce contain no wheat; gluten removed"
+  },
+  {
+   "id": "caesar-salad",
+   "field": "allergens",
+   "from": [
+    "eggs",
+    "gluten",
+    "shellfish"
+   ],
+   "to": [
+    "eggs",
+    "gluten"
+   ],
+   "why": "Worcestershire contains anchovy (fish), not shellfish; shellfish removed"
+  },
+  {
+   "id": "dal-makhani-black-gram-with-cream",
+   "field": "total_minutes",
+   "from": 20,
+   "to": 780,
+   "why": "infobox says 20 min but steps require an overnight soak; set to 12 h soak + 60 min cook"
+  }
+ ]
+}

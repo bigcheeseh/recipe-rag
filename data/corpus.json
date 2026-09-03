@@ -1,0 +1,2057 @@
+[
+ {
+  "id": "spaghetti-alla-carbonara",
+  "title": "Spaghetti alla Carbonara",
+  "url": "https://en.wikibooks.org/wiki/Cookbook:Spaghetti_alla_Carbonara",
+  "revid": 4640105,
+  "ingredients": [
+   "450 g (1 pound ) spaghetti",
+   "225–500 g (½–1 pound) guanciale or pancetta",
+   "5 egg yolks",
+   "178 ml (¾ cup ) grated Pecorino Romano cheese",
+   "178 ml (¾ cup) grated Parmigiano-Reggiano cheese",
+   "3–4 tablespoons extra-virgin olive oil",
+   "½ tablespoon freshly-ground pepper",
+   "Salt"
+  ],
+  "steps": [
+   "Dice the guanciale or pancetta into 2.5 cm (1- inch ) pieces.",
+   "Bring a big pot of water to a boil and add salt to taste when it begins to simmer .",
+   "Cook the spaghetti until it is al dente and drain it, reserving 1 cup of water.",
+   "While spaghetti is cooking, heat the olive oil in a large skillet over a medium-high heat. When the oil is hot, add the pancetta and cook for about 10 minutes over a low flame until the pancetta has rendered most of its fat but is still chewy and barely browned.",
+   "In a bowl, slowly whisk about ½ cup of the pasta water into the egg yolks. Add the grated cheese and mix thoroughly with a fork.",
+   "Strain the spaghetti and transfer it immediately to the skillet with the pancetta. Toss it and turn off the heat.",
+   "Add the egg and cheese mixture to the pasta while stirring in the remaining pasta water to help thin the sauce and create an emulsion.",
+   "Add the pepper and toss all the ingredients to coat the pasta."
+  ],
+  "infobox": {
+   "Servings": "6",
+   "Time": "1 hour",
+   "Difficulty": ""
+  },
+  "meta": {
+   "allergens": [
+    "dairy",
+    "eggs",
+    "gluten"
+   ],
+   "diet_tags": [],
+   "cuisine": "Italian",
+   "total_minutes": 60
+  }
+ },
+ {
+  "id": "carbonara-pasta",
+  "title": "Carbonara Pasta",
+  "url": "https://en.wikibooks.org/wiki/Cookbook:Carbonara_Pasta",
+  "revid": 4627110,
+  "ingredients": [
+   "4 free-range eggs with large yolks",
+   "3 oz (65 g ) fresh Italian pancetta , cubed into ¼–⅜- inch (0.64–0.95 cm ) pieces",
+   "1 sprig of fresh thyme , finely chopped",
+   "¼ small onion , finely chopped",
+   "The minced zest of ½ a lemon",
+   "Salt to taste",
+   "Pepper to taste",
+   "Grated parmigiano and/or pecorino romano cheese",
+   "12 oz (340 g) uncooked pasta (e.g. spaghetti or penne)"
+  ],
+  "steps": [
+   "Put on the desired quantity of pasta to cook.",
+   "Crack the eggs carefully, and separate the yolks from the whites—a good way of doing this is to run the egg through the almost closed fingers of your upturned palm, so as the white runs away through the fingers, and the yolk remains in your hand. Keep the yolks in a large bowl, and use the whites for another purpose. Remember to pick out the pesky little white bit that always remains behind on the yolk.",
+   "Fry the pancetta on a lowish heat in a dry frying pan until it is crispy.",
+   "When the pancetta is cooked, drain and allow it to cool for a few minutes before combining it with the yolks in a large bowl. Allowing it to cool prevents cooking of the eggs.",
+   "Add a pinch of rock-salt and a very generous amount of ground pepper to the yolk mixture.",
+   "Add the lemon zest, chopped thyme, and a small amount of the Parmigiano cheese.",
+   "Drain the pasta through a colander , count to 10 to let the pasta cool slightly, and add it to the bowl with the yolk mixture.",
+   "Mix it through with a wooden spoon and serve immediately, sprinkling the remaining Parmigiano cheese over the top."
+  ],
+  "infobox": {
+   "Servings": "4",
+   "Difficulty": ""
+  },
+  "meta": {
+   "allergens": [
+    "dairy",
+    "eggs",
+    "gluten"
+   ],
+   "diet_tags": [],
+   "cuisine": "Italian",
+   "total_minutes": 30
+  }
+ },
+ {
+  "id": "risotto-basic",
+  "title": "Risotto (Basic)",
+  "url": "https://en.wikibooks.org/wiki/Cookbook:Risotto_(Basic)",
+  "revid": 4525537,
+  "ingredients": [
+   "400 g (14 oz ) risotto rice",
+   "1 onion , finely chopped",
+   "1 glass dry white wine",
+   "25 g (1 oz) butter (a good rich butter is best)",
+   "About 1 liter stock / broth (but it's a good idea to have more than you need)"
+  ],
+  "steps": [
+   "Sweat the onion very gently over medium heat in some butter or olive oil, without letting it brown. This is known as a soffritto in Italy.",
+   "Add the rice and cook until it has a transparent look (this shouldn't take long). Add some salt and pepper.",
+   "Add the wine. A hot pan will cause the alcohol to evaporate more quickly (and create a nice dramatic effect), but make sure you don't burn the rice or the soffritto .",
+   "As the wine cooks away you will see the remaining liquid getting thicker as it's absorbing the starch from the rice. When it's more or less gone, add some stock. Do not add too much stock. The rice should never be submerged in stock. Keep stirring it and keep adding more stock as it cooks away. This should take about 15–20 minutes.",
+   "Taste to see if the rice is done. The rice should be soft, but have enough bite to it to feel the individual grains of rice. The choice between a liquid risotto or a firmer one is a matter of personal preference. When put on a plate, it should spread out slowly. If it sits still, it needs some more stock; if there's liquid coming from the risotto , it needs to cook down a bit more.",
+   "Let it rest for about a minute once ready.",
+   "Vigorously stir in the butter in small chunks at the time, tasting to get the amount of butter right. Season with more salt and pepper to taste. This phase is called the mantecatura .",
+   "Serve immediately."
+  ],
+  "infobox": {
+   "Servings": "4 persons",
+   "Time": "40 minutes",
+   "Difficulty": ""
+  },
+  "meta": {
+   "allergens": [
+    "dairy"
+   ],
+   "diet_tags": [
+    "vegetarian",
+    "pescatarian"
+   ],
+   "cuisine": "Italian",
+   "total_minutes": 40
+  }
+ },
+ {
+  "id": "risotto-alla-milanese",
+  "title": "Risotto alla Milanese",
+  "url": "https://en.wikibooks.org/wiki/Cookbook:Risotto_alla_Milanese",
+  "revid": 4517968,
+  "ingredients": [
+   "¼ tsp saffron threads",
+   "3½–4 cups chicken broth",
+   "7 tbsp butter or margarine , divided",
+   "1 large onion , chopped",
+   "1½ cups uncooked risotto rice",
+   "½ cup dry white wine",
+   "½ tsp salt",
+   "Dash pepper",
+   "¼ cup freshly-grated Parmesan cheese",
+   "Chopped fresh parsley , fresh parsley sprig, and tomato slices for garnish (optional)"
+  ],
+  "steps": [
+   "Crush saffron in mortar with pestle to a powder. Place saffron in glass measuring cup.",
+   "Bring broth to a boil in small saucepan over medium heat; reduce heat to low.",
+   "Stir ½ cup broth into saffron to dissolve; set aside. Keep remaining broth hot.",
+   "Heat 6 tablespoons butter in large, heavy skillet or 2½- quart saucepan over medium heat until melted and bubbly.",
+   "Cook and stir onion 5 minutes or until onion is soft.",
+   "Stir in rice; cook and stir 2 minutes.",
+   "Stir in wine, salt and pepper.",
+   "Cook, uncovered, over medium-high heat 3–5 minutes until wine has evaporated, stirring occasionally.",
+   "Measure ½ cup hot broth; stir into rice mixture. Reduce heat to medium-low, maintaining a simmer throughout adding broth.",
+   "Cook and stir until broth has absorbed. Repeat, adding ½ cup broth 3 more times, cooking and stirring until broth has absorbed.",
+   "Add saffron-flavored broth to rice and cook until absorbed.",
+   "Continue to add remaining broth, ½ cup at a time, cooking and stirring until rice is tender but firm and mixture has slight creamy consistency. Not all broth may be necessary. Total cooking time of rice will be about 20 minutes.",
+   "Remove risotto from heat.",
+   "Stir in remaining 1 tablespoon butter and cheese.",
+   "Garnish, if desired.",
+   "Serve immediately."
+  ],
+  "infobox": {
+   "Servings": "6–8",
+   "Time": "1 hour",
+   "Difficulty": ""
+  },
+  "meta": {
+   "allergens": [
+    "dairy"
+   ],
+   "diet_tags": [
+    "vegetarian",
+    "pescatarian"
+   ],
+   "cuisine": "Italian",
+   "total_minutes": 60
+  }
+ },
+ {
+  "id": "risotto-ai-funghi",
+  "title": "Risotto ai Funghi",
+  "url": "https://en.wikibooks.org/wiki/Cookbook:Risotto_ai_Funghi",
+  "revid": 4610401,
+  "ingredients": [
+   "250 g arborio, vialone nano , or carnaroli risotto rice",
+   "25 g salted butter",
+   "1 small (150 g) white onion , finely chopped",
+   "1 large clove garlic , minced",
+   "½ litre chicken stock",
+   "200 g fresh porcini mushrooms ,or about 50 g dried",
+   "1 small bunch of flat-leaved parsley",
+   "1 cup white, dry wine",
+   "100 g freshly grated Parmesan Reggiano cheese"
+  ],
+  "steps": [
+   "If using dried mushrooms, soak them for at least 20 minutes in 200 ml warm water. Even if the instructions on the packet say they should be soaked for less time, ignore them and soak for at least 20 minutes. Once they have reconstituted properly, chop about ½ of them into small pieces and roughly chop the rest. There's no need to soak fresh mushrooms.",
+   "Melt half the butter in preferably a medium sized frying pan or saucepan , on a medium heat.",
+   "Sweat the onion and garlic in the butter until the onion is translucent. Under no circumstances should the onions and garlic burn. If they do burn, throw them away and start over.",
+   "Now add the rice and swirl it around in the pan until it is also coated in the butter. Leave for about 30 seconds. Again it should not even come close to burning.",
+   "Now splash in the wine—it should fizz and steam dramatically—and wait for it to evaporate.",
+   "Add about half the stock slowly, one ladle at a time. Some feel slowly adding the stock is nonsense because they are off doing something else risking the rice \"catching\" and burning. Some feel it makes no discernible difference to the taste. Most would agree that this doesn't affect the taste, but does change the texture.",
+   "Stir the rice about every 2 minutes to release the starch and add more stock if there is the slightest chance of the rice drying out.",
+   "After about 5 minutes of cooking add the mushrooms and their juice (or liquor as it is called). If using dried mushrooms, make sure to avoid adding the dirt that has sedimented at the bottom of the container in which they've dried.",
+   "The secret of risotto is that the rice should be cooked until al dente , which means the rice should have a bit of bite left, rather than be squashy and flaccid. This takes anywhere from 15–20 minutes, but be sure to start testing small spoonfuls after about 15 minutes of cooking. The rice should be fairly glutinous and not too runny. Ideally it should spread out on its own across the plate when served, not remaining in a lump in the middle.",
+   "When you feel the rice is cooked, take it off the heat and add the chopped parsley, the remaining butter and about 2 tbsp of the Parmesan cheese and mix it all in together. Adjust the seasoning as well.",
+   "Let it stand for about 2 minutes (the Italians call this the Mantecatura period) and serve."
+  ],
+  "infobox": {
+   "Difficulty": ""
+  },
+  "meta": {
+   "allergens": [
+    "dairy"
+   ],
+   "diet_tags": [
+    "vegetarian",
+    "pescatarian"
+   ],
+   "cuisine": "Italian",
+   "total_minutes": 50
+  }
+ },
+ {
+  "id": "bolognese-sauce",
+  "title": "Bolognese Sauce",
+  "url": "https://en.wikibooks.org/wiki/Cookbook:Bolognese_Sauce",
+  "revid": 4518860,
+  "ingredients": [
+   "1.5 lb (675 g ) of lean ground beef , at room temperature",
+   "2 large egg whites, at room temperature",
+   "1 can (28 oz / 800 g) of stewed San Marzano or Roma ( Italian ) tomatoes",
+   "1 can (6 oz / 170 g) tomato paste",
+   "6 cloves of garlic , peeled",
+   "2 Tbsp olive oil",
+   "Bay leaf",
+   "Oregano"
+  ],
+  "steps": [
+   "Put a thick-bottomed pot over a medium-low heat with the oil and garlic.",
+   "As the pot warms up, mix the beef and egg whites into a homogeneous paste.",
+   "Stir the garlic cloves in the warming oil until the fragrance can be noted.",
+   "Add the meat to the pot, stirring to break clusters into fine pieces, and cook until most of the juices have evaporated.",
+   "Add the tomato paste and stir before adding the stewed tomatoes.",
+   "Cover the pot, leaving a vent, and simmer at a low heat for 1 hour, stirring every 15 minutes.",
+   "Turn off the heat and retrieve the garlic cloves, to either discard or mash them before re-adding to the sauce.",
+   "Season according to taste, taking in consideration the salt content of the tomato products.",
+   "Cover completely and let rest for half an hour, during which time preparation for assembly and plating can be done."
+  ],
+  "infobox": {
+   "Servings": "4",
+   "Time": "1 hour, 45 minutes",
+   "Difficulty": ""
+  },
+  "meta": {
+   "allergens": [
+    "eggs"
+   ],
+   "diet_tags": [],
+   "cuisine": "Italian",
+   "total_minutes": 105
+  }
+ },
+ {
+  "id": "spaghetti-with-bolognese-meat-sauce",
+  "title": "Spaghetti with Bolognese Meat Sauce",
+  "url": "https://en.wikibooks.org/wiki/Cookbook:Spaghetti_with_Bolognese_Meat_Sauce",
+  "revid": 4630833,
+  "ingredients": [
+   "¼ lb (125 g ) ham or bacon , cut into cubes",
+   "1 lb (450 g) beef lean or medium ground",
+   "1 tablespoon (15 ml ) olive oil",
+   "1 cup (225 ml) coarsely chopped onion",
+   "¼ cup (50 ml) coarsely chopped celery",
+   "¼ cup (50 ml) coarsely chopped carrot",
+   "¼ cup (50 ml) coarsely chopped fennel bulb, if available",
+   "¼ cup (50 ml) butter",
+   "1 cup (225 ml) canned plum tomato",
+   "½ cup (125 ml) red wine",
+   "2 cups (500 ml) beef stock (preferably fresh, but canned beef stock will do)",
+   "¼ cup (50 ml) tomato paste",
+   "1 strip of lemon rind",
+   "1 bay leaf",
+   "1 lb (450 g) spaghetti pasta, preferably made from durum wheat",
+   "1 cup Parmesan cheese for garnish, preferably freshly grated Reggiano Parmesan",
+   "Salt to taste",
+   "Fresh ground pepper to taste"
+  ],
+  "steps": [
+   "Mix the coarsely chopped onion, carrot, celery and fennel (optional) together and finely chop them (this is called a battuto in Italian, or a finely chopped mixture of vegetables and herbs to flavour a dish).",
+   "Cut the ham or bacon into little cubes and sauté in a heavy saucepan .",
+   "Add the butter and allow it to melt. Then, add the battuto.",
+   "Cook, stirring occasionally until very lightly browned. Add this mixture to a heavy pot.",
+   "Heat the olive oil in the skillet the battuto was browned in and when the oil is hot, add the beef and stir to break up lumps, cooking until well browned.",
+   "Add to the battuto in the pot.",
+   "Add the wine to the skillet the beef was in and stir on high heat, scraping any brown bits stuck to the pan.",
+   "Add the tomato paste and stock and stir until well mixed and add this mixture to the pot.",
+   "Drain and coarsely chop the plum tomatoes and add them to the pot.",
+   "Add the bay leaf and lemon rind. Bring the pot to a boil, then reduce to a gentle simmer , with bubbles barely breaking the surface.",
+   "Simmer, stirring occasionally for an hour (or more), until thick.",
+   "Add pepper and salt to taste.",
+   "When the sauce is ready, bring a gallon (4 litres) of water to a full boil over high heat in a large pot",
+   "Add the pasta, give it a brisk stir to ensure it is all covered by water and not clumped together. Cook for about 10–12 minutes, or until al dente (firm but not hard, there should still be a bit of 'bite' when chewing pasta, rather than soggy and mushy).",
+   "Drain the pasta well and serve immediately.",
+   "Remove the bay leaf and lemon rind, then spoon the Bolognese sauce over the pasta and have guests garnish with the grated Parmesan cheese."
+  ],
+  "infobox": {
+   "Servings": "4",
+   "Time": "2 hours",
+   "Difficulty": ""
+  },
+  "meta": {
+   "allergens": [
+    "dairy",
+    "gluten"
+   ],
+   "diet_tags": [],
+   "cuisine": "Italian",
+   "total_minutes": 120
+  }
+ },
+ {
+  "id": "bruschetta",
+  "title": "Bruschetta",
+  "url": "https://en.wikibooks.org/wiki/Cookbook:Bruschetta",
+  "revid": 4523487,
+  "ingredients": [
+   "1 loaf of Italian or French bread , sliced ½ inch (1.25 cm) thick on the bias",
+   "½ head garlic",
+   "Kosher salt or sea salt",
+   "Freshly-ground black pepper",
+   "Extra-virgin olive oil",
+   "Toppings of your choice (see examples below)",
+   "Chopped tomatoes with arugula or basil",
+   "Cooked white beans (topped, if you like, with sautéed kale)",
+   "Sautéed mushrooms (preferably wild varieties)",
+   "Minced anchovies flavored with wine vinegar and herbs",
+   "Thinly-sliced pancetta crisped under the broiler",
+   "Pugliese-style chopped mixture of summer vegetables (red onion , cucumber , tomatoes , oregano , flat-leaf parsley , basil , and red pepper flakes )"
+  ],
+  "steps": [
+   "Toast the bread slices in a toaster oven, under a broiler, or on a grill, until they turn golden.",
+   "Immediately rub the bread with the cut side of the garlic. Sprinkle with salt and black pepper, and drizzle generously with extra-virgin olive oil.",
+   "Serve warm topped with whatever combinations of seasonal ingredients you choose."
+  ],
+  "infobox": {
+   "Servings": "depends on loaf size",
+   "Time": "10 minutes",
+   "Difficulty": ""
+  },
+  "meta": {
+   "allergens": [
+    "gluten"
+   ],
+   "diet_tags": [
+    "vegetarian",
+    "pescatarian"
+   ],
+   "cuisine": "Italian",
+   "total_minutes": 10
+  }
+ },
+ {
+  "id": "banana-bread-i",
+  "title": "Banana Bread I",
+  "url": "https://en.wikibooks.org/wiki/Cookbook:Banana_Bread_I",
+  "revid": 4658357,
+  "ingredients": [
+   "White sugar, 1 cup, 200 g, 80%",
+   "Butter , softened, ½ cup, 113 g, 45.4%",
+   "Bananas (the riper the better), mashed, 3 ea ., 243–456 g, 97.2-182.4%",
+   "Eggs, 2 ea., 100 g, 40%",
+   "All-purpose flour, 2 cups, 250 g, 100%",
+   "Baking soda, ½ tsp, 2.3 g, 0.92%",
+   "Sour milk or buttermilk, ⅓ cup, 81 g, 32.67%",
+   "Salt, ¼ tsp, 1.5 g, 0.6%",
+   "Vanilla extract, 1 tsp, 4.2 g, 1.68%",
+   "Total, 996–1209 g, 398.47-483.67%"
+  ],
+  "steps": [
+   "Preheat oven to 350°F (175°C) .",
+   "Lightly grease an 8 x 4- inch (20 x 10 cm ) loaf pan .",
+   "Combine all ingredients into a large mixing bowl . Beat well.",
+   "Pour batter into pan.",
+   "Bake on middle shelf of oven for 60 minutes, or until a toothpick inserted into the center of the loaf comes out clean."
+  ],
+  "infobox": {
+   "Time": "1 hour"
+  },
+  "meta": {
+   "allergens": [
+    "dairy",
+    "eggs",
+    "gluten"
+   ],
+   "diet_tags": [
+    "vegetarian",
+    "pescatarian"
+   ],
+   "cuisine": "American",
+   "total_minutes": 60
+  }
+ },
+ {
+  "id": "banana-bread-ii",
+  "title": "Banana Bread II",
+  "url": "https://en.wikibooks.org/wiki/Cookbook:Banana_Bread_II",
+  "revid": 4658354,
+  "ingredients": [
+   "Component 1",
+   "Melted butter, ½ cup, 113 g, 60.5%",
+   "White granulated sugar, 1 cup, 200 g, 106.6%",
+   "Eggs, 2 ea ., 100 g, 53.3%",
+   "Vanilla extract, 1 tsp, 4.2 g, 2.24%",
+   "Flour, 1 ½ cups, 187 g, 100%",
+   "Baking soda, 1 tsp, 4.6 g, 2.45%",
+   "Salt, ½ tsp, 3 g, 1.60%",
+   "Sour cream, 113 g (4 oz), 60.5%",
+   "Sliced bananas (ripe), 2 ea., 162–304 g, 86–162%",
+   "Chopped walnuts (optional), ½ cup, 58.5 g, 31.2%",
+   "Ground cinnamon (optional), 1 tsp, 2.6 g, 1.39%",
+   "Total, 949–1091 g, 506–582%"
+  ],
+  "steps": [
+   "Preheat oven to 350°F (~175°C)",
+   "Grease 9x5- inch (23x13 cm ) loaf pan (optionally mix some sugar with a little cinnamon and spread over buttered surface of pan).",
+   "Beat eggs.",
+   "Mix melted butter and sugar in a large bowl (alternatively, cream the butter).",
+   "Stir in eggs and vanilla.",
+   "Combine flour, baking soda, salt, and cinnamon; add to mixture.",
+   "Add sour cream, sliced bananas, and walnuts.",
+   "Pour mixture into pan, optionally using a spatula to even out the top.",
+   "Bake for about 1 hour, let cool, and enjoy!"
+  ],
+  "infobox": {
+   "Time": "1.5 hours",
+   "Difficulty": ""
+  },
+  "meta": {
+   "allergens": [
+    "nuts",
+    "dairy",
+    "eggs",
+    "gluten"
+   ],
+   "diet_tags": [
+    "vegetarian",
+    "pescatarian"
+   ],
+   "cuisine": "American",
+   "total_minutes": 90
+  }
+ },
+ {
+  "id": "banana-bread-with-walnuts",
+  "title": "Banana Bread with Walnuts",
+  "url": "https://en.wikibooks.org/wiki/Cookbook:Banana_Bread_with_Walnuts",
+  "revid": 4541035,
+  "ingredients": [
+   "490 g all-purpose flour",
+   "5½+⅛ tsp baking powder",
+   "1 pinch salt",
+   "8 oz butter , softened",
+   "320 g turbinado sugar",
+   "4 ea . (200 g ) eggs",
+   "950 g mashed banana",
+   "2 ½ cups walnuts , coarsely chopped",
+   "Turbinado sugar for sprinkling"
+  ],
+  "steps": [
+   "Combine the flour, baking powder, and salt.",
+   "Cream the butter and sugar together until light and fluffy.",
+   "Whisk the eggs, and gradually beat them into the butter mixture.",
+   "Mix in one third of the flour mixture, followed by half the banana. Continue alternating in this way until all the dry mixture and mashed banana is incorporated.",
+   "Stir in the walnuts.",
+   "Grease and line 2 loaf pans . Divide batter evenly between pans. Sprinkle the tops with additional turbinado sugar.",
+   "Bake at 350°F for at least 1 hour. After this point, check the banana bread every 10 minutes or so until it is done. It will be browned, and a skewer inserted into the center of the loaf should come out clean with no more than moist crumbs attached.",
+   "Let cool to room temperature in the pans. Unmold."
+  ],
+  "infobox": {
+   "Recipe origin": "USA, 2000s",
+   "Servings": "2 loaves",
+   "Difficulty": ""
+  },
+  "meta": {
+   "allergens": [
+    "nuts",
+    "dairy",
+    "eggs",
+    "gluten"
+   ],
+   "diet_tags": [
+    "vegetarian",
+    "pescatarian"
+   ],
+   "cuisine": "American",
+   "total_minutes": 90
+  }
+ },
+ {
+  "id": "chocolate-chip-cookies-i",
+  "title": "Chocolate Chip Cookies I",
+  "url": "https://en.wikibooks.org/wiki/Cookbook:Chocolate_Chip_Cookies_I",
+  "revid": 4630845,
+  "ingredients": [
+   "2 sticks (½ lb / 225 g / 1 cup ) butter , softened",
+   "¾ cup (180 ml ) granulated white sugar",
+   "¾ cup (180 ml) packed brown sugar",
+   "¼ teaspoon vanilla extract",
+   "2 standard (100 g) eggs",
+   "2 ¼ cups (600 ml / 290 g) all-purpose flour",
+   "1 teaspoon baking soda",
+   "1 teaspoon salt",
+   "1 teaspoon dry ground lemon or orange peel (optional)",
+   "2 cups (480 ml / 12 oz ) semi-sweet chocolate morsels / chips",
+   "5 oz (150 g) chopped nuts , such as groundnuts (optional)"
+  ],
+  "steps": [
+   "Preheat oven to 375°F ( 210°C ), or 350°F ( 195°C ) if you want chewy cookies.",
+   "Cream butter, granulated sugar, and brown sugar in a large mixer bowl.",
+   "Add eggs one at a time, beating until fully incorporated.",
+   "Add vanilla extract and beat in.",
+   "In a small bowl, sift together the dry ingredients (except chocolate and nuts). Add to the wet mixture in two parts and fold until combined. If you beat this too long, you may get some gluten formation which will change the cookie texture.",
+   "Stir in chocolate morsels (chips), and nuts if using.",
+   "Drop dough by rounded tablespoons onto ungreased baking sheets . There should be enough fat in the cookie dough to prevent sticking, but using parchment paper or non-stick pans may help if you find this not to be the case.",
+   "Bake in the preheated oven for 10–12 minutes or until golden brown (cooking times may vary). Let stand for about 1 minute and remove from hot baking sheet to cool on a wire rack ."
+  ],
+  "infobox": {
+   "Yield": "56 cookies",
+   "Servings": "10",
+   "Time": "Prep: 20 minutes Cooking: 12 minutes Total: 32 minutes"
+  },
+  "meta": {
+   "allergens": [
+    "nuts",
+    "dairy",
+    "eggs",
+    "gluten",
+    "soy"
+   ],
+   "diet_tags": [
+    "vegetarian",
+    "pescatarian"
+   ],
+   "cuisine": "American",
+   "total_minutes": 32
+  }
+ },
+ {
+  "id": "chocolate-chip-cookies-ii",
+  "title": "Chocolate Chip Cookies II",
+  "url": "https://en.wikibooks.org/wiki/Cookbook:Chocolate_Chip_Cookies_II",
+  "revid": 4519184,
+  "ingredients": [
+   "1 ½ cup (145 g ) all-purpose flour",
+   "½ tsp salt",
+   "½ tsp baking soda",
+   "½ cup (115 g) butter",
+   "¼ cup (50 g) brown sugar",
+   "½ cup (100 g) white granulated sugar",
+   "1 egg",
+   "1 tsp vanilla essence",
+   "1 pack (6 oz / 170 g) semi-sweet chocolate chips"
+  ],
+  "steps": [
+   "Combine the flour, salt, and baking powder.",
+   "Preheat the oven until it reaches 375°F/190°C.",
+   "In another bowl, cream the butter and sugars until light and fluffy.",
+   "Add egg and vanilla, and beat until smooth.",
+   "Mix in the flour mixture until well-blended.",
+   "Add the chocolate chips, and stir with a wooden spoon.",
+   "Drop the cookies onto a lightly-greased or parchment -lined cookie sheet by teaspoonfuls in 2- inch (5 cm) ball shapes.",
+   "Bake for 15 minutes or until the edges are light brown.",
+   "Remove the cookies from the cookie sheet with a metal spatula, then let them cool on a wire rack ."
+  ],
+  "infobox": {
+   "Difficulty": ""
+  },
+  "meta": {
+   "allergens": [
+    "dairy",
+    "eggs",
+    "gluten",
+    "soy"
+   ],
+   "diet_tags": [
+    "vegetarian",
+    "pescatarian"
+   ],
+   "cuisine": "American",
+   "total_minutes": 30
+  }
+ },
+ {
+  "id": "chocolate-chip-cookies-iii",
+  "title": "Chocolate Chip Cookies III",
+  "url": "https://en.wikibooks.org/wiki/Cookbook:Chocolate_Chip_Cookies_III",
+  "revid": 4519185,
+  "ingredients": [
+   "½ cup butter , softened",
+   "½ cup white sugar",
+   "¼ cup packed brown sugar",
+   "1 egg",
+   "1 tsp vanilla",
+   "1 cup flour",
+   "½ tsp salt",
+   "½ tsp baking soda",
+   "Hershey's Chipits semisweet chocolate chips"
+  ],
+  "steps": [
+   "Cream butter and sugar in a bowl until well combined.",
+   "Mix in egg and vanilla.",
+   "Combine flour, salt, and baking soda. Mix this dry mix into the wet mix.",
+   "Fold in chocolate chips.",
+   "Scoop cookies onto a parchment -lined baking sheet . Bake at 350°F until golden brown.",
+   "Cool slightly, then remove from baking sheet. Cool fully."
+  ],
+  "infobox": {
+   "Difficulty": ""
+  },
+  "meta": {
+   "allergens": [
+    "dairy",
+    "eggs",
+    "gluten"
+   ],
+   "diet_tags": [
+    "vegetarian",
+    "pescatarian"
+   ],
+   "cuisine": "American",
+   "total_minutes": 30
+  }
+ },
+ {
+  "id": "chocolate-chip-cookies-vegan",
+  "title": "Chocolate Chip Cookies (Vegan)",
+  "url": "https://en.wikibooks.org/wiki/Cookbook:Chocolate_Chip_Cookies_(Vegan)",
+  "revid": 4519182,
+  "ingredients": [
+   "½ cup non-dairy shortening",
+   "½ cup non-dairy margarine",
+   "1 cup brown sugar",
+   "½ banana",
+   "8–12 oz vegan chocolate chips",
+   "2 tsp (5 ml) baking powder",
+   "1 tsp (5 ml) salt",
+   "2 cups flour (whole wheat pastry flour recommended but all-purpose white also works)"
+  ],
+  "steps": [
+   "Preheat oven to 350°F (180°C).",
+   "Cream shortening, margarine, and sugar together in a mixer .",
+   "Add banana to the sugar and butter mixture.",
+   "Mix all the dry ingredients together. Slowly add to the wet mixture.",
+   "Add chocolate chips.",
+   "Roll small portions of dough into balls and place on a cookie sheet .",
+   "Bake for 10–11 minutes, or until slightly browned."
+  ],
+  "infobox": {
+   "Yield": "3 dozen",
+   "Time": "45 minutes",
+   "Difficulty": ""
+  },
+  "meta": {
+   "allergens": [
+    "gluten",
+    "soy"
+   ],
+   "diet_tags": [
+    "vegan",
+    "vegetarian",
+    "pescatarian"
+   ],
+   "cuisine": "American",
+   "total_minutes": 45
+  }
+ },
+ {
+  "id": "chocolate-chip-cookies-gluten-free",
+  "title": "Chocolate Chip Cookies (Gluten-Free)",
+  "url": "https://en.wikibooks.org/wiki/Cookbook:Chocolate_Chip_Cookies_(Gluten-Free)",
+  "revid": 4519181,
+  "ingredients": [
+   "½ cup (1 stick / 120 ml ) butter",
+   "½ cup (120 ml) white granulated sugar",
+   "½ cup (120 ml) brown sugar",
+   "2 ea . (100 g ) eggs",
+   "½ tsp vanilla extract",
+   "1¼ cup (300 ml / 1 cup + 2 tablespoons ) sweet rice flour",
+   "1 tsp xanthan gum",
+   "¾ tsp baking powder",
+   "½ tsp baking soda",
+   "Chocolate chips (as many as you like)"
+  ],
+  "steps": [
+   "Preheat oven to 350°F (180°C).",
+   "Mix the sweet rice flour, xanthan gum, baking powder and baking soda in a large mixing bowl.",
+   "In a smaller mixing bowl or stand mixer, cream the butter, sugar, and brown sugar. Add the eggs and vanilla and continue mixing.",
+   "Add the wet ingredients to the dry ingredients and mix thoroughly with a wooden spoon. Don't worry about over-mixing; since there is no gluten in the flour, there is no danger of overworking it.",
+   "Fold in the chocolate chips.",
+   "Line cookie sheet with silicone mat and spoon on balls of dough, about 1½ inches (4 cm ) in diameter.",
+   "Put cookie dough in the fridge for 30–40 minutes or into the freezer for 10–20 minutes.",
+   "Bake until golden brown."
+  ],
+  "infobox": {
+   "Yield": "30 cookies",
+   "Time": "Prep: ~10 minutes Baking: ~25 minutes"
+  },
+  "meta": {
+   "allergens": [
+    "dairy",
+    "eggs"
+   ],
+   "diet_tags": [
+    "vegetarian",
+    "pescatarian"
+   ],
+   "cuisine": "American",
+   "total_minutes": 75
+  }
+ },
+ {
+  "id": "pancakes-north-american",
+  "title": "Pancakes (North American)",
+  "url": "https://en.wikibooks.org/wiki/Cookbook:Pancakes_(North_American)",
+  "revid": 4585403,
+  "ingredients": [
+   "120 g (½ cup or 4 oz ) wheat flour (white, whole grain or 1:1 mix of white and whole grain)",
+   "1 ½ tsp baking powder",
+   "1 pinch salt",
+   "250 ml (1 cup or 8 fl oz ) milk (substitute buttermilk or 1:1 mix of milk and buttermilk)",
+   "1 egg , separated",
+   "1 tbsp white sugar (optional; this will add a sweetness to your pancakes and is recommended if you are not using any sauces, syrups or ingredient such as bananas or blueberries that will add natural sugars to the mix)"
+  ],
+  "steps": [
+   "In a large bowl, mix dry ingredients together until well-blended.",
+   "Add milk and mix well until smooth.",
+   "Separate the egg, placing the whites in a medium bowl and the yolks in the batter. Mix batter well.",
+   "Whip whites until stiff and then fold into batter gently (skip this step for heavier pancakes or if 1 cup buttermilk is substituted for milk).",
+   "Pour ladles of the mixture into a non-stick pan , one at a time.",
+   "Cook until the edges are dry and bubbles appear on surface. Flip, then cook until golden."
+  ],
+  "infobox": {
+   "Yield": "12–14 pancakes",
+   "Servings": "3",
+   "Time": "15 minutes",
+   "Difficulty": ""
+  },
+  "meta": {
+   "allergens": [
+    "dairy",
+    "eggs",
+    "gluten"
+   ],
+   "diet_tags": [
+    "vegetarian",
+    "pescatarian"
+   ],
+   "cuisine": "American",
+   "total_minutes": 15
+  }
+ },
+ {
+  "id": "pancakes-vegan",
+  "title": "Pancakes (Vegan)",
+  "url": "https://en.wikibooks.org/wiki/Cookbook:Pancakes_(Vegan)",
+  "revid": 4530551,
+  "ingredients": [
+   "1 cup flour",
+   "2 teaspoons baking powder",
+   "2 teaspoons white granulated sugar",
+   "1 teaspoon salt",
+   "1 cup soy milk",
+   "vegetable oil"
+  ],
+  "steps": [
+   "Mix all dry ingredients: flour, baking powder, sugar, and salt.",
+   "Mix soy milk into the dry ingredients.",
+   "Heat a griddle until water sprinkled on it quickly evaporates. Spread a thin film of oil on the griddle.",
+   "Pour pancake batter on griddle to form 4- to 5-inch circles. Bubbles should start forming.",
+   "When the underside is light brown, flip the pancake.",
+   "When the other side is light brown, serve."
+  ],
+  "infobox": {
+   "Yield": "5 pancakes",
+   "Time": "15 minutes",
+   "Difficulty": ""
+  },
+  "meta": {
+   "allergens": [
+    "gluten",
+    "soy"
+   ],
+   "diet_tags": [
+    "vegan",
+    "vegetarian",
+    "pescatarian"
+   ],
+   "cuisine": "American",
+   "total_minutes": 15
+  }
+ },
+ {
+  "id": "blueberry-pancakes",
+  "title": "Blueberry Pancakes",
+  "url": "https://en.wikibooks.org/wiki/Cookbook:Blueberry_Pancakes",
+  "revid": 4519106,
+  "ingredients": [
+   "1¾ cup all-purpose flour",
+   "2 Tbsp white granulated sugar",
+   "2 tsp baking soda",
+   "1½ tsp cream of tartar (or baking powder)",
+   "½ tsp salt",
+   "1 tsp cinnamon",
+   "1 tsp nutmeg",
+   "1 tsp vanilla extract",
+   "2 cups buttermilk",
+   "4 eggs , separated",
+   "¼ cup butter (optional)",
+   "1 cup frozen blueberries"
+  ],
+  "steps": [
+   "Sift together flour, sugar, baking powder, cream of tartar, salt, cinnamon and nutmeg. Set aside.",
+   "Whisk together buttermilk, butter and egg yolks in a large bowl. Mix flour mixture into buttermilk mixture. Mix in blueberries.",
+   "Whip egg whites in a small bowl until stiff, but do not let dry peaks form. Fold into pancake batter.",
+   "Heat a large pan or griddle over medium heat. Lightly spray or brush with vegetable oil. Ladle in a ¼ cup of batter for each pancake; cook until set and bubbly on the top. Turn pancake over, then cook for 1 more minute.",
+   "Serve warm with whatever topping you prefer."
+  ],
+  "infobox": {
+   "Difficulty": ""
+  },
+  "meta": {
+   "allergens": [
+    "dairy",
+    "eggs",
+    "gluten"
+   ],
+   "diet_tags": [
+    "vegetarian",
+    "pescatarian"
+   ],
+   "cuisine": "American",
+   "total_minutes": 30
+  }
+ },
+ {
+  "id": "guacamole-i",
+  "title": "Guacamole I",
+  "url": "https://en.wikibooks.org/wiki/Cookbook:Guacamole_I",
+  "revid": 4636788,
+  "ingredients": [
+   "4 avocados",
+   "2 tablespoons pico de gallo",
+   "Juice of ½ lime",
+   "2 chopped Jalapeño OR 2 tablespoons of crushed red pepper OR 1 tablespoon of cayenne pepper",
+   "1 teaspoon salt",
+   "4 teaspoons olive oil",
+   "1 ½ teaspoon minced garlic",
+   "½ teaspoon of ground black pepper",
+   "1 minced jalapeño OR 2 minced serrano chiles OR 2 tablespoon minced of any chile pepper like (adjust for spiciness)"
+  ],
+  "steps": [
+   "Halve and pit the avocados.",
+   "Score the avocado flesh in a criss-cross pattern without cutting through the skin.",
+   "Scoop out the flesh of one half with a large spoon and place in mixing bowl.",
+   "Add the lime juice and stir to evenly coat the avocados.",
+   "Stir in the pico de gallo, garlic, oil, jalapeño, salt, red pepper, and black pepper, mashing and tossing the avocado pieces until thoroughly mixed.",
+   "Scoop out the remaining avocado chunks and gently mix and toss in the larger pieces. The guacamole is the right consistency when more large pieces than mashed parts remain.",
+   "Garnish with a sprig of cilantro."
+  ],
+  "infobox": {
+   "Time": "10 minutes",
+   "Difficulty": ""
+  },
+  "meta": {
+   "allergens": [],
+   "diet_tags": [
+    "vegan",
+    "vegetarian",
+    "pescatarian"
+   ],
+   "cuisine": "Mexican",
+   "total_minutes": 10
+  }
+ },
+ {
+  "id": "guacamole-ii",
+  "title": "Guacamole II",
+  "url": "https://en.wikibooks.org/wiki/Cookbook:Guacamole_II",
+  "revid": 4517629,
+  "ingredients": [
+   "3 whole avocados , ripe but not over-ripe",
+   "1 lime",
+   "3 cloves of garlic , finely chopped",
+   "2–3 whole red chilli peppers , finely chopped",
+   "Salt"
+  ],
+  "steps": [
+   "Prepare avocados by halving and removing the stone. The simplest way to do this is to hold the avocado in the palm of your hand and strike the stone squarely and firmly with a chef's knife—the knife will then pull the stone out easily. If it doesn't come out easily, the avocado isn't ripe enough.",
+   "Reserve one half avocado. Skin and blend the rest using a hand-held food processor .",
+   "Add the juice of the lime, chillies, and garlic. Add generous salt to taste.",
+   "Roughly chop the reserved avocado, and add to paste to give chunky texture. Resulting dip will keep for several days in a fridge, and it shouldn't brown too much if covered (the lime juice will act as an antioxidant as well as giving a nice flavour). In general, it will be found to disappear very rapidly by enthusiastic consumers!"
+  ],
+  "infobox": {
+   "Difficulty": ""
+  },
+  "meta": {
+   "allergens": [],
+   "diet_tags": [
+    "vegan",
+    "vegetarian",
+    "pescatarian"
+   ],
+   "cuisine": "Mexican",
+   "total_minutes": 15
+  }
+ },
+ {
+  "id": "guacamole-chile-free",
+  "title": "Guacamole (Chile-Free)",
+  "url": "https://en.wikibooks.org/wiki/Cookbook:Guacamole_(Chile-Free)",
+  "revid": 4517631,
+  "ingredients": [
+   "2 very ripe avocados",
+   "1 clove of garlic , minced",
+   "Juice of 1 ½ limes",
+   "1 small red onion , diced very small",
+   "1 small tomato , diced very small",
+   "2 tbsp chopped cilantro (coriander leaves)",
+   "Salt to taste"
+  ],
+  "steps": [
+   "Put everything except the avocados into a medium-sized mixing bowl.",
+   "Halve the avocados and scoop the flesh into the bowl. Using a large fork (or a blender ), mash the avocados and combine with all the other ingredients.",
+   "Taste the mixture and add anything you think necessary (be aware that the flavors, especially the lime, will soften a little by the time it is served).",
+   "Cover and refrigerate for at least an hour to allow the flavors to blend. When it is removed from the refrigerator, there may be some brown on the top – you can scrape that off, but it isn't harmful. Using a covering that is in full contact with the surface of the guacamole (for example, some plastic wrap that's pressed right down into the food) may help. Adding the avocado pit into the bowl is a useless superstition."
+  ],
+  "infobox": {
+   "Difficulty": ""
+  },
+  "meta": {
+   "allergens": [],
+   "diet_tags": [
+    "vegan",
+    "vegetarian",
+    "pescatarian"
+   ],
+   "cuisine": "Mexican",
+   "total_minutes": 75
+  }
+ },
+ {
+  "id": "pico-de-gallo",
+  "title": "Pico de Gallo",
+  "url": "https://en.wikibooks.org/wiki/Cookbook:Pico_de_Gallo",
+  "revid": 4518154,
+  "ingredients": [
+   "2 cups chopped fresh, seeded tomato",
+   "½ cup chopped white or yellow onion",
+   "2 tablespoons chopped cilantro",
+   "½ teaspoon salt",
+   "2 teaspoons freshly squeezed lime juice",
+   "1 teaspoon ground black pepper",
+   "1 ½ tablespoons stemmed, seeded, and minced jalapeño or other chiles",
+   "1 small clove of garlic , minced",
+   "Hot sauce , to taste"
+  ],
+  "steps": [
+   "Wash vegetables and cilantro.",
+   "Combine vegetables, mixing well.",
+   "Add salt, pepper, chiles, lime juice, and garlic.",
+   "Add hot sauce as desired.",
+   "Let stand 30 minutes to allow flavors to meld."
+  ],
+  "infobox": {
+   "Difficulty": ""
+  },
+  "meta": {
+   "allergens": [],
+   "diet_tags": [
+    "vegan",
+    "vegetarian",
+    "pescatarian"
+   ],
+   "cuisine": "Mexican",
+   "total_minutes": 40
+  }
+ },
+ {
+  "id": "chili-vegan",
+  "title": "Chili (Vegan)",
+  "url": "https://en.wikibooks.org/wiki/Cookbook:Chili_(Vegan)",
+  "revid": 4599150,
+  "ingredients": [
+   "2 cans (30 oz ) red kidney beans",
+   "1 can (15 oz) black beans",
+   "1 can (15 oz) navy beans",
+   "1 can corn kernels",
+   "1 can (6 oz) tomato paste",
+   "1 medium tomato , chopped (canned diced tomato works too)",
+   "2 fresh jalapeños (or your favorite chili pepper works too; more if you like it really hot)",
+   "1 green bell pepper , chopped",
+   "1 red or yellow bell pepper, chopped",
+   "2 medium onions , chopped",
+   "4 medium cloves of garlic , chopped or crushed",
+   "10 ml chili powder",
+   "1 large pinch salt (optional)",
+   "pinch of oregano",
+   "10 ml olive oil (or any other kind of vegetable oil)",
+   "50 ml molasses",
+   "Chili garlic sauce (optional)"
+  ],
+  "steps": [
+   "In a large pot, heat the olive oil with a few drops of water. When the water starts sizzling, add the onions and garlic. Stir until the onions are soft (optionally until they are slightly brown).",
+   "Add the chili peppers and fry for a few more seconds. Add the tomato paste and tomato, and the chili powder, salt, and oregano. Stir a few times then let boil and simmer .",
+   "Rinse the beans well and add them to the simmering vegetables. Drain the corn and add to the chili. Add the molasses.",
+   "Taste the chili; if it needs more seasoning, add it now (perhaps with the exception of salt, as people can add this at the table). It is probably better not to add more jalapeños at this point, but if the chili is not spicy enough, some chili sauce or chili garlic sauce can be added.",
+   "Let the pot simmer, covered, for at least 30 minutes—longer will distribute the flavor better. If the chili is too thick, add a little water; if it's too thin, uncover the pot to let water evaporate.",
+   "Add the bell peppers, stir, and simmer for a minute or two (peppers should stay crunchy).",
+   "Serve with bread ; Keeps well, perhaps even better the second day."
+  ],
+  "infobox": {
+   "Servings": "8",
+   "Difficulty": ""
+  },
+  "meta": {
+   "allergens": [],
+   "diet_tags": [
+    "vegan",
+    "vegetarian",
+    "pescatarian"
+   ],
+   "cuisine": "American",
+   "total_minutes": 60
+  }
+ },
+ {
+  "id": "grilled-cheese-sandwich",
+  "title": "Grilled Cheese Sandwich",
+  "url": "https://en.wikibooks.org/wiki/Cookbook:Grilled_Cheese_Sandwich",
+  "revid": 4518251,
+  "ingredients": [
+   "2 slices of bread",
+   "Butter",
+   "1–3 slices of easy-to-melt cheese , such as cheddar , gouda, Limberger, American (or shredded cheese to taste)",
+   "Other ingredients as necessary (see variations below)"
+  ],
+  "steps": [
+   "Heat a skillet , frying pan or griddle over medium heat.",
+   "Spread butter on the bread , and place both pieces of bread, butter side down, in the skillet.",
+   "When the butter sides of both have browned (check periodically), flip one over and place cheese on top, then place the other slice of bread on top of the cheese (again, butter side down).",
+   "Compress the sandwich by pressing on it with a spatula .",
+   "Once the bottom side of the sandwich is browned sufficiently, flip the sandwich over. When both sides are browned, take off heat, cut, and serve.",
+   "Preheat oven to 150°C (300°F).",
+   "Spread butter on both sides of the bread slices.",
+   "Sandwich the cheese and fillings between the bread slices, and transfer the sandwiches to a baking sheet .",
+   "Bake for 10–15 minutes, flip, and bake another 5–10 minutes or to taste."
+  ],
+  "infobox": {
+   "Yield": "1 sandwich",
+   "Servings": "1 or more",
+   "Time": "5 minutes",
+   "Difficulty": ""
+  },
+  "meta": {
+   "allergens": [
+    "dairy",
+    "gluten"
+   ],
+   "diet_tags": [
+    "vegetarian",
+    "pescatarian"
+   ],
+   "cuisine": "American",
+   "total_minutes": 5
+  }
+ },
+ {
+  "id": "potato-salad",
+  "title": "Potato Salad",
+  "url": "https://en.wikibooks.org/wiki/Cookbook:Potato_Salad",
+  "revid": 4525019,
+  "ingredients": [
+   "2 pounds (~1 kg ) potatoes",
+   "6 slices of bacon",
+   "½ cup (120 g ) finely- chopped yellow onion",
+   "2 tablespoons white granulated sugar",
+   "½ teaspoon celery seed",
+   "2 hard boiled eggs",
+   "¼ cup (60 g) flour",
+   "½ cup (120 ml ) vinegar",
+   "1 cup (240 ml) water",
+   "1 tablespoon fresh parsley",
+   "1 ½ teaspoon salt",
+   "Pepper",
+   "Paprika"
+  ],
+  "steps": [
+   "Cook bacon strips, cut into small pieces, and set aside for later.",
+   "Boil potatoes for 5–10 minutes or until softened; cut into small chunks or thick slices.",
+   "Place potatoes in a large bowl and let them come to room temperature.",
+   "In a bowl combine flour, celery seed, parsley, chopped onion, salt, and pepper.",
+   "Pour the water and vinegar into a pot, stir in sugar and bring to a boil. Add the dry mixture and stir until thickened.",
+   "In the original bowl place potatoes and bacon, pour on thickened mixture.",
+   "Break apart eggs and stir lightly into the bowl to combine.",
+   "Place in large serving bowl and sprinkle with paprika.",
+   "Serve"
+  ],
+  "infobox": {
+   "Time": "30 minutes",
+   "Difficulty": ""
+  },
+  "meta": {
+   "allergens": [
+    "eggs",
+    "gluten"
+   ],
+   "diet_tags": [],
+   "cuisine": "American",
+   "total_minutes": 30
+  }
+ },
+ {
+  "id": "coleslaw-i",
+  "title": "Coleslaw I",
+  "url": "https://en.wikibooks.org/wiki/Cookbook:Coleslaw_I",
+  "revid": 4630331,
+  "ingredients": [
+   "4 tablespoons mayonnaise or 2 dL olive oil",
+   "¼–½ cup (about 50–100ml) cider vinegar (optional)",
+   "1 head white cabbage",
+   "1 medium red onion , thinly sliced"
+  ],
+  "steps": [
+   "If adding cider vinegar, add it to the mayonnaise and mix together well.",
+   "Slice or shred the cabbage, as coarsely or finely as desired.",
+   "In a large bowl, mix cabbage and onion together with mayonnaise.",
+   "Set aside to allow the flavours to merge at least 20 minutes but preferably for a couple of hours."
+  ],
+  "infobox": {
+   "Servings": "6",
+   "Time": "10 minutes",
+   "Difficulty": ""
+  },
+  "meta": {
+   "allergens": [
+    "eggs"
+   ],
+   "diet_tags": [
+    "vegetarian",
+    "pescatarian"
+   ],
+   "cuisine": "American",
+   "total_minutes": 10
+  }
+ },
+ {
+  "id": "mashed-potatoes",
+  "title": "Mashed Potatoes",
+  "url": "https://en.wikibooks.org/wiki/Cookbook:Mashed_Potatoes",
+  "revid": 4502781,
+  "ingredients": [
+   "Potatoes",
+   "Butter",
+   "Milk"
+  ],
+  "steps": [
+   "Boil the potatoes until tender, then drain.",
+   "While hot, rub the potatoes through a colander into a clean pan.",
+   "For every pound of potatoes, mix in ½ ounce butter and 1 tablespoon milk; do not make them too moist.",
+   "Serve hot."
+  ],
+  "infobox": {
+   "Difficulty": ""
+  },
+  "meta": {
+   "allergens": [
+    "dairy"
+   ],
+   "diet_tags": [
+    "vegetarian",
+    "pescatarian"
+   ],
+   "cuisine": "American",
+   "total_minutes": 30
+  }
+ },
+ {
+  "id": "beef-stew-i",
+  "title": "Beef Stew I",
+  "url": "https://en.wikibooks.org/wiki/Cookbook:Beef_Stew_I",
+  "revid": 4518573,
+  "ingredients": [
+   "2 lb (900 g ) beef",
+   "½ cup flour",
+   "¼ cup oil",
+   "1 bay leaf",
+   "1 tsp (5 ml ) marjoram",
+   "1 tsp (5 ml) oregano",
+   "46 fl oz (5 ¾ cup , 1.36 L , or 1 large can) tomato juice",
+   "10 ½ oz (298 g , about 1 ¼ cup , or 300 mL ) double-strength beef broth",
+   "2–4 russet potatoes , or other large non-sweet white baking potatoes",
+   "4 large carrots",
+   "4 stalks of celery"
+  ],
+  "steps": [
+   "Cut the beef into chunks about 1 inch (2.5 cm) across.",
+   "Put the beef and flour in a container, such as a plastic bag, and shake or squish until the beef is well-coated. Use more flour for a thicker stew, or less for a thinner stew.",
+   "Put oil into a wide pot and heat it.",
+   "In several batches, brown the beef in the pot with the oil.",
+   "Return the browned beef to the pot, along with all the spices, tomato juice, and the double-strength beef broth.",
+   "Cover the pot, then simmer for at least an hour to soften the beef. Stir the stew every few minutes to prevent the beef from burning on the bottom of the pot.",
+   "Peel the carrots, and cut them into pieces about the same size as the beef. Add them to the stew, and simmer a bit more, stirring every few minutes.",
+   "Cut the other vegetables likewise, add to stew, and simmer a bit more, stirring.",
+   "When all the vegetables are soft but not yet falling apart, remove the bay leaf and serve the stew."
+  ],
+  "infobox": {
+   "Difficulty": ""
+  },
+  "meta": {
+   "allergens": [
+    "gluten"
+   ],
+   "diet_tags": [],
+   "cuisine": "American",
+   "total_minutes": 120
+  }
+ },
+ {
+  "id": "caesar-salad",
+  "title": "Caesar Salad",
+  "url": "https://en.wikibooks.org/wiki/Cookbook:Caesar_Salad",
+  "revid": 4518113,
+  "ingredients": [
+   "1 head Romaine lettuce , roughly chopped",
+   "¼ cup (about 50 ml ) extra-virgin olive oil , divided",
+   "Heavy pinch of sea salt",
+   "Freshly-ground black pepper",
+   "Drizzle of red wine vinegar",
+   "3 shots Worcestershire sauce",
+   "2 soft-boiled eggs",
+   "Garlic croûtons"
+  ],
+  "steps": [
+   "Drizzle lettuce with 2 tbsp extra-virgin olive oil. Toss to coat.",
+   "Add salt and pepper. Toss to coat.",
+   "Add vinegar and toss to coat.",
+   "Drizzle Worcestershire sauce over lettuce. Toss to coat.",
+   "Crack eggs over salad. Toss to coat.",
+   "Top with garlic croûtons and serve."
+  ],
+  "infobox": {
+   "Difficulty": ""
+  },
+  "meta": {
+   "allergens": [
+    "eggs",
+    "gluten"
+   ],
+   "diet_tags": [
+    "pescatarian"
+   ],
+   "cuisine": "American",
+   "total_minutes": 20
+  }
+ },
+ {
+  "id": "pad-thai",
+  "title": "Pad Thai",
+  "url": "https://en.wikibooks.org/wiki/Cookbook:Pad_Thai",
+  "revid": 4581549,
+  "ingredients": [
+   "½ pound (225 g ) rice noodles",
+   "¼ cup (60 ml ) fish sauce",
+   "3+ tablespoons (50 ml) white vinegar (or rice vinegar )",
+   "¼ cup plus 1 tablespoon (75 ml) tamarind juice",
+   "¼ cup and 1 tablespoon (75 ml) palm sugar (or granulated sugar )",
+   "4 tablespoons (60 ml) vegetable oil",
+   "2 cloves garlic , chopped",
+   "2 tablespoons (30 ml) dried red chili pepper flakes (or to taste)",
+   "½ pound (225 g) of shrimp , tofu , chicken , squid , or beef (or a combination thereof)",
+   "Assorted vegetables (e.g., shredded carrots , white onions , red or green peppers )",
+   "2 eggs",
+   "4 chopped green onions",
+   "¾ pound (340 g) bean sprouts",
+   "¾ cup (175 ml) chopped unroasted peanuts",
+   "Wedge of lime (garnish)",
+   "Cilantro (coriander) leaves (garnish)"
+  ],
+  "steps": [
+   "Soak the noodles in warm water for about 20 minutes and strain. Alternatively, pour boiling water over the noodles and let them sit for 7 minutes.)",
+   "Mix the fish sauce with the vinegar, sugar and tamarind juice together in a small bowl.",
+   "Heat the vegetable oil in a wok on high, and brown the chopped garlic and chili peppers for a minute.",
+   "Cook the meats/tofu in oil, until they are browned (6–8 minutes).",
+   "Add assorted veggies and cook until tender.",
+   "Add noodles. Crack the eggs over the noodles, allow them to cook, and then mix them up.",
+   "Add the fish sauce mix into the wok, mix it all up and turn the heat down to medium.",
+   "Add the chopped green onions and bean sprouts, then stir fry for 2 more minutes.",
+   "Serve on a large plate or bowl. Garnish with chopped peanuts and, optionally, chopped cilantro or coriander and a wedge of lime."
+  ],
+  "infobox": {
+   "Servings": "2–3",
+   "Time": "20 minutes",
+   "Difficulty": ""
+  },
+  "meta": {
+   "allergens": [
+    "nuts",
+    "eggs",
+    "shellfish",
+    "soy"
+   ],
+   "diet_tags": [],
+   "cuisine": "Thai",
+   "total_minutes": 20
+  }
+ },
+ {
+  "id": "khao-pad-thai-fried-rice",
+  "title": "Khao Pad (Thai Fried Rice)",
+  "url": "https://en.wikibooks.org/wiki/Cookbook:Khao_Pad_(Thai_Fried_Rice)",
+  "revid": 4512943,
+  "ingredients": [
+   "1 tablespoon vegetable oil",
+   "1 tablespoon minced garlic",
+   "2 eggs",
+   "2 cups cooked rice , cooled",
+   "1 tablespoon fish sauce",
+   "1 tablespoon soy sauce",
+   "1 cup cooked meat (e.g. shrimp , pork , chicken , etc.)",
+   "2 teaspoons sugar",
+   "½ teaspoon ground black pepper",
+   "Spring onion as desired, sliced"
+  ],
+  "steps": [
+   "Heat up a frying pan or wok and add the oil, then the minced garlic. Stir fry until fragrant.",
+   "Add the eggs, and stir fry the eggs until cooked.",
+   "Add the rice and stir fry.",
+   "Season with fish sauce, soy sauce, and sugar, then continue frying until the rice is crumbly.",
+   "Add meat, pepper, and spring onions. Stir again until heated through, then transfer to a serving dish."
+  ],
+  "infobox": {
+   "Difficulty": ""
+  },
+  "meta": {
+   "allergens": [
+    "eggs",
+    "gluten",
+    "soy",
+    "shellfish"
+   ],
+   "diet_tags": [],
+   "cuisine": "Thai",
+   "total_minutes": 20
+  }
+ },
+ {
+  "id": "pad-kra-pao-gai-thai-basil-chicken-stir-fry",
+  "title": "Pad Kra Pao Gai (Thai Basil Chicken Stir Fry)",
+  "url": "https://en.wikibooks.org/wiki/Cookbook:Pad_Kra_Pao_Gai_(Thai_Basil_Chicken_Stir_Fry)",
+  "revid": 4535146,
+  "ingredients": [
+   "1½ tablespoons cooking oil",
+   "5–10 Thai chillis",
+   "5 cloves garlic , finely chopped",
+   "500 g lean minced chicken",
+   "125 g green beans , finely chopped",
+   "2 tablespoons fish sauce",
+   "3 tablespoons oyster sauce",
+   "1 pinch of sugar",
+   "15–20 Thai or sweet basil leaves"
+  ],
+  "steps": [
+   "Add the oil to a pan over high heat. Wait until the oil has heated up.",
+   "One the oil is hot, add the chillis and garlic to the pan and stir fry for roughly 10 seconds.",
+   "Add the minced chicken, and stir fry with a spatula.",
+   "When the chicken is nearly done add the green beans.",
+   "Add the fish sauce, oyster sauce, and sugar. Stir fry for 2 minutes.",
+   "Turn the heat off, add basil, and stir for 5 seconds.",
+   "Serve with rice and a fried egg on top."
+  ],
+  "infobox": {
+   "Difficulty": ""
+  },
+  "meta": {
+   "allergens": [
+    "shellfish",
+    "eggs"
+   ],
+   "diet_tags": [],
+   "cuisine": "Thai",
+   "total_minutes": 20
+  }
+ },
+ {
+  "id": "fried-rice",
+  "title": "Fried Rice",
+  "url": "https://en.wikibooks.org/wiki/Cookbook:Fried_Rice",
+  "revid": 4523476,
+  "ingredients": [
+   "Cooked rice (leftover rice that has been left refrigerated works well)",
+   "Soy sauce",
+   "Oil",
+   "Peas",
+   "Bean sprouts",
+   "Bok choy",
+   "Kidney beans",
+   "Mushroom",
+   "Carrot",
+   "Sweet corn",
+   "Fried tofu",
+   "Egg",
+   "Aromatics (e.g. onion , shallot , scallion , garlic )",
+   "Black pepper",
+   "Sugar",
+   "Salt",
+   "Chilli pepper",
+   "Fried rice spice",
+   "Chicken",
+   "Char siu (Chinese barbecue pork )",
+   "Marinated beef",
+   "Pork",
+   "Seafood (add curry powder for curry flavor)",
+   "Prawns",
+   "Shrimps"
+  ],
+  "steps": [
+   "If using tofu, cook it.",
+   "If using onions, dice them into whatever size you prefer.",
+   "If using bok choy, separate the stalk part from the leaf part. Slice the leaf part crosswise into ¾-inch-thick strips, then tear the strips into 2-inch pieces. These pieces will be treated much like the bean sprouts, though perhaps with slightly more cooking. The stalk part will be treated as celery.",
+   "If using bean sprouts, wash them and discard any that are not white and crunchy.",
+   "If using meat, slice into desired sized pieces and cook.",
+   "Add a generous amount of oil to a large frying pan (more than you think you'd need) to avoid sticking. If using a type of sausage or other excessively fatty meat, not as much oil may be needed because of the amount of fat.",
+   "Add the rice. Cook over the stove on medium-high heat.",
+   "Add the soy sauce, meat(s), eggs, and all vegetables except the onions and bean sprouts.",
+   "Add pepper, a pinch or two of sugar, and optionally some added salt.",
+   "Add the tofu, bean sprouts, and onion when the rice is almost done (depending on how fried you want them), being careful not to overcook them."
+  ],
+  "infobox": {
+   "Servings": "4 persons",
+   "Time": "20 minutes",
+   "Difficulty": ""
+  },
+  "meta": {
+   "allergens": [
+    "soy",
+    "eggs",
+    "shellfish",
+    "gluten"
+   ],
+   "diet_tags": [],
+   "cuisine": "Chinese",
+   "total_minutes": 20
+  }
+ },
+ {
+  "id": "miso-soup",
+  "title": "Miso Soup",
+  "url": "https://en.wikibooks.org/wiki/Cookbook:Miso_Soup",
+  "revid": 4610543,
+  "ingredients": [
+   "½ tsp sesame oil",
+   "3 cups water",
+   "2 tbsp miso",
+   "2 green onions (optional), finely minced",
+   "½ cake tofu (optional), cut into ½-inch cubes",
+   "2–3 fresh mushrooms (optional), thinly sliced",
+   "5–6 shrimp (optional), cubed or shredded",
+   "Some pieces of seaweed (optional)"
+  ],
+  "steps": [
+   "Heat oil in a small pot.",
+   "Add green onion. Cook for a few minutes while stirring frequently.",
+   "Add 2 ½ cups of water. Bring to a boil .",
+   "Dissolve miso in remaining ½ cup of water and add to pot.",
+   "Lower heat and add mushrooms, seaweed, and tofu, if desired."
+  ],
+  "infobox": {
+   "Difficulty": ""
+  },
+  "meta": {
+   "allergens": [
+    "shellfish",
+    "soy"
+   ],
+   "diet_tags": [
+    "pescatarian"
+   ],
+   "cuisine": "Japanese",
+   "total_minutes": 20
+  }
+ },
+ {
+  "id": "chicken-curry",
+  "title": "Chicken Curry",
+  "url": "https://en.wikibooks.org/wiki/Cookbook:Chicken_Curry",
+  "revid": 4615182,
+  "ingredients": [
+   "4 lb chicken",
+   "1½ teaspoon salt",
+   "½ teaspoon red chile powder",
+   "1 pinch of turmeric",
+   "100 ml coconut yogurt",
+   "1½ teaspoon ground coriander",
+   "½ teaspoon garlic paste",
+   "1½ teaspoon ginger paste",
+   "1 teaspoon chile powder",
+   "1 teaspoon garam masala",
+   "1 teaspoon paprika",
+   "1 teaspoon cumin",
+   "1 teaspoon cinnamon",
+   "1 teaspoon fenugreek leaves",
+   "1 teaspoon curry powder",
+   "Juice of ½ lemon",
+   "½ teaspoon mint",
+   "1 tablespoon coconut oil",
+   "500 g tomatoes , diced",
+   "150 ml coconut yogurt",
+   "200 g potatoes",
+   "2 teaspoons curry powder",
+   "1 medium onion",
+   "1 teaspoon ginger paste",
+   "½ teaspoon garlic paste",
+   "1 teaspoon mustard seeds",
+   "1 teaspoon cumin seeds",
+   "1 teaspoon fennel seeds",
+   "2 teaspoons curry powder"
+  ],
+  "steps": [
+   "Clean the chicken and cut into small pieces. Combine with all the marinade ingredients and mix well. Set aside for 30 minutes to let flavors seep in.",
+   "Fry cumin, fennel, and mustard seeds on a medium heat in a large pan .",
+   "Add garlic and ginger paste and fry.",
+   "Chop the onions into small pieces and fry in the pan.",
+   "Add the potatoes and fry.",
+   "In a separate pan, sear the chicken in batches and add it to bowl separately.",
+   "After the onions turn golden brown add the marinated chicken.",
+   "Add curry powder, coconut yogurt and turn to a low heat. Leave to cook for 35–40 minutes.",
+   "Finely chop fresh coriander and a dash of lemon juice to the curry.",
+   "Serve with rice or naan bread"
+  ],
+  "infobox": {
+   "Servings": "8",
+   "Time": "1 hour 30 minutes",
+   "Difficulty": ""
+  },
+  "meta": {
+   "allergens": [
+    "dairy"
+   ],
+   "diet_tags": [],
+   "cuisine": "Indian",
+   "total_minutes": 90
+  }
+ },
+ {
+  "id": "hummus-i",
+  "title": "Hummus I",
+  "url": "https://en.wikibooks.org/wiki/Cookbook:Hummus_I",
+  "revid": 4515548,
+  "ingredients": [
+   "1 cup dry chickpeas",
+   "Water",
+   "1 teaspoon baking soda",
+   "2–3 cloves of garlic",
+   "1 teaspoon salt",
+   "Tahini and water, to make a paste",
+   "Ground cumin",
+   "Fresh, coarsely-cut coriander leaves",
+   "Salt to taste"
+  ],
+  "steps": [
+   "The night before you plan to cook, combine the chickpeas, 2.5 cups of water, and baking soda. Leave to soak for 6–12 hours.",
+   "Rinse.",
+   "Add the rinsed chickpeas to 3 cups of water, along with the garlic and 1 teaspoon of salt. Bring to a boil . After about 45 minutes, they should swell enough for their skins to come off. Give it a stir, and use a slotted spoon to remove as many of the skins as you can from the water.",
+   "Cover the pot and continue cooking for about 2 hours, or until they almost dissolve to a paste.",
+   "Pour out the water. If desired, some can be reserved to add later, for extra flavor.",
+   "Mash the chickpeas by pressing them through a pasta sieve or use a food processor .",
+   "Let it cool for 10 minutes.",
+   "Add tahini and water until you get the right consistency.",
+   "Season with salt, ground cumin, and coriander leaves."
+  ],
+  "infobox": {
+   "Difficulty": ""
+  },
+  "meta": {
+   "allergens": [],
+   "diet_tags": [
+    "vegan",
+    "vegetarian",
+    "pescatarian"
+   ],
+   "cuisine": "Middle Eastern",
+   "total_minutes": 870
+  }
+ },
+ {
+  "id": "falafel",
+  "title": "Falafel",
+  "url": "https://en.wikibooks.org/wiki/Cookbook:Falafel",
+  "revid": 4515539,
+  "ingredients": [
+   "2 cups (480 g ) chickpeas , drained",
+   "4 cloves of garlic , peeled and sliced",
+   "4 tablespoon parsley, chopped",
+   "1 onion , cut into chunks",
+   "1 teaspoon (0.25 g) ground coriander",
+   "1 teaspoon (0.75 g) ground cumin",
+   "1 teaspoon (0.46 g) cayenne pepper",
+   "1 teaspoon baking powder",
+   "6 tablespoon flour",
+   "½ cup vegetable oil ( sunflower or corn oil ) for frying"
+  ],
+  "steps": [
+   "The night before, place the chickpeas in a bowl and cover with water (they will expand, so cover with at least a couple of inches). Drain, rinse, and dry before using. This will be about 4 cups' worth, all of which gets used.",
+   "In a food processor or blender purée chickpeas. To the chickpeas add the other ingredients (except oil); process until well mixed.",
+   "Shape into balls, using about 1 tablespoon for each.",
+   "Heat oil in a medium skillet over medium-high heat. Add balls, and brown on all sides.",
+   "Serve with pita ."
+  ],
+  "infobox": {
+   "Difficulty": ""
+  },
+  "meta": {
+   "allergens": [
+    "gluten"
+   ],
+   "diet_tags": [
+    "vegan",
+    "vegetarian",
+    "pescatarian"
+   ],
+   "cuisine": "Middle Eastern",
+   "total_minutes": 45
+  }
+ },
+ {
+  "id": "tzatziki",
+  "title": "Tzatziki",
+  "url": "https://en.wikibooks.org/wiki/Cookbook:Tzatziki",
+  "revid": 4519035,
+  "ingredients": [
+   "1½ cups yogurt",
+   "4 cloves garlic , minced",
+   "1 tablespoon dill (sub. ¼ tablespoon of tarragon if no dill is available)",
+   "2 tablespoons olive oil",
+   "4 tablespoons lemon juice (optional)",
+   "2 small cucumbers , diced",
+   "Salt",
+   "White pepper , to taste (optional)"
+  ],
+  "steps": [
+   "Drain yogurt in a sieve or a cheesecloth for about 3 hours prior to using it.",
+   "Drain the cucumber and salt it to further remove moisture.",
+   "Combine yogurt, garlic, olive oil, and lemon juice in a bowl and cover and refrigerate for 1 hour or more.",
+   "After refrigerating, add dill and cucumber into bowl and mix with a whisk until smooth.",
+   "Add pepper and salt to taste."
+  ],
+  "infobox": {
+   "Difficulty": ""
+  },
+  "meta": {
+   "allergens": [
+    "dairy"
+   ],
+   "diet_tags": [
+    "vegetarian",
+    "pescatarian"
+   ],
+   "cuisine": "Greek",
+   "total_minutes": 240
+  }
+ },
+ {
+  "id": "greek-salad",
+  "title": "Greek Salad",
+  "url": "https://en.wikibooks.org/wiki/Cookbook:Greek_Salad",
+  "revid": 4518144,
+  "ingredients": [
+   "Red tomatoes , chopped",
+   "Cucumber , sliced into rounds",
+   "Red or white onions , sliced into half-moons",
+   "Green bell peppers , cut into small pieces",
+   "Greek olives",
+   "Extra-virgin or virgin olive oil",
+   "Vinegar or lemon juice",
+   "Salt",
+   "Feta cheese",
+   "Oregano"
+  ],
+  "steps": [
+   "Combine tomatoes, cucumbers, onions, peppers, and olives in a deep bowl.",
+   "Add enough olive oil, vinegar or lemon juice, and salt to taste. Toss the ingredients for half a minute.",
+   "Place a feta cheese slice on top and season with a splash of olive oil.",
+   "Top with a sprig of oregano if desired."
+  ],
+  "infobox": {
+   "Difficulty": ""
+  },
+  "meta": {
+   "allergens": [
+    "dairy"
+   ],
+   "diet_tags": [
+    "vegetarian",
+    "pescatarian"
+   ],
+   "cuisine": "Greek",
+   "total_minutes": 15
+  }
+ },
+ {
+  "id": "shakshuka",
+  "title": "Shakshuka",
+  "url": "https://en.wikibooks.org/wiki/Cookbook:Shakshuka",
+  "revid": 4634493,
+  "ingredients": [
+   "3 tablespoons olive oil",
+   "1 large onion, diced",
+   "1 red bell pepper, diced",
+   "1 green bell pepper, diced",
+   "4 cloves garlic, minced",
+   "1 teaspoon ground cumin",
+   "1 teaspoon sweet paprika",
+   "½ teaspoon smoked paprika",
+   "¼ teaspoon cayenne pepper (or to taste)",
+   "800 g (28 oz) crushed tomatoes",
+   "Salt and black pepper, to taste",
+   "6 large eggs",
+   "60 g (2 oz) feta cheese, crumbled, to serve",
+   "Small handful fresh parsley or coriander (cilantro), chopped, to serve",
+   "Crusty bread or pita, to serve"
+  ],
+  "steps": [
+   "Heat olive oil in a large, deep skillet or sauté pan over medium heat. Add onion and both bell peppers; cook 8 minutes until softened.",
+   "Add garlic, cumin, sweet paprika, smoked paprika, and cayenne. Stir 1 minute until fragrant.",
+   "Add crushed tomatoes. Season with salt and pepper. Stir well and bring to a simmer.",
+   "Reduce heat to medium-low. Simmer the sauce 10 minutes, stirring occasionally, until slightly thickened.",
+   "Use the back of a spoon to make 6 small wells in the sauce. Crack an egg into each well.",
+   "Cover the pan with a lid. Cook 6–8 minutes until egg whites are set but yolks are still runny, or longer if firmer yolks are preferred.",
+   "Remove from heat. Scatter feta and fresh herbs over the top. Serve immediately from the pan with bread."
+  ],
+  "infobox": {},
+  "meta": {
+   "allergens": [
+    "dairy",
+    "eggs",
+    "gluten"
+   ],
+   "diet_tags": [
+    "vegetarian",
+    "pescatarian"
+   ],
+   "cuisine": "Middle Eastern",
+   "total_minutes": 35
+  }
+ },
+ {
+  "id": "gazpacho",
+  "title": "Gazpacho",
+  "url": "https://en.wikibooks.org/wiki/Cookbook:Gazpacho",
+  "revid": 4518408,
+  "ingredients": [
+   "2 oz (50 g ) 2–3 day-old white bread (optional—leave out for a thinner soup)",
+   "1 lb (450 g) tomatoes , skinned and quartered",
+   "½ lb (225 g) green bell peppers , seeded and trimmed",
+   "½ cucumber , peeled and cut in chunks",
+   "1 clove of garlic",
+   "½ mild Spanish onion , chopped",
+   "1 tbsp white or red wine vinegar",
+   "2 tbsp olive oil",
+   "¼ chile pepper , seeds removed (optional)",
+   "Cilantro (optional)",
+   "⅓ pt (2.4 dl ) iced water",
+   "Sea salt",
+   "Black pepper",
+   "Ice cubes",
+   "1 tomato, skinned and diced fine",
+   "½ green bell pepper, diced fine",
+   "¼ peeled cucumber, diced fine",
+   "bread"
+  ],
+  "steps": [
+   "If using, tear up the bread, and soak it in water for 30 minutes. Squeeze it dry.",
+   "Blend bread, tomatoes, bell peppers, cucumber, garlic, onion, vinegar, olive oil, chiles, cilantro, and water in a blender until roughly chopped. The soup should have texture and discernible vegetable bits, so do not chop too finely.",
+   "Pour soup into a large bowl with some ice, and season to taste with salt and pepper.",
+   "Dice the bread, and fry it in a little olive oil until brown.",
+   "Chop the other vegetables finely.",
+   "Serve all garnishes in separate little bowls on the table.",
+   "Serve gazpacho chilled.",
+   "Allow diners to sprinkle on their own toppings.",
+   "Wikipedia has related information at Gazpacho ."
+  ],
+  "infobox": {
+   "Difficulty": ""
+  },
+  "meta": {
+   "allergens": [
+    "gluten"
+   ],
+   "diet_tags": [
+    "vegan",
+    "vegetarian",
+    "pescatarian"
+   ],
+   "cuisine": "Spanish",
+   "total_minutes": 60
+  }
+ },
+ {
+  "id": "dal-makhani-black-gram-with-cream",
+  "title": "Dal Makhani (Black Gram with Cream)",
+  "url": "https://en.wikibooks.org/wiki/Cookbook:Dal_Makhani_(Black_Gram_with_Cream)",
+  "revid": 4517540,
+  "ingredients": [
+   "1 cup whole dried urad dal (skinless black gram)",
+   "⅓ cup dried kidney beans (rajma)",
+   "5–6 cups water (to cook dal)",
+   "Salt",
+   "Red chile powder (according to taste)",
+   "1 tsp turmeric powder",
+   "1 tbsp grated ginger",
+   "3–4 tbsp ghee or oil",
+   "1 large pinch of hing powder ( asafoetida )",
+   "2 bay leaves",
+   "½ cinnamon stick",
+   "3 cloves",
+   "1 medium onion (optional), finely chopped",
+   "1 tbsp ginger garlic paste",
+   "2–3 medium tomatoes , finely chopped",
+   "2 tsp coriander powder",
+   "½ cup fresh cream",
+   "1 tbsp clarified butter",
+   "2 tbsp chopped coriander leaves (optional)",
+   "Salt, to taste"
+  ],
+  "steps": [
+   "Wash and soak black urad dal and red kidney beans overnight in an adequate amount of lukewarm water.",
+   "Cook the soaked dal, kidney beans, and chickpeas in 5–6 cups of water with the salt, red chili powder, turmeric, and grated ginger until soft.",
+   "Keep the cooked dal aside.",
+   "Heat oil or butter in a thick bottomed pan. Add hing, bay leaves, cinnamon stick, cloves, and chopped onions and cook until light golden brown in color. When the onion turns brown, add ginger garlic paste, and sauté .",
+   "Add chopped tomatoes. Sauté and add coriander powder. Sauté until tomatoes are well mashed.",
+   "Add cooked dal and water as needed.",
+   "Mix it well and simmer for 15–20 minutes.",
+   "Add fresh cream and clarified butter, and let it simmer for 5 minutes. Remove from the heat. Garnish with coriander leaves before serving.",
+   "Serve hot with naan, paratha or rice."
+  ],
+  "infobox": {
+   "Servings": "4–6",
+   "Time": "20 minutes",
+   "Difficulty": ""
+  },
+  "meta": {
+   "allergens": [
+    "dairy"
+   ],
+   "diet_tags": [
+    "vegetarian",
+    "pescatarian"
+   ],
+   "cuisine": "Indian",
+   "total_minutes": 780
+  }
+ },
+ {
+  "id": "indian-moong-dal",
+  "title": "Indian Moong Dal",
+  "url": "https://en.wikibooks.org/wiki/Cookbook:Indian_Moong_Dal",
+  "revid": 4515496,
+  "ingredients": [
+   "½ cup moong dal",
+   "3 green chiles",
+   "½ tsp turmeric powder",
+   "1½ cups water",
+   "Salt to taste",
+   "2 tbsp cooking oil or ghee",
+   "1 sprig curry leaves",
+   "1 tsp jeera (cumin)"
+  ],
+  "steps": [
+   "Combine the dal, green chillies, turmeric powder, and water in a pressure cooker . Cook for 15 minutes, then leave the pressure cooker to release steam on its own.",
+   "Open the pressure cooker and mash the cooked dal. Add salt to taste. Add more water if it is too thick and heat over a medium heat.",
+   "Heat oil or ghee in a frying pan , then add jeera and curry leaves. After it splutters, pour it over the cooked dal.",
+   "Serve hot with rice or rotis."
+  ],
+  "infobox": {
+   "Servings": "4",
+   "Difficulty": ""
+  },
+  "meta": {
+   "allergens": [
+    "dairy"
+   ],
+   "diet_tags": [
+    "vegetarian",
+    "pescatarian"
+   ],
+   "cuisine": "Indian",
+   "total_minutes": 30
+  }
+ },
+ {
+  "id": "red-lentil-soup",
+  "title": "Red Lentil Soup",
+  "url": "https://en.wikibooks.org/wiki/Cookbook:Red_Lentil_Soup",
+  "revid": 4518501,
+  "ingredients": [
+   "1–2 tablespoons olive oil",
+   "1 onion , diced",
+   "2 carrots , diced",
+   "2 cloves garlic , minced",
+   "½ lb dry red lentils",
+   "6 cups water or stock",
+   "1 bay leaf"
+  ],
+  "steps": [
+   "Finished lentil soup, with potatoes, parsley, and dill added Pick over the lentils to remove any debris if needed. Rinse well.",
+   "Heat the olive oil in a large pan over medium heat. Once oil is hot, add the onion and carrots. Sauté for a few minutes, until the vegetables have started to soften, then add the garlic.",
+   "Add the lentils, bay leaf, and water to the pot. Simmer over low-medium heat for 20–30 minutes until lentils are softened.",
+   "Serve hot."
+  ],
+  "infobox": {
+   "Servings": "4"
+  },
+  "meta": {
+   "allergens": [],
+   "diet_tags": [
+    "vegan",
+    "vegetarian",
+    "pescatarian"
+   ],
+   "cuisine": "Middle Eastern",
+   "total_minutes": 40
+  }
+ },
+ {
+  "id": "french-onion-soup",
+  "title": "French Onion Soup",
+  "url": "https://en.wikibooks.org/wiki/Cookbook:French_Onion_Soup",
+  "revid": 4518404,
+  "ingredients": [
+   "3 rounded cups (500 g ) chopped onion",
+   "A knob of butter (a little less than 2 tbsp or 25g)",
+   "1 tbsp (15g) flour",
+   "1.5 liters (roughly 5¼ cups) beef stock (chicken or vegetable stock is an acceptable alternative)",
+   "1 bouquet garni (fresh bay , thyme, and Herbes de Provence , tied in a bundle or in a temporary sack made of cheesecloth )",
+   "1 slice of stale french bread, per person (or fresh bread, toasted beforehand)",
+   "3 tbsp red (50 ml ) port wine",
+   "1 cup grated (125g) Gruyère cheese",
+   "Nutmeg",
+   "Salt",
+   "Pepper"
+  ],
+  "steps": [
+   "Melt the butter in a large saucepan . Stir in the onions, and let the onions blonde on moderate heat (which is to say, let them cook until they are light gold and transparent, but do not let them over-caramelize and become dark).",
+   "Add the flour to the onions. Stir gently for 3–4 minutes. The flour will seem to have disappeared, but has been absorbed into the butter. This will give the soup its characteristic slight thickness. Scrape up any of the dark brown butter and flour mixture that has stuck to the bottom of the saucepan; it is called fond , and will add flavour to the soup.",
+   "Pour ⅔ of the beef broth over the onions and mix well. Add the bouquet garni. Bring to a boil , stirring regularly.",
+   "Season with salt and pepper and a little nutmeg, to taste. Add the rest of the broth, and let the soup simmer gently for 10–15 minutes.",
+   "If your bread is fresh, then toast it now over low heat.",
+   "Remove the soup from the heat, and remove the bouquet garni. Add port and stir well.",
+   "Divide the soup into 6 oven-safe ceramic or glass bowls. Press a slice of bread into the top of each bowl of soup. Generously sprinkle grated Gruyère cheese on top. Broil on low for 10 minutes, or until the cheese is melted and browned.",
+   "Serve piping hot."
+  ],
+  "infobox": {
+   "Servings": "3–6 persons",
+   "Time": "Prep: 10 minutes prep Cooking: 35 minutes",
+   "Difficulty": ""
+  },
+  "meta": {
+   "allergens": [
+    "dairy",
+    "gluten"
+   ],
+   "diet_tags": [],
+   "cuisine": "French",
+   "total_minutes": 45
+  }
+ },
+ {
+  "id": "basic-scrambled-eggs",
+  "title": "Basic Scrambled Eggs",
+  "url": "https://en.wikibooks.org/wiki/Cookbook:Basic_Scrambled_Eggs",
+  "revid": 4523414,
+  "ingredients": [
+   "3 eggs",
+   "2–3 tbsp milk (optional)",
+   "2 tbsp butter",
+   "¼ tsp salt (or to taste)",
+   "⅛ tsp black pepper (or to taste)"
+  ],
+  "steps": [
+   "Crack eggs into a measuring cup.",
+   "Add the milk (if desired) and salt.",
+   "Using a whisk or fork, beat the mixture until foamy.",
+   "Melt butter in a frying pan on medium heat",
+   "Pour eggs into frying pan.",
+   "Stir mixture to break up the egg as it cooks and allow more liquid to touch the hot pan. Stirring rapidly will create small curds, while slower stirring will create larger curds.",
+   "Cook until just before you feel that they are done, since the eggs will continue to cook after being removed from the pan. The eggs are done when the sheen disappears; stop cooking just before this happens.",
+   "Transfer to a plate. Season with black pepper (black pepper will burn and become bitter if seasoned before cooking).",
+   "Eat as is or with ketchup ( tomato sauce ), salsa , and/or butter on toast ."
+  ],
+  "infobox": {
+   "Servings": "1",
+   "Difficulty": ""
+  },
+  "meta": {
+   "allergens": [
+    "dairy",
+    "eggs"
+   ],
+   "diet_tags": [
+    "vegetarian",
+    "pescatarian"
+   ],
+   "cuisine": "American",
+   "total_minutes": 10
+  }
+ },
+ {
+  "id": "asparagus-frittata",
+  "title": "Asparagus Frittata",
+  "url": "https://en.wikibooks.org/wiki/Cookbook:Asparagus_Frittata",
+  "revid": 4522469,
+  "ingredients": [
+   "1 tablespoon olive oil",
+   "2 garlic cloves, minced",
+   "1 bunch of fresh asparagus , trimmed and chopped",
+   "8 large eggs",
+   "3 teaspoons milk (whole fat milk is best, but part skim would be fine)",
+   "2 teaspoons chopped fresh basil or 1 teaspoon dried basil",
+   "1 pinch of salt",
+   "1 pinch of ground black pepper",
+   "3 tablespoons grated Parmesan cheese"
+  ],
+  "steps": [
+   "In a bowl, beat together the eggs, milk, basil, salt and pepper. Set aside.",
+   "Preheat broiler / oven to 350°F (175°C). Heat the olive oil in the heat-safe skillet over medium heat.",
+   "When the oil is hot, add the garlic and sauté until fragrant, about a minute.",
+   "Add the chopped asparagus and sauté for about 5 minutes until it begins to become tender.",
+   "Pour the egg mixture into the skillet and cook about 4 minutes or until bubbles begin to form in the center of the eggs.",
+   "Sprinkle the Parmesan cheese on top of the eggs, and immediately transfer the pan to the oven.",
+   "Cook under the broiler until the top puffs and browns, about 3 minutes.",
+   "Remove the pan from the oven (careful, it will be hot) and cut the frittata into wedges.",
+   "Serve immediately with crusty bread and fresh fruit for a light spring dinner."
+  ],
+  "infobox": {
+   "Servings": "4",
+   "Difficulty": ""
+  },
+  "meta": {
+   "allergens": [
+    "dairy",
+    "eggs"
+   ],
+   "diet_tags": [
+    "vegetarian",
+    "pescatarian"
+   ],
+   "cuisine": "Italian",
+   "total_minutes": 25
+  }
+ }
+]
