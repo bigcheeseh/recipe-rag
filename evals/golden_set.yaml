@@ -100,7 +100,7 @@
 - id: g14
   kind: comparison
   q: "Which takes longer to make, the Pad Thai or Banana Bread I?"
-  expect: {cites: [pad-thai, banana-bread-i], contains: "banana"}
+  expect: {cites: [pad-thai, banana-bread], contains: "banana"}
 
 - id: g15
   kind: negative_fact
