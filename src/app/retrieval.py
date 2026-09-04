@@ -57,7 +57,9 @@ class Index:
         return list(self._bm25.get_scores(tokenize(query)))
 
 
-def bm25_rank(index: Index, query: str, candidates: list[Recipe], k: int = 5) -> list[Recipe]:
+def bm25_rank(
+    index: Index, query: str, candidates: list[Recipe], k: int = 5
+) -> list[tuple[Recipe, float]]:
     """Best chunk score per candidate recipe, descending; zero-score recipes are dropped."""
     allowed = {r.id: r for r in candidates}
     best: dict[str, float] = {}
@@ -65,7 +67,7 @@ def bm25_rank(index: Index, query: str, candidates: list[Recipe], k: int = 5) ->
         if chunk.recipe_id in allowed and score > 0:
             best[chunk.recipe_id] = max(best.get(chunk.recipe_id, 0.0), score)
     ranked = sorted(best, key=lambda rid: best[rid], reverse=True)
-    return [allowed[rid] for rid in ranked[:k]]
+    return [(allowed[rid], best[rid]) for rid in ranked[:k]]
 
 
 def apply_filters(recipes: list[Recipe], query: Query) -> list[Recipe]:
@@ -92,7 +94,7 @@ def apply_filters(recipes: list[Recipe], query: Query) -> list[Recipe]:
 class Retriever(Protocol):
     """The only thing the pipeline depends on. Swap the implementation, not the pipeline."""
 
-    def retrieve(self, query: Query) -> list[Recipe]: ...
+    def retrieve(self, query: Query) -> list[tuple[Recipe, float]]: ...
 
 
 class BM25Retriever:
@@ -100,5 +102,5 @@ class BM25Retriever:
         self.recipes, self.k = recipes, k
         self.index = Index(recipes)
 
-    def retrieve(self, query: Query) -> list[Recipe]:
+    def retrieve(self, query: Query) -> list[tuple[Recipe, float]]:
         return bm25_rank(self.index, query.search_terms, apply_filters(self.recipes, query), self.k)

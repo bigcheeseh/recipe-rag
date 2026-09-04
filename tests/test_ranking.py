@@ -21,7 +21,7 @@ INDEX = Index(RECIPES)
 
 
 def ids(query: str, candidates=RECIPES, k: int = 5) -> list[str]:
-    return [r.id for r in bm25_rank(INDEX, query, candidates, k=k)]
+    return [r.id for r, _ in bm25_rank(INDEX, query, candidates, k=k)]
 
 
 def test_tokenize_lowercases_and_singularises():

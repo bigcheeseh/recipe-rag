@@ -234,7 +234,6 @@ def main(argv: list[str] | None = None) -> None:
     print(f"\naccepted {len(accepted)}, rejected {len(rejected)}")
 
 
-
 # --- enrichment -------------------------------------------------------------
 
 PROMPT_PATH = Path(__file__).resolve().parents[2] / "prompts" / "enrich.md"

@@ -45,6 +45,7 @@ class FakeLLM:
     """Scripted model. `queries` maps question -> Query; `drafts` is consumed in order."""
 
     model = "claude-sonnet-5"
+    prompt_hash = "fake"
 
     def __init__(self, queries: dict[str, Query] | None = None, drafts: list[Draft] | None = None):
         self.queries = queries or {}

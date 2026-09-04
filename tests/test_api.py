@@ -1,3 +1,6 @@
+import json
+import logging
+
 import anthropic
 import pytest
 from fastapi.testclient import TestClient
@@ -90,6 +93,24 @@ def test_overlong_question_is_422():
     assert make_client(FakeLLM()).post("/ask", json={"question": "x" * 501}).status_code == 422
 
 
+def test_one_structured_log_record_per_request(caplog):
+    llm = FakeLLM(drafts=[answer("x", ["beef-wellington"]), answer("y", ["carbonara"])])
+    with caplog.at_level(logging.INFO, logger="app.request"):
+        r = make_client(llm).post("/ask", json={"question": EGGS})
+    records = [json.loads(m) for m in caplog.messages]
+    assert len(records) == 1
+    rec = records[0]
+    assert rec["trace_id"] == r.headers["X-Trace-Id"]
+    assert rec["question"] == EGGS
+    assert rec["query"]["search_terms"] == EGGS
+    assert rec["retrieved"][0]["id"] == "carbonara" and rec["retrieved"][0]["score"] > 0
+    assert rec["cited"] == ["carbonara"]
+    assert rec["grounding"] == "repaired"
+    assert rec["prompt_hash"] == "fake" and rec["model"] == "claude-sonnet-5"
+    assert rec["tokens_in"] == 300  # extract + generate + repair
+    assert set(rec["latency_ms"]) == {"extract", "retrieve", "generate", "total"}
+
+
 class BrokenLLM(FakeLLM):
     def __init__(self, exc: Exception):
         super().__init__()
@@ -115,4 +136,4 @@ def test_upstream_failures_map_to_status_codes(exc, status, detail):
     r = client.post("/ask", json={"question": EGGS})
     assert r.status_code == status
     assert r.json()["detail"] == detail
-    assert r.json()["trace_id"]
+    assert r.json()["trace_id"] == r.headers["X-Trace-Id"]

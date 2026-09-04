@@ -34,7 +34,8 @@ def test_repair_is_tried_once_and_accepted_when_grounded():
         calls.append(1)
         return draft(["risotto"])
 
-    out = ground(draft(["beef-wellington"]), RETRIEVED, retry)
+    out, status = ground(draft(["beef-wellington"]), RETRIEVED, retry)
+    assert status == "repaired"
     assert out.source_ids == ["risotto"] and out.answer == "x"
     assert calls == [1]
 
@@ -46,7 +47,8 @@ def test_failed_repair_becomes_insufficient_context():
         calls.append(1)
         return draft(["still-wrong"])
 
-    out = ground(draft(["beef-wellington"]), RETRIEVED, retry)
+    out, status = ground(draft(["beef-wellington"]), RETRIEVED, retry)
+    assert status == "refused"
     assert out.answer is None
     assert out.refusal is not None and out.refusal.reason == "insufficient_context"
     assert out.source_ids == []
@@ -54,5 +56,6 @@ def test_failed_repair_becomes_insufficient_context():
 
 
 def test_grounded_draft_never_triggers_retry():
-    out = ground(draft(["carbonara"]), RETRIEVED, lambda: draft(["risotto"]))
+    out, status = ground(draft(["carbonara"]), RETRIEVED, lambda: draft(["risotto"]))
+    assert status == "ok"
     assert out.source_ids == ["carbonara"]

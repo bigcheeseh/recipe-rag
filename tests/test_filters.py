@@ -60,4 +60,4 @@ def test_bm25_retriever_filters_then_ranks():
 
     r: Retriever = BM25Retriever(ALL)
     got = r.retrieve(Query(in_domain=True, search_terms="dal omelet", exclude_allergens=["eggs"]))
-    assert [x.id for x in got] == ["dal"]
+    assert [x.id for x, _ in got] == ["dal"]

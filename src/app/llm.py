@@ -1,5 +1,6 @@
 """The two model calls. Everything else in the pipeline is pure Python."""
 
+import hashlib
 from pathlib import Path
 from typing import TypeVar
 
@@ -48,6 +49,8 @@ def render_context(r: Recipe) -> str:
 class LLM:
     def __init__(self, client: anthropic.Anthropic, model: str):
         self.client, self.model = client, model
+        blob = b"".join(p.read_bytes() for p in sorted(PROMPTS.glob("*.md")))
+        self.prompt_hash = hashlib.sha256(blob).hexdigest()[:12]
 
     def _parse(self, prompt: str, output: type[T], max_tokens: int) -> tuple[T, TokenUsage]:
         """One structured-output call; retried once if the model returns no parseable object."""
