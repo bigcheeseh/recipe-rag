@@ -85,10 +85,18 @@ class Recipe(BaseModel):
     meta: Meta | None = None
 
 
+class GeneratorRefusal(BaseModel):
+    """out_of_domain is decided by the extractor before retrieval; the generator, which
+    always has recipes in front of it, may only plead missing context or safety."""
+
+    reason: Literal["insufficient_context", "safety_deferral"]
+    message: str
+
+
 class Draft(BaseModel):
     """What the generator returns. The pipeline turns source_ids into Source objects."""
 
     answer: str | None
-    refusal: Refusal | None
+    refusal: GeneratorRefusal | None
     source_ids: list[str] = []
     conflicts: list[str] = []

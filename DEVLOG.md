@@ -304,3 +304,16 @@ service that invents numbers fails its one job, whatever the cost saving.
 Sonnet 5 remains the default; Haiku remains `MODEL=claude-haiku-4-5` for
 anyone who accepts that trade. Hybrid and full context are re-measured
 under top-k 8 with the Opus judge so ADR-002's table is consistent.
+
+## 2026-09-04 — generator could refuse out_of_domain; now it cannot
+
+Hybrid and full-context runs both failed g12 (Beef Wellington) with
+`out_of_domain`. The extractor was not at fault (6/6 in_domain when
+probed); the generator, seeing many recipes and none matching, picked
+`out_of_domain` from the shared Refusal enum. That reason belongs to the
+extractor alone: the generator always has recipes in front of it, so its
+only honest refusals are insufficient_context and safety_deferral. The
+Draft schema now uses a two-value GeneratorRefusal, so the structured
+output cannot express the wrong reason, and rule 1 of generate.md says a
+missing dish is insufficient_context. All three Sonnet configurations are
+re-run under the new schema.

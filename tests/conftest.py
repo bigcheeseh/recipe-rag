@@ -3,7 +3,7 @@
 import pytest
 
 from app.llm import TokenUsage
-from app.models import Draft, Query, Recipe, Refusal
+from app.models import Draft, GeneratorRefusal, Query, Recipe
 
 
 def recipe(id_: str, title: str, ingredients: list[str], steps: list[str]) -> Recipe:
@@ -69,7 +69,7 @@ def answer(text: str, ids: list[str], conflicts: list[str] | None = None) -> Dra
 
 
 def refusal(reason: str, ids: list[str] | None = None) -> Draft:
-    r = Refusal(reason=reason, message=f"{reason} message")  # type: ignore[arg-type]
+    r = GeneratorRefusal(reason=reason, message=f"{reason} message")  # type: ignore[arg-type]
     return Draft(answer=None, refusal=r, source_ids=ids or [])
 
 

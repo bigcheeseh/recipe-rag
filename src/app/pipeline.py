@@ -13,7 +13,7 @@ from collections.abc import Callable
 from typing import Literal, Protocol
 
 from app.llm import TokenUsage, cost_usd
-from app.models import Answer, Draft, Query, Recipe, Refusal, Source, Usage
+from app.models import Answer, Draft, GeneratorRefusal, Query, Recipe, Refusal, Source, Usage
 from app.retrieval import Retriever
 
 log = logging.getLogger("app.request")
@@ -38,7 +38,7 @@ def ground(
     draft = retry()
     if validate_grounding(draft, retrieved_ids):
         return draft, "repaired"
-    refusal = Refusal(
+    refusal = GeneratorRefusal(
         reason="insufficient_context",
         message="The retrieved recipes do not support a grounded answer to this question.",
     )
@@ -76,8 +76,7 @@ class Pipeline:
         ms["extract"] = _ms(t0)
         rec["query"] = query.model_dump()
         if not query.in_domain:
-            draft = Draft(answer=None, refusal=_out_of_domain(), source_ids=[])
-            return self._finish(draft, usage, ms, t0, rec)
+            return self._finish(None, _out_of_domain(), [], [], usage, ms, t0, rec)
 
         t1 = time.perf_counter()
         hits = self.retriever.retrieve(query)
@@ -85,8 +84,7 @@ class Pipeline:
         rec["retrieved"] = [{"id": r.id, "score": round(s, 3)} for r, s in hits]
         retrieved = [r for r, _ in hits]
         if not retrieved:
-            draft = Draft(answer=None, refusal=_nothing_matched(), source_ids=[])
-            return self._finish(draft, usage, ms, t0, rec)
+            return self._finish(None, _nothing_matched(), [], [], usage, ms, t0, rec)
 
         t2 = time.perf_counter()
         draft, u2 = self.llm.generate(question, retrieved)
@@ -100,24 +98,35 @@ class Pipeline:
 
         draft, rec["grounding"] = ground(draft, {r.id for r in retrieved}, retry)
         ms["generate"] = _ms(t2)
-        return self._finish(draft, usage, ms, t0, rec)
+        refusal = None
+        if draft.refusal is not None:
+            refusal = Refusal(reason=draft.refusal.reason, message=draft.refusal.message)
+        # A refusal wins if the model filled both fields (Answer forbids both).
+        answer = None if refusal is not None else draft.answer
+        return self._finish(answer, refusal, draft.source_ids, draft.conflicts, usage, ms, t0, rec)
 
     def _finish(
-        self, draft: Draft, usage: TokenUsage, ms: dict[str, int], t0: float, rec: dict
+        self,
+        answer: str | None,
+        refusal: Refusal | None,
+        source_ids: list[str],
+        conflicts: list[str],
+        usage: TokenUsage,
+        ms: dict[str, int],
+        t0: float,
+        rec: dict,
     ) -> Answer:
-        # A refusal wins if the model filled both fields (Answer forbids both).
-        answer = None if draft.refusal is not None else draft.answer
         sources = [
             Source(recipe_id=r.id, title=r.title, url=r.url)
-            for rid in draft.source_ids
+            for rid in source_ids
             if (r := self.by_id.get(rid)) is not None
         ]
         ms["total"] = _ms(t0)
         out = Answer(
             answer=answer,
-            refusal=draft.refusal,
+            refusal=refusal,
             sources=sources,
-            conflicts=draft.conflicts,
+            conflicts=conflicts,
             usage=Usage(
                 model=self.llm.model,
                 tokens_in=usage.total_in,

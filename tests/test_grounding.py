@@ -1,13 +1,13 @@
 """AC-9: the groundedness validator rejects cited ids that were not retrieved. No network."""
 
-from app.models import Draft, Refusal
+from app.models import Draft, GeneratorRefusal
 from app.pipeline import ground, validate_grounding
 
 RETRIEVED = {"carbonara", "risotto"}
 
 
 def draft(ids: list[str], answer: str | None = "x") -> Draft:
-    refusal = None if answer else Refusal(reason="insufficient_context", message="m")
+    refusal = None if answer else GeneratorRefusal(reason="insufficient_context", message="m")
     return Draft(answer=answer, refusal=refusal, source_ids=ids)
 
 
