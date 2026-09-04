@@ -203,8 +203,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument(
         "--judge",
         default=None,
-        help="rubric judge model, or 'none'; default claude-opus-5 when testing Sonnet, "
-        "else claude-sonnet-5 (never the model under test)",
+        help="rubric judge model, or 'none'; default claude-opus-5 for every run so scores "
+        "are comparable across models (Opus is never the model under test)",
     )
     ap.add_argument(
         "--calibrate",
@@ -225,7 +225,9 @@ def main(argv: list[str] | None = None) -> int:
     os.environ["RETRIEVER"], os.environ["MODEL"] = args.retriever, args.model
     args.label = args.label or f"{args.retriever}-{args.model}"
     if args.judge is None:
-        args.judge = "claude-opus-5" if args.model == "claude-sonnet-5" else "claude-sonnet-5"
+        args.judge = "claude-opus-5"
+    if args.judge == args.model:
+        raise SystemExit("the judge must not be the model under test")
     load_dotenv()  # the app loads it at startup; the judge client is built before that
     judge_client = anthropic.Anthropic() if args.judge != "none" else None
 

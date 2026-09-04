@@ -271,3 +271,11 @@ Russian constraint question.
 
 Calibration files now: exactly one per model, both from the current
 prompts and top-k 8. Judge-vs-human agreement is not measured yet.
+
+## 2026-09-04 — one judge for every run
+
+The first judged runs used Opus 5 to grade Sonnet and Sonnet 5 to grade
+Haiku, which made the two score columns incomparable (different graders,
+possibly different strictness). The runner now defaults to Opus 5 for
+every run and refuses a judge equal to the model under test. The Haiku
+run is re-judged by Opus so the Sonnet/Haiku comparison uses one grader.
