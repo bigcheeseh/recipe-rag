@@ -293,6 +293,10 @@ be challenged.
 11. **Safety deferral scope.** Any question asking whether food is *safe* for
     a medical condition is deferred. Questions asking whether a recipe
     *contains* an ingredient are answered normally from the ingredient list.
-12. **Single language.** English questions and English recipes only.
+12. **Languages.** The corpus is English. Questions may be in any language:
+    the extraction call always produces English search terms, and the
+    generator answers in the language of the question. Only English and
+    Russian are covered by the golden set (`g22`, `g23`); other languages
+    are untested.
 13. **No authentication** on the endpoint. The deployment is a demo; abuse
     is bounded by Cloud Run concurrency limits and `min_instances = 0`.

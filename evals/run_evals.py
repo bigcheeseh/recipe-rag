@@ -10,6 +10,7 @@ most recent committed run fails now.
 import argparse
 import json
 import os
+import re
 import statistics
 import subprocess
 import sys
@@ -58,6 +59,10 @@ def check(expect: dict, status: int, body: dict, corpus: dict[str, Recipe]) -> l
             fails.append(f"refusal {expect['refusal']}: got {got}")
     if expect.get("sources_empty") and cited:
         fails.append(f"sources_empty: got {cited}")
+    if expect.get("answered") and a.answer is None:
+        fails.append(f"answered: got refusal {a.refusal.reason if a.refusal else None}")
+    if expect.get("script") == "cyrillic" and not re.search(r"[Ѐ-ӿ]", text + message):
+        fails.append("script cyrillic")
     if "conflicts_min" in expect and len(a.conflicts) < expect["conflicts_min"]:
         fails.append(f"conflicts_min {expect['conflicts_min']}: got {len(a.conflicts)}")
 

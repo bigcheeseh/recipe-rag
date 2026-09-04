@@ -6,7 +6,9 @@ Fields:
   kitchen technique, or dietary suitability of a dish. false for anything else
   (cars, code, general knowledge, chit-chat).
 - search_terms: bare content words for keyword search, lower case, no question
-  words, no filler. Always include the dish name if one is named. If the user
+  words, no filler. Always in English, whatever language the question is in
+  (the recipes are English): "Сколько желтков в карбонаре?" -> "carbonara egg
+  yolks". Always include the dish name if one is named. If the user
   describes a dish without naming it ("pasta with bacon and egg"), add the
   most likely dish name ("carbonara"). If the question is about a property
   (oven temperature, cooking time, an ingredient), include that word too.
