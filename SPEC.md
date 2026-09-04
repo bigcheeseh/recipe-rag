@@ -245,9 +245,9 @@ computed from those counts and the prices above. It is never estimated.
 The metadata-enrichment call at ingestion is a one-time cost and is recorded
 separately in `ingest_manifest.json`, not in per-question `Usage`.
 
-**Target for 1,000 questions:** USD 14.23, from the mean `cost_usd` of the
+**Target for 1,000 questions:** USD 14.34, from the mean `cost_usd` of the
 BM25 + Sonnet 5 eval run on the 23-question golden set with top-k 8
-(`evals/runs/20260904T190742Z-bm25-claude-sonnet-5.md`, mean USD 0.0142)
+(`evals/runs/20260904T193941Z-bm25-claude-sonnet-5.md`, mean USD 0.0143)
 multiplied by 1,000. Top-k 5 measured USD 11.37 on the same set. ADR-002
 lists the other configurations.
 

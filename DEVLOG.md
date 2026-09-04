@@ -317,3 +317,17 @@ Draft schema now uses a two-value GeneratorRefusal, so the structured
 output cannot express the wrong reason, and rule 1 of generate.md says a
 missing dish is insufficient_context. All three Sonnet configurations are
 re-run under the new schema.
+
+## 2026-09-04 — final Block 6 table: all three Sonnet configurations 23/23
+
+After the generator-refusal fix, BM25 / hybrid / full on Sonnet 5 all pass
+23/23 with Opus-judged means within one response of each other
+(ADR-002 table rebuilt). Costs USD 0.0143 / 0.0153 / 0.0148 per question.
+Retrieval strategy no longer moves accuracy or wording on this corpus;
+BM25 stays the default on cost, latency and dependencies.
+
+Calibration files, one per model, current prompts and schema:
+- evals/runs/20260904T193941Z-bm25-claude-sonnet-5.answers.md
+- evals/runs/20260904T191546Z-bm25-claude-haiku-4-5.answers.md
+  (Haiku run predates the refusal-schema change; the change only removed a
+  refusal option Haiku never used, so its responses are unaffected.)

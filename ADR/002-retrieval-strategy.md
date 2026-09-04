@@ -9,30 +9,28 @@ Three ways to get recipes in front of the generator were built behind one
 original, 8 harder English, 2 Russian) with the same prompts
 (`evals/runs/`, 2026-09-04). Every check is deterministic.
 
-| Configuration | Pass | Mean USD / question | USD / 1,000 | total p50 ms | total p95 ms | generate p50 ms |
-| --- | --- | --- | --- | --- | --- | --- |
-| BM25, Sonnet 5 (default) | 22/23 | 0.0114 | 11.37 | 5086 | 8346 | 2824 |
-| Hybrid BM25 + Voyage vectors, Sonnet 5 | 23/23 | 0.0129 | 12.91 | 6503 | 67906 | 3121 |
-| Full context (48 recipes, cached), Sonnet 5 | 23/23 | 0.0148 | 14.83 | 4905 | 12601 | 2902 |
-| Full context (cached), Haiku 4.5 | 23/23 | 0.0049 | 4.90 | 4032 | 7576 | 2804 |
-| BM25, Haiku 4.5 | 23/23 | 0.0042 | 4.17 | 3361 | 8592 | 2174 |
+All rows: top-k 8 with exact-title promotion, generator refusals limited
+to insufficient_context / safety_deferral, rubric judge Opus 5 (clarity /
+care / language, mean of 1-3, reported only).
+
+| Configuration | Pass | Judge c / c / l | Mean USD / question | USD / 1,000 | total p50 ms | total p95 ms | generate p50 ms |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| BM25, Sonnet 5 (default) | 23/23 | 2.95 / 2.95 / 3.00 | 0.0143 | 14.34 | 5267 | 11619 | 3327 |
+| Hybrid BM25 + Voyage vectors, Sonnet 5 | 23/23 | 2.95 / 3.00 / 3.00 | 0.0153 | 15.35 | 5546 | 69295 | 2824 |
+| Full context (48 recipes, cached), Sonnet 5 | 23/23 | 3.00 / 2.95 / 3.00 | 0.0148 | 14.83 | 5197 | 13235 | 3090 |
+| BM25, Haiku 4.5 | 23/23 | 2.95 / 2.91 / 3.00 | 0.0050 | 4.96 | 3409 | 7200 | 2052 |
 
 Latency is from the developer machine, one request at a time; deployed
 numbers come in Block 7. The hybrid p95 is Voyage's free-tier rate limit
 (20 s back-offs on 429), not the vector math (about 300 ms when not
-limited). An earlier 13-question version of this table, 13/13 for every
-row, is in git history.
+limited). Earlier versions of this table (13 questions; then 23 questions
+at top-k 5, where BM25 + Sonnet was 22/23 on the two-dish question g14)
+are in git history. Full context + Haiku was measured only at top-k 5
+(23/23, USD 0.0049) and not re-run.
 
-One question separates the rows. g14 ("Which takes longer to make, the
-Pad Thai or Banana Bread I?") fails on BM25 + Sonnet: the extractor drops
-the variant marker "I", "pad thai" pulls two Thai neighbours into the
-five slots, and the banana bread that gets through is the walnut variant,
-which states no time. Sonnet then refuses with insufficient_context, which
-is the correct behaviour on that context. Hybrid and full context surface
-Banana Bread I and answer. BM25 + Haiku passed the same question by
-answering from the walnut variant's steps, which is less careful, not
-better retrieval. So the golden set now measures a real BM25 limitation:
-two-dish questions and exact variant names compete for a fixed top-5.
+Accuracy no longer separates the rows. The judge differences are one
+response each, within noise for 22 graded responses. What separates them
+is cost, latency, dependencies, and scaling.
 
 ## Decision
 
@@ -47,13 +45,18 @@ two-dish questions and exact variant names compete for a fixed top-5.
    Code and `data/embeddings.npz` are kept for the day the corpus grows past
    what dish names can key.
 3. **Full context stays behind `RETRIEVER=full`.** It works at 48 recipes
-   and it is the simplest possible pipeline, but it costs 30% more per
-   question at this size and its generation p95 is the worst of the table.
-4. **Sonnet 5 stays the default model.** Haiku 4.5 passed 23/23 at about
-   a third of the cost. The one place the two differ (g14) is Haiku
-   answering where Sonnet declined for lack of a stated time, so the gap is
-   caution, not capability, and 23 questions are still too few to rank
-   models on wording quality. Haiku stays a one-line `MODEL` switch.
+   and it is the simplest possible pipeline. At top-k 8 its cost is within
+   4% of BM25 and its judge scores match; what still argues against it is
+   the 80-recipe cost threshold below, a generation p95 that grows with
+   the corpus, and dependence on a warm cache.
+4. **Sonnet 5 stays the default model** (user decision, 2026-09-04).
+   Haiku 4.5 passed 23/23 at about a third of the cost, but on the
+   browsing question g07 it listed recipes with no stated time by guessing
+   durations and presenting them as facts (judge care 1). Sonnet on the
+   same question named the two recipes with stated times and said the rest
+   are unknown. A recipe service that invents numbers fails its one job,
+   so the cost saving does not buy the default. Haiku stays a one-line
+   `MODEL` switch for anyone who accepts that trade.
 5. **Top-k raised to 8 and exact-title promotion added** (user decision,
    2026-09-04) after g14 flapped on BM25 + Sonnet: two dishes competing
    for five slots let the wrong banana bread variant through. k=8 was
