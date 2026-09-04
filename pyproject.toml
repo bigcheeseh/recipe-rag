@@ -45,3 +45,7 @@ known-first-party = ["app"]
 [tool.mypy]
 mypy_path = "src"
 packages = ["app"]
+
+[[tool.mypy.overrides]]
+module = "rank_bm25"
+ignore_missing_imports = true
