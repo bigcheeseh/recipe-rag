@@ -1,4 +1,4 @@
-from app.models import Recipe
+from app.models import Query, Recipe
 from app.retrieval import Index, bm25_rank, tokenize
 
 
@@ -68,3 +68,36 @@ def test_only_candidates_are_ranked():
 
 def test_k_caps_results():
     assert len(ids("eggs", k=2)) == 2
+
+
+KHAO_PAD = recipe(
+    "khao-pad-thai-fried-rice",
+    "Khao Pad Thai Fried Rice",
+    ["pad thai sauce", "pad thai noodles", "pad thai spice mix", "rice"],
+    ["Fry the rice the pad thai way.", "Serve like pad thai."],
+)
+
+
+def test_exact_title_in_search_terms_ranks_that_recipe_first():
+    # Term frequency alone puts the fried rice above Pad Thai itself.
+    from app.retrieval import BM25Retriever
+
+    r = BM25Retriever(RECIPES + [KHAO_PAD])
+    assert (
+        ids("pad thai") != []
+        and [
+            x.id
+            for x, _ in bm25_rank(Index(RECIPES + [KHAO_PAD]), "pad thai", RECIPES + [KHAO_PAD])
+        ][0]
+        == "khao-pad-thai-fried-rice"
+    )
+    assert r.retrieve(Query(in_domain=True, search_terms="pad thai"))[0][0].id == "pad-thai"
+
+
+def test_default_top_k_is_eight():
+    from app.retrieval import BM25Retriever
+
+    many = RECIPES + [recipe(f"egg-{i}", f"Egg Dish {i}", ["eggs"], ["Cook."]) for i in range(5)]
+    terms = "egg dish bananas rice noodles avocados"  # every fixture recipe scores > 0
+    got = BM25Retriever(many).retrieve(Query(in_domain=True, search_terms=terms))
+    assert len(got) == 8
