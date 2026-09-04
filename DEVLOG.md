@@ -279,3 +279,19 @@ Haiku, which made the two score columns incomparable (different graders,
 possibly different strictness). The runner now defaults to Opus 5 for
 every run and refuses a judge equal to the model under test. The Haiku
 run is re-judged by Opus so the Sonnet/Haiku comparison uses one grader.
+
+## 2026-09-04 — Sonnet vs Haiku, both judged by Opus 5
+
+Same prompts, same retrieval (BM25, top-k 8), same grader:
+Sonnet 23/23, clarity 2.95, care 2.95, language 3.00, USD 0.0142/question.
+Haiku 23/23, clarity 2.95, care 2.91, language 3.00, USD 0.0050/question.
+Opus was slightly kinder to Haiku than Sonnet had been (care 2.91 vs
+2.86), which is exactly why one grader is required. The remaining gap is
+one response: Haiku's browsing answer (g07) lists recipes with no stated
+time by guessing durations, care 1. Sonnet on the same question names the
+two recipes with stated times and says the rest are unknown.
+
+Files for human calibration, one per model, both from the current
+prompts, retrieval and grader:
+- evals/runs/20260904T190742Z-bm25-claude-sonnet-5.answers.md
+- evals/runs/20260904T191546Z-bm25-claude-haiku-4-5.answers.md
