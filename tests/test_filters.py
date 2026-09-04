@@ -71,3 +71,11 @@ def test_browsing_question_falls_back_to_filtered_set_when_terms_match_nothing()
     assert [x.id for x, _ in got] == ["pad-thai", "omelet"]
     # Without any constraint there is no defined answer set, so nothing is returned.
     assert r.retrieve(Query(in_domain=True, search_terms="quick recipes")) == []
+
+
+def test_full_context_retriever_returns_every_filtered_recipe():
+    from app.retrieval import FullContextRetriever
+
+    r = FullContextRetriever(ALL)
+    assert [x.id for x, _ in r.retrieve(q())] == ["pad-thai", "dal", "omelet", "unknown"]
+    assert [x.id for x, _ in r.retrieve(q(diet=["vegan"]))] == ["dal"]
