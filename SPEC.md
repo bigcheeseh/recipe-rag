@@ -245,10 +245,11 @@ computed from those counts and the prices above. It is never estimated.
 The metadata-enrichment call at ingestion is a one-time cost and is recorded
 separately in `ingest_manifest.json`, not in per-question `Usage`.
 
-**Target for 1,000 questions:** USD 11.37, from the mean `cost_usd` of the
-BM25 + Sonnet 5 eval run on the 23-question golden set
-(`evals/runs/20260904T175824Z-bm25-claude-sonnet-5.md`, mean USD 0.0114)
-multiplied by 1,000. ADR-002 lists the other configurations.
+**Target for 1,000 questions:** USD 14.23, from the mean `cost_usd` of the
+BM25 + Sonnet 5 eval run on the 23-question golden set with top-k 8
+(`evals/runs/20260904T190742Z-bm25-claude-sonnet-5.md`, mean USD 0.0142)
+multiplied by 1,000. Top-k 5 measured USD 11.37 on the same set. ADR-002
+lists the other configurations.
 
 Prompt caching of the system prompt and recipe context is an optimisation
 considered only after the baseline is measured.

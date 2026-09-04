@@ -247,3 +247,14 @@ guarantee, not a scoring tweak: "pad thai" must return Pad Thai first even
 though Khao Pad Thai Fried Rice mentions the phrase more often. It only
 helps when the extractor keeps the full title, which it did not always do
 for "Banana Bread I"; k=8 is what makes that question stable.
+
+## 2026-09-04 — BM25 + Sonnet with top-k 8: 23/23, no regression
+
+`evals/runs/20260904T190742Z-bm25-claude-sonnet-5.md`: 23/23, g14 answered
+with Banana Bread I in context. Judge means clarity 2.95, care 2.95,
+language 3.00. Cost rose from USD 0.0114 to 0.0142 per question (+25%),
+which is the price of three more recipes in every generation call; total
+p50 5011 ms, p95 12067 ms. SPEC section 7 target updated to USD 14.23 per
+1,000. The pre-k=8 Sonnet answers file was dropped so calibration uses
+responses from the current retrieval; Haiku is re-run under k=8 for the
+same reason.
