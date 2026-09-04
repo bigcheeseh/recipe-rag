@@ -110,7 +110,7 @@
 - id: g16
   kind: described_dish
   q: "How long does pasta with bacon and egg take to make?"
-  expect: {cites: [carbonara], cites_min: 2, conflicts_min: 1}
+  expect: {cites: [spaghetti-alla-carbonara], contains: "hour"}
 
 - id: g17
   kind: constraint

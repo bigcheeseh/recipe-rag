@@ -6,7 +6,7 @@ from typing import TypeVar
 
 import anthropic
 from anthropic.types import TextBlockParam
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 
 from app.models import Draft, Query, Recipe
 
@@ -69,14 +69,20 @@ class LLM:
         self, output: type[T], max_tokens: int, user: str, system: list[TextBlockParam] | None
     ) -> tuple[T, TokenUsage]:
         """One structured-output call; retried once if the model returns no parseable object."""
+        last_error = "no parsed output"
         for _ in range(2):
-            resp = self.client.messages.parse(
-                model=self.model,
-                max_tokens=max_tokens,
-                system=system if system else anthropic.omit,
-                messages=[{"role": "user", "content": user}],
-                output_format=output,
-            )
+            try:
+                resp = self.client.messages.parse(
+                    model=self.model,
+                    max_tokens=max_tokens,
+                    system=system if system else anthropic.omit,
+                    messages=[{"role": "user", "content": user}],
+                    output_format=output,
+                )
+            except ValidationError as e:
+                # Typically JSON cut off by max_tokens; the SDK raises before we see usage.
+                last_error = str(e).splitlines()[-1]
+                continue
             u = resp.usage
             usage = TokenUsage(
                 tokens_in=u.input_tokens,
@@ -86,7 +92,8 @@ class LLM:
             )
             if resp.parsed_output is not None:
                 return resp.parsed_output, usage
-        raise UnparseableOutput(f"{output.__name__}: stop_reason={resp.stop_reason}")
+            last_error = f"stop_reason={resp.stop_reason}"
+        raise UnparseableOutput(f"{output.__name__}: {last_error}")
 
     def extract_query(self, question: str) -> tuple[Query, TokenUsage]:
         prompt = (PROMPTS / "extract_query.md").read_text(encoding="utf-8")
@@ -101,4 +108,4 @@ class LLM:
         if self.cache_context:
             context["cache_control"] = {"type": "ephemeral"}
         system: list[TextBlockParam] = [{"type": "text", "text": rules}, context]
-        return self._parse(Draft, 1024, f"Question:\n{question}", system)
+        return self._parse(Draft, 4096, f"Question:\n{question}", system)

@@ -122,7 +122,7 @@ def main(argv: list[str] | None = None) -> int:
     rows, regressions = [], []
     lat: dict[str, list[int]] = {"extract": [], "retrieve": [], "generate": [], "total": []}
     costs: list[float] = []
-    with TestClient(app) as client:
+    with TestClient(app, raise_server_exceptions=False) as client:
         for g in golden:
             r = client.post("/ask", json={"question": g["q"]})
             body = (
