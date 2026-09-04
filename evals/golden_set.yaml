@@ -148,3 +148,35 @@
   kind: constraint_ru
   q: "Посоветуй веганское блюдо без орехов."
   expect: {cites_min: 1, never_cites_allergen: nuts, requires_diet: vegan, script: cyrillic}
+
+# --- corpus-wide: answerable only by seeing every recipe --------------------
+
+- id: g24
+  kind: corpus_wide
+  q: "Which recipe in this cookbook is the quickest to make?"
+  expect: {cites: [grilled-cheese-sandwich], contains: "grilled cheese"}
+
+- id: g25
+  kind: corpus_wide
+  q: "Which recipe has the longest stated total time?"
+  expect: {cites: [spaghetti-with-bolognese-meat-sauce], contains: "2 hours"}
+
+- id: g26
+  kind: aggregate
+  q: "How many chocolate chip cookie recipes are there, and which of them bake at 375°F?"
+  expect: {cites_min: 5, cites: [chocolate-chip-cookies-ii]}
+
+- id: g27
+  kind: constraint_list
+  q: "List every vegan recipe that takes 15 minutes or less."
+  expect: {cites_min: 2, requires_diet: vegan, max_minutes_cited: 15}
+
+- id: g28
+  kind: corpus_wide
+  q: "Which recipe needs something soaked overnight?"
+  expect: {cites: [dal-makhani], contains: "dal"}
+
+- id: g29
+  kind: corpus_wide_ru
+  q: "Какой рецепт здесь самый быстрый?"
+  expect: {cites: [grilled-cheese-sandwich], script: cyrillic}
