@@ -31,3 +31,11 @@ chunk whose text only says "stir the rice".
   sections have very different lengths and vocabulary, which skews BM25.
 - Alternative deferred: no retrieval at all, full corpus in context. To be
   measured in Commit 31 against this baseline (see DEVLOG open question).
+
+## Addendum, 2026-09-04: retrieval seam
+
+The pipeline depends only on `Retriever.retrieve(query) -> list[Recipe]`.
+`BM25Retriever` is the current implementation (filters, then BM25). An
+embedding retriever or a full-context "return everything that passes the
+filters" retriever implements the same method, so the Commit 31 comparison
+is a flag choosing the class, not a change to the pipeline.

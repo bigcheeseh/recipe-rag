@@ -2,7 +2,7 @@
 
 import re
 from dataclasses import dataclass
-from typing import Literal
+from typing import Literal, Protocol
 
 from rank_bm25 import BM25Okapi
 
@@ -87,3 +87,18 @@ def apply_filters(recipes: list[Recipe], query: Query) -> list[Recipe]:
             continue
         out.append(r)
     return out
+
+
+class Retriever(Protocol):
+    """The only thing the pipeline depends on. Swap the implementation, not the pipeline."""
+
+    def retrieve(self, query: Query) -> list[Recipe]: ...
+
+
+class BM25Retriever:
+    def __init__(self, recipes: list[Recipe], k: int = 5):
+        self.recipes, self.k = recipes, k
+        self.index = Index(recipes)
+
+    def retrieve(self, query: Query) -> list[Recipe]:
+        return bm25_rank(self.index, query.search_terms, apply_filters(self.recipes, query), self.k)
