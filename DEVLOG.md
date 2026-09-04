@@ -158,3 +158,30 @@ the new layout and also passed 13/13, so the layout did not move accuracy.
 Decision: BM25 + Sonnet 5 stays the default. Hybrid and full context stay
 behind flags. Haiku is a documented `MODEL` switch, not the default, until
 the golden set is large enough to rank models on wording quality.
+
+## 2026-09-04 — golden set grown to 23; first question that separates configs
+
+Added eight harder English questions (two-dish comparison, negative fact,
+described dish, two constraints at once, contains-vs-safe, near-miss dish,
+doubling arithmetic, prompt injection) and two Russian ones (factual and
+allergen constraint, checked for a Cyrillic answer). Prompts now force
+English search terms and answer in the question's language; SPEC
+assumption 12 updated.
+
+Two questions had to be corrected against the corpus before they were
+fair: g16 asked for a time conflict between the two carbonaras, but only
+one states a time, so it now checks the stated "1 hour"; g14 first
+compared against Risotto ai Funghi, which states no time, and Sonnet
+refused correctly, so it now compares against banana bread.
+
+Two bugs surfaced and were fixed: a long answer (g17 listed five recipes)
+overran `max_tokens=1024`, the SDK raised a validation error the wrapper
+did not catch, and the eval runner died with the app's 500. Now: cap 4096,
+truncation is caught and retried once, then 502; the runner records a
+500 as a failed row.
+
+Results on 23 questions: BM25+Sonnet 22/23, every other configuration
+23/23. The failing question is g14, and the cause is BM25's fixed top-5
+under a two-dish query (details in ADR-002). This is the first time the
+golden set has separated the options, which is what it is for. The fix is
+a decision (k=8 vs exact-title boost), left open.

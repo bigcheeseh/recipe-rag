@@ -5,24 +5,34 @@
 ## Context
 
 Three ways to get recipes in front of the generator were built behind one
-`Retriever` seam and measured on the same 13-question golden set with the
-same prompts (`evals/runs/`, 2026-09-04). Every check is deterministic.
+`Retriever` seam and measured on the same 23-question golden set (13
+original, 8 harder English, 2 Russian) with the same prompts
+(`evals/runs/`, 2026-09-04). Every check is deterministic.
 
 | Configuration | Pass | Mean USD / question | USD / 1,000 | total p50 ms | total p95 ms | generate p50 ms |
 | --- | --- | --- | --- | --- | --- | --- |
-| BM25, Sonnet 5 (default) | 13/13 | 0.0111 | 11.07 | 5192 | 6299 | 2944 |
-| Hybrid BM25 + Voyage vectors, Sonnet 5 | 13/13 | 0.0112 | 11.18 | 25296 | 26276 | 3178 |
-| Full context (48 recipes, cached), Sonnet 5 | 13/13 | 0.0122 | 12.24 | 5870 | 7276 | 4372 |
-| Full context (cached), Haiku 4.5 | 13/13 | 0.0063 | 6.25 | 4428 | 7551 | 2887 |
-| BM25, Haiku 4.5 | 13/13 | 0.0040 | 4.00 | 3675 | 4501 | 2535 |
+| BM25, Sonnet 5 (default) | 22/23 | 0.0114 | 11.37 | 5086 | 8346 | 2824 |
+| Hybrid BM25 + Voyage vectors, Sonnet 5 | 23/23 | 0.0129 | 12.91 | 6503 | 67906 | 3121 |
+| Full context (48 recipes, cached), Sonnet 5 | 23/23 | 0.0148 | 14.83 | 4905 | 12601 | 2902 |
+| Full context (cached), Haiku 4.5 | 23/23 | 0.0049 | 4.90 | 4032 | 7576 | 2804 |
+| BM25, Haiku 4.5 | 23/23 | 0.0042 | 4.17 | 3361 | 8592 | 2174 |
 
 Latency is from the developer machine, one request at a time; deployed
-numbers come in Block 7. The hybrid total is dominated by Voyage's free-tier
-rate limit (20 s back-off on 429), not by the vector math (about 300 ms when
-not limited).
+numbers come in Block 7. The hybrid p95 is Voyage's free-tier rate limit
+(20 s back-offs on 429), not the vector math (about 300 ms when not
+limited). An earlier 13-question version of this table, 13/13 for every
+row, is in git history.
 
-Accuracy did not separate the options: 13/13 everywhere. The differences
-are cost, latency, dependencies, and how each one scales.
+One question separates the rows. g14 ("Which takes longer to make, the
+Pad Thai or Banana Bread I?") fails on BM25 + Sonnet: the extractor drops
+the variant marker "I", "pad thai" pulls two Thai neighbours into the
+five slots, and the banana bread that gets through is the walnut variant,
+which states no time. Sonnet then refuses with insufficient_context, which
+is the correct behaviour on that context. Hybrid and full context surface
+Banana Bread I and answer. BM25 + Haiku passed the same question by
+answering from the walnut variant's steps, which is less careful, not
+better retrieval. So the golden set now measures a real BM25 limitation:
+two-dish questions and exact variant names compete for a fixed top-5.
 
 ## Decision
 
@@ -37,13 +47,19 @@ are cost, latency, dependencies, and how each one scales.
    Code and `data/embeddings.npz` are kept for the day the corpus grows past
    what dish names can key.
 3. **Full context stays behind `RETRIEVER=full`.** It works at 48 recipes
-   and it is the simplest possible pipeline, but it costs more per question
-   at this size and adds about 1.4 s to generation.
-4. **Sonnet 5 stays the default model.** Haiku 4.5 passed the same 13
-   questions at a third of the cost. Thirteen questions are too few to rank
-   models on nuance (conflict wording, safety-deferral phrasing), so the
-   cheaper model is offered as a one-line `MODEL` switch rather than made
-   the default. Revisit when the golden set is larger.
+   and it is the simplest possible pipeline, but it costs 30% more per
+   question at this size and its generation p95 is the worst of the table.
+4. **Sonnet 5 stays the default model.** Haiku 4.5 passed 23/23 at about
+   a third of the cost. The one place the two differ (g14) is Haiku
+   answering where Sonnet declined for lack of a stated time, so the gap is
+   caution, not capability, and 23 questions are still too few to rank
+   models on wording quality. Haiku stays a one-line `MODEL` switch.
+5. **Known gap, not fixed here:** BM25's top-5 for two-dish questions.
+   Candidate fixes, each about ten lines and a re-run: `k=8` (measured
+   offline to include Banana Bread I in 3 of 3 extractions, at roughly
+   +1.5k input tokens per question), or an exact-title boost when the
+   search terms contain a full recipe title. Left for a decision with
+   numbers rather than folded into this ADR.
 
 ## Where full context stops being viable
 
@@ -57,8 +73,10 @@ per recipe.
   that assumes steady traffic keeping the 5-minute cache warm; each cold
   request pays 1.25x on the whole corpus (USD 0.065 at 48 recipes, measured
   on the first eval question).
-- **Latency.** Generation was 4372 ms p50 against 2944 ms for BM25 at 48
-  recipes, and prefill time grows with context length.
+- **Latency.** On the 23-question run, generation p50 was close to BM25
+  (2902 vs 2824 ms) but p95 was 10523 vs 6737 ms; on the earlier
+  13-question run p50 was 4372 vs 2944 ms. Prefill time grows with
+  context length.
 - **Context window.** Haiku 4.5 is 200K tokens, so about **360 recipes**
   is a hard ceiling for the cheap-model variant. Sonnet 5's 1M window
   allows about 1,800, but cost rules it out long before that.
