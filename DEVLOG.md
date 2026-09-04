@@ -47,3 +47,22 @@ there was no conflict to detect. g13 now asks about carbonara eggs. g01
 and g03 were narrowed to a specific recipe so they stay plain factual
 questions rather than accidental conflict cases. tests/test_corpus.py pins
 these facts so a corpus refresh that breaks the golden set fails CI.
+
+## 2026-09-04 — retrieval demo before wiring the LLM
+
+BM25 over 96 section chunks, golden-set questions fed in raw (no query
+extraction yet). Every in-domain question puts the right recipe family in
+the top 3. Two things worth knowing before Block 5:
+
+- Raw questions carry noise. "How many eggs go into carbonara?" ranks a
+  cookie recipe first because "go"/"into"/"eggs" score across many chunks;
+  the extracted form "carbonara eggs" ranks both carbonara variants 1–2.
+  The extract_query prompt must return bare content terms, not the question.
+- Out-of-domain and absent-dish questions ("flat tyre", "Beef Wellington")
+  still return five low-score recipes. BM25 has no notion of "nothing
+  relevant". Refusals therefore have to come from extract_query (in_domain)
+  and from the generator (insufficient_context), never from a score cutoff.
+  A score threshold was considered and rejected: BM25 scores are not
+  comparable across queries.
+- Unknown metadata is treated as failing any active filter. Every corpus
+  record currently has metadata, so this only matters for future refreshes.
