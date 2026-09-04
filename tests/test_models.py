@@ -83,3 +83,17 @@ def test_overlong_question_rejected():
 
 def test_question_is_stripped():
     assert AskRequest(question="  eggs?  ").question == "eggs?"
+
+
+# the generator may refuse for lack of context or safety, never for domain (extractor's call)
+
+
+def test_generator_draft_cannot_refuse_out_of_domain():
+    from app.models import Draft
+
+    with pytest.raises(ValidationError):
+        Draft(answer=None, refusal={"reason": "out_of_domain", "message": "x"}, source_ids=[])
+    d = Draft(
+        answer=None, refusal={"reason": "insufficient_context", "message": "x"}, source_ids=[]
+    )
+    assert d.refusal is not None and d.refusal.reason == "insufficient_context"
