@@ -66,3 +66,25 @@ the top 3. Two things worth knowing before Block 5:
   comparable across queries.
 - Unknown metadata is treated as failing any active filter. Every corpus
   record currently has metadata, so this only matters for future refreshes.
+
+## 2026-09-04 — Block 5 decisions
+
+- Query extraction adds a probable dish name when the user describes a dish
+  without naming it ("pasta with bacon and egg" -> "carbonara bacon egg
+  time", observed live). This is the cheap answer to BM25's vocabulary
+  problem; the eval will show whether it is enough.
+- The generator sometimes fills both `answer` and `refusal` on a safety
+  deferral (observed live on the pad thai question). The pipeline lets the
+  refusal win rather than failing the request; the test pins this.
+- Thinking effort is left at the provider default for both calls, as SPEC
+  assumption 4 says. Measured live latency is roughly 2-3 s for extraction
+  and 3-5 s for generation on single requests; the eval run will give real
+  p50/p95 figures, so nothing is written into SPEC section 6 yet.
+- Every response carries an `X-Trace-Id` header matching the log record and
+  the error body, so a user report can be tied to one JSON line.
+- `prompt_hash` is the SHA-256 of all files under `prompts/`, truncated, so
+  the log tells which prompt version produced an answer.
+- Open mismatch to resolve in Block 6: SPEC AC-7 says g06 ("vegan main with
+  no nuts") should be a safety deferral, but the golden set treats it as a
+  filtered recommendation. The golden set is right: it asks for dishes, not
+  for a medical judgement. AC-7 should be narrowed to g05.
