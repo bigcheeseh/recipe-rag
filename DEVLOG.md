@@ -295,3 +295,12 @@ Files for human calibration, one per model, both from the current
 prompts, retrieval and grader:
 - evals/runs/20260904T190742Z-bm25-claude-sonnet-5.answers.md
 - evals/runs/20260904T191546Z-bm25-claude-haiku-4-5.answers.md
+
+## 2026-09-04 — model decision: Sonnet 5 stays the default
+
+The user judged Haiku's g07 behaviour (durations guessed for recipes that
+state none, presented as a list of facts) a serious problem. A recipe
+service that invents numbers fails its one job, whatever the cost saving.
+Sonnet 5 remains the default; Haiku remains `MODEL=claude-haiku-4-5` for
+anyone who accepts that trade. Hybrid and full context are re-measured
+under top-k 8 with the Opus judge so ADR-002's table is consistent.
