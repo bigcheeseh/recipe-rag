@@ -64,7 +64,8 @@ def judge(
     prompt = prompt.replace("{question}", question).replace("{response}", render_response(body))
     resp = client.messages.parse(
         model=model,
-        max_tokens=512,
+        max_tokens=4096,  # adaptive thinking counts against this
+        output_config={"effort": "low"},
         messages=[{"role": "user", "content": prompt}],
         output_format=Judgement,
     )
