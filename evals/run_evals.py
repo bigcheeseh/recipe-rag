@@ -17,14 +17,101 @@ import sys
 from datetime import UTC, datetime
 from pathlib import Path
 
+import anthropic
 import yaml
 from fastapi.testclient import TestClient
+from pydantic import BaseModel, Field
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from app.api import app, load_corpus  # noqa: E402
+from app.llm import TokenUsage, cost_usd  # noqa: E402
 from app.models import Answer, Recipe  # noqa: E402
+
+CRITERIA = ("clarity", "care", "language")
+
+
+class Judgement(BaseModel):
+    """Rubric scores from prompts/judge.md. Reported next to the deterministic result,
+    never used as the pass/fail gate."""
+
+    clarity: int = Field(ge=1, le=3)
+    care: int = Field(ge=1, le=3)
+    language: int = Field(ge=1, le=3)
+    note: str
+
+    def scores(self) -> str:
+        return "/".join(str(getattr(self, c)) for c in CRITERIA)
+
+
+def render_response(body: dict) -> str:
+    if body.get("answer"):
+        text = body["answer"]
+    else:
+        r = body.get("refusal") or {}
+        text = f"REFUSAL ({r.get('reason')}): {r.get('message')}"
+    if body.get("conflicts"):
+        text += "\nConflicts: " + " | ".join(body["conflicts"])
+    return text
+
+
+def judge(
+    client: anthropic.Anthropic, model: str, question: str, body: dict
+) -> tuple[Judgement, TokenUsage]:
+    prompt = (ROOT / "prompts" / "judge.md").read_text(encoding="utf-8")
+    prompt = prompt.replace("{question}", question).replace("{response}", render_response(body))
+    resp = client.messages.parse(
+        model=model,
+        max_tokens=512,
+        messages=[{"role": "user", "content": prompt}],
+        output_format=Judgement,
+    )
+    if resp.parsed_output is None:
+        raise RuntimeError(f"judge returned no object: stop_reason={resp.stop_reason}")
+    u = resp.usage
+    return resp.parsed_output, TokenUsage(tokens_in=u.input_tokens, tokens_out=u.output_tokens)
+
+
+def agreement(judge_scores: dict[str, str], human_scores: dict[str, str]) -> dict[str, dict]:
+    """Per criterion: exact-match rate and mean absolute difference over ids scored by both.
+    Scores are "c/c/l" strings as written in the answers file."""
+    ids = sorted(set(judge_scores) & set(human_scores))
+    out: dict[str, dict] = {}
+    for i, c in enumerate(CRITERIA):
+        pairs = [
+            (int(judge_scores[k].split("/")[i]), int(human_scores[k].split("/")[i])) for k in ids
+        ]
+        n = len(pairs)
+        out[c] = {
+            "n": n,
+            "exact": sum(j == h for j, h in pairs) / n if n else 0.0,
+            "mean_abs_diff": sum(abs(j - h) for j, h in pairs) / n if n else 0.0,
+        }
+    return out
+
+
+def table_column(table: Path, idx: int, want_scores: bool = False) -> dict[str, str]:
+    """Column `idx` of the markdown table rows whose id starts with "g"."""
+    out = {}
+    for line in table.read_text(encoding="utf-8").splitlines():
+        cells = [c.strip() for c in line.strip("|").split("|")]
+        if len(cells) > idx and cells[0].startswith("g"):
+            if not want_scores or cells[idx].count("/") == 2:
+                out[cells[0]] = cells[idx]
+    return out
+
+
+def judge_summary(model: str, judged: dict[str, Judgement], usage: TokenUsage) -> list[str]:
+    if not judged:
+        return []
+    means = {c: statistics.mean(getattr(j, c) for j in judged.values()) for c in CRITERIA}
+    line = ", ".join(f"{c} {m:.2f}" for c, m in means.items())
+    return [
+        f"Rubric judge ({model}, reported, not gating), mean of 1-3 over {len(judged)} "
+        f"responses: {line}. Judge cost USD {cost_usd(model, usage):.4f}.",
+        "",
+    ]
 
 
 def check(expect: dict, status: int, body: dict, corpus: dict[str, Recipe]) -> list[str]:
@@ -111,17 +198,43 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--model", default="claude-sonnet-5", help="sets MODEL for this run")
     ap.add_argument("--label", default=None, help="run label; defaults to retriever-model")
     ap.add_argument("--runs", type=Path, default=ROOT / "evals" / "runs")
+    ap.add_argument(
+        "--judge",
+        default=None,
+        help="rubric judge model, or 'none'; default claude-opus-5 when testing Sonnet, "
+        "else claude-sonnet-5 (never the model under test)",
+    )
+    ap.add_argument(
+        "--calibrate",
+        type=Path,
+        default=None,
+        help="an answers file with the human column filled in: print judge agreement, exit",
+    )
     args = ap.parse_args(argv)
+    if args.calibrate:
+        report = agreement(
+            table_column(args.calibrate, 2, True), table_column(args.calibrate, 3, True)
+        )
+        for c, r in report.items():
+            print(
+                f"{c:9} n={r['n']:2} exact={r['exact']:.0%} mean_abs_diff={r['mean_abs_diff']:.2f}"
+            )
+        return 0
     os.environ["RETRIEVER"], os.environ["MODEL"] = args.retriever, args.model
     args.label = args.label or f"{args.retriever}-{args.model}"
+    if args.judge is None:
+        args.judge = "claude-opus-5" if args.model == "claude-sonnet-5" else "claude-sonnet-5"
+    judge_client = anthropic.Anthropic() if args.judge != "none" else None
 
     golden = yaml.safe_load((ROOT / "evals" / "golden_set.yaml").read_text(encoding="utf-8"))
     corpus = {r.id: r for r in load_corpus(ROOT / "data" / "corpus.json")}
     baseline = previous_passes(args.runs)
 
-    rows, regressions = [], []
+    rows, regressions, answers = [], [], []
     lat: dict[str, list[int]] = {"extract": [], "retrieve": [], "generate": [], "total": []}
     costs: list[float] = []
+    judged: dict[str, Judgement] = {}
+    judge_usage = TokenUsage()
     with TestClient(app, raise_server_exceptions=False) as client:
         for g in golden:
             r = client.post("/ask", json={"question": g["q"]})
@@ -139,12 +252,18 @@ def main(argv: list[str] | None = None) -> int:
             if "cost_usd" in usage:
                 costs.append(usage["cost_usd"])
             refusal = (body.get("refusal") or {}).get("reason") or ""
+            score = ""
+            if judge_client and r.status_code == 200:
+                j, ju = judge(judge_client, args.judge, g["q"], body)
+                judged[g["id"]], judge_usage, score = j, judge_usage + ju, j.scores()
+                flat = render_response(body).replace("\n", " ").replace("|", "/")
+                answers.append(f"| {g['id']} | {g['q']} | {score} |  | {flat} | {j.note} |")
             rows.append(
                 f"| {g['id']} | {g['kind']} | {'PASS' if ok else 'FAIL'} | "
                 f"{'; '.join(fails)} | {refusal} | {len(body.get('sources') or [])} | "
                 f"{len(body.get('conflicts') or [])} | {usage.get('tokens_in', '')} | "
                 f"{usage.get('tokens_out', '')} | {usage.get('cost_usd', 0):.4f} | "
-                f"{usage.get('latency_ms', {}).get('total', '')} |"
+                f"{usage.get('latency_ms', {}).get('total', '')} | {score} |"
             )
             print(rows[-1])
 
@@ -166,15 +285,29 @@ def main(argv: list[str] | None = None) -> int:
         "| --- | --- | --- |",
         *[f"| {k} | {pct(v, 0.5)} | {pct(v, 0.95)} |" for k, v in lat.items()],
         "",
+        *judge_summary(args.judge, judged, judge_usage),
         "| id | kind | result | failures | refusal | sources | conflicts | tokens_in | "
-        "tokens_out | cost_usd | total_ms |",
-        "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+        "tokens_out | cost_usd | total_ms | judge c/c/l |",
+        "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
         *rows,
         "",
     ]
     args.runs.mkdir(parents=True, exist_ok=True)
     out = args.runs / f"{stamp}-{args.label}.md"
     out.write_text("\n".join(lines), encoding="utf-8")
+    if answers:
+        answers_file = args.runs / f"{stamp}-{args.label}.answers.md"
+        header = [
+            f"# Answers {stamp} — {args.label}, judged by {args.judge}",
+            "",
+            "Fill the `human` column with your own clarity/care/language scores (e.g. 3/2/3),",
+            "then run `python evals/run_evals.py --calibrate <this file>`.",
+            "",
+            "| id | question | judge | human | response | judge note |",
+            "| --- | --- | --- | --- | --- | --- |",
+        ]
+        answers_file.write_text("\n".join(header + answers + [""]), encoding="utf-8")
+        print(f"answers for human scoring -> {answers_file}")
     print(f"\n{passed}/{len(rows)} passed, regressions: {regressions or 'none'} -> {out}")
     return 1 if regressions else 0
 

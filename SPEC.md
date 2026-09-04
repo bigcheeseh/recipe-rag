@@ -167,7 +167,11 @@ criterion.
 - AC-13. `evals/run_evals.py` runs the full golden set, checks every `expect`
   field deterministically, writes a markdown table to `evals/runs/`, and
   exits non-zero if any question fails that passed in the previous committed
-  run.
+  run. A rubric judge (`prompts/judge.md`, a different model from the one
+  under test) scores clarity, care and language 1-3 per response; the score
+  is reported in the table and never gates. Its agreement with human scores
+  is measured by `--calibrate` and recorded in DEVLOG before the score is
+  used for a decision.
 - AC-14. The baseline pass rate on the golden set is recorded in `DEVLOG.md`
   and in the committed run table. Target: TBD until the first run.
 

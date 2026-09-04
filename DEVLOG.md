@@ -185,3 +185,15 @@ Results on 23 questions: BM25+Sonnet 22/23, every other configuration
 under a two-dish query (details in ADR-002). This is the first time the
 golden set has separated the options, which is what it is for. The fix is
 a decision (k=8 vs exact-title boost), left open.
+
+## 2026-09-04 — rubric judge added (user decision, lifts the "no LLM-as-judge" rule)
+
+The deterministic checks prove facts, citations and refusals but cannot
+grade wording, which is the one thing that still separates Sonnet from
+Haiku. The user chose to add a model-graded score with three conditions:
+it is reported, never gating; the judge is never the model under test
+(Opus 5 grades Sonnet, Sonnet grades Haiku); and it is calibrated against
+human scores before it is used for a decision. The runner writes an
+`.answers.md` file with a blank `human` column; `--calibrate` prints
+per-criterion exact agreement and mean absolute difference. Judge cost is
+reported separately and is not part of `Usage.cost_usd`.

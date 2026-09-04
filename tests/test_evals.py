@@ -82,3 +82,36 @@ def test_conflicts_min():
         "cites_min 3: got 2",
         "conflicts_min 2: got 1",
     ]
+
+
+def test_judge_agreement_is_per_criterion():
+    from evals.run_evals import agreement
+
+    judge = {"g01": "3/3/3", "g02": "2/3/3", "g03": "1/1/3"}
+    human = {"g01": "3/3/3", "g02": "3/3/3", "g99": "1/1/1"}  # g03 unscored, g99 unjudged
+    rep = agreement(judge, human)
+    assert rep["clarity"] == {"n": 2, "exact": 0.5, "mean_abs_diff": 0.5}
+    assert rep["care"] == {"n": 2, "exact": 1.0, "mean_abs_diff": 0.0}
+
+
+def test_render_response_shows_refusal_and_conflicts():
+    from evals.run_evals import render_response
+
+    r = body(refusal={"reason": "safety_deferral", "message": "m"}, ids=["carbonara"])
+    assert render_response(r) == "REFUSAL (safety_deferral): m"
+    a = body("x", ids=["carbonara"], conflicts=["eggs differ"])
+    assert render_response(a) == "x\nConflicts: eggs differ"
+
+
+def test_human_scores_are_read_from_the_answers_table(tmp_path):
+    from evals.run_evals import table_column
+
+    f = tmp_path / "a.md"
+    f.write_text(
+        "| id | question | judge | human | response | note |\n"
+        "| --- | --- | --- | --- | --- | --- |\n"
+        "| g01 | q | 3/3/3 | 2/3/3 | r | n |\n| g02 | q | 3/2/3 |  | r | n |\n",
+        encoding="utf-8",
+    )
+    assert table_column(f, 2, True) == {"g01": "3/3/3", "g02": "3/2/3"}
+    assert table_column(f, 3, True) == {"g01": "2/3/3"}

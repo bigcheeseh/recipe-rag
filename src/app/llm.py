@@ -12,7 +12,11 @@ from app.models import Draft, Query, Recipe
 
 PROMPTS = Path(__file__).resolve().parents[2] / "prompts"
 # USD per 1M tokens (input, output). SPEC section 7; Anthropic list prices.
-PRICES = {"claude-sonnet-5": (2.00, 10.00), "claude-haiku-4-5": (1.00, 5.00)}
+PRICES = {
+    "claude-sonnet-5": (2.00, 10.00),
+    "claude-haiku-4-5": (1.00, 5.00),
+    "claude-opus-5": (5.00, 25.00),
+}
 CACHE_WRITE, CACHE_READ = 1.25, 0.10  # multipliers on the input price
 
 T = TypeVar("T", bound=BaseModel)
