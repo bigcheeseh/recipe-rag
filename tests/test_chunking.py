@@ -1,5 +1,5 @@
 from app.models import Recipe
-from app.retrieval import Chunk, chunk_recipes, to_search_text
+from app.retrieval import SECTIONS, Chunk, chunk_recipes, to_search_text
 
 RISOTTO = Recipe(
     id="risotto-ai-funghi",
@@ -12,7 +12,7 @@ RISOTTO = Recipe(
 
 
 def test_search_text_starts_with_dish_name_in_every_section():
-    for section in ("ingredients", "steps"):
+    for section in SECTIONS:
         assert to_search_text(RISOTTO, section).startswith("Risotto ai Funghi")
 
 

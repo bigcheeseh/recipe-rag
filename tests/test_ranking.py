@@ -7,15 +7,31 @@ def recipe(id_: str, title: str, ingredients: list[str], steps: list[str]) -> Re
 
 
 RECIPES = [
-    recipe("carbonara", "Spaghetti alla Carbonara", ["400 g spaghetti", "5 egg yolks"],
-           ["Boil the pasta.", "Whisk the yolks with cheese."]),
-    recipe("risotto", "Risotto ai Funghi", ["300 g arborio rice", "mushrooms"],
-           ["Toast the rice.", "Add stock a ladle at a time and stir."]),
-    recipe("banana-bread", "Banana Bread", ["3 bananas", "2 eggs", "flour"],
-           ["Mash the bananas.", "Bake at 350°F for one hour."]),
+    recipe(
+        "carbonara",
+        "Spaghetti alla Carbonara",
+        ["400 g spaghetti", "5 egg yolks"],
+        ["Boil the pasta.", "Whisk the yolks with cheese."],
+    ),
+    recipe(
+        "risotto",
+        "Risotto ai Funghi",
+        ["300 g arborio rice", "mushrooms"],
+        ["Toast the rice.", "Add stock a ladle at a time and stir."],
+    ),
+    recipe(
+        "banana-bread",
+        "Banana Bread",
+        ["3 bananas", "2 eggs", "flour"],
+        ["Mash the bananas.", "Bake at 350°F for one hour."],
+    ),
     recipe("guacamole", "Guacamole", ["2 avocados", "1 lime"], ["Mash everything together."]),
-    recipe("pad-thai", "Pad Thai", ["rice noodles", "peanuts", "2 eggs"],
-           ["Soak the noodles.", "Stir-fry and top with peanuts."]),
+    recipe(
+        "pad-thai",
+        "Pad Thai",
+        ["rice noodles", "peanuts", "2 eggs"],
+        ["Soak the noodles.", "Stir-fry and top with peanuts."],
+    ),
 ]
 INDEX = Index(RECIPES)
 

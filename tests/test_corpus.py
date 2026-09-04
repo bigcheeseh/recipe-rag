@@ -23,8 +23,16 @@ def test_every_recipe_has_metadata(corpus):
 
 @pytest.mark.parametrize(
     "recipe_id",
-    ["spaghetti-alla-carbonara", "carbonara-pasta", "risotto-ai-funghi", "pad-thai",
-     "guacamole-i", "banana-bread-i", "chocolate-chip-cookies-i", "chocolate-chip-cookies-iii"],
+    [
+        "spaghetti-alla-carbonara",
+        "carbonara-pasta",
+        "risotto-ai-funghi",
+        "pad-thai",
+        "guacamole-i",
+        "banana-bread-i",
+        "chocolate-chip-cookies-i",
+        "chocolate-chip-cookies-iii",
+    ],
 )
 def test_golden_set_ids_exist(corpus, recipe_id):
     assert recipe_id in corpus
