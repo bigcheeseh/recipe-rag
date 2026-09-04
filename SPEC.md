@@ -134,10 +134,11 @@ criterion.
   `refusal.reason == "out_of_domain"` and `sources == []`.
 - AC-6. An in-domain question whose answer is not in the corpus (golden `g12`)
   returns `refusal.reason == "insufficient_context"`, never a fabricated answer.
-- AC-7. An allergy-safety question (golden `g05`, `g06`) returns
+- AC-7. An allergy-safety question (golden `g05`) returns
   `refusal.reason == "safety_deferral"`, the message names the allergen, the
   message mentions trace amounts or cross-contamination, and `sources` cites
-  the recipe asked about.
+  the recipe asked about. A request *for* dishes without an allergen (`g06`)
+  is a filtered recommendation, not a deferral: it is covered by AC-11.
 
 ### Grounding
 
