@@ -133,3 +133,28 @@ Decision: hybrid stays behind `RETRIEVER=hybrid`, off by default, code and
 embeddings kept. It becomes worth revisiting when the corpus grows enough
 that dish names stop being unique keys, or when questions arrive without
 the extraction step. Feeds ADR-002.
+
+## 2026-09-04 — retrieval vs full-context comparison (Block 6 close)
+
+Five configurations, all 13/13 on the golden set. Table and thresholds in
+ADR-002. Headline numbers (mean USD per question / total p50 ms):
+BM25+Sonnet 0.0111 / 5192; hybrid+Sonnet 0.0112 / 25296 (Voyage free-tier
+rate limit); full+Sonnet 0.0122 / 5870; full+Haiku 0.0063 / 4428;
+BM25+Haiku 0.0040 / 3675.
+
+Full context with prompt caching works as expected: the first question
+wrote 26,186 tokens to the cache, every later one read them back. Cost
+accounting now prices cache writes at 1.25x and reads at 0.1x of input,
+and `Usage.tokens_in` reports total input including cached tokens, so the
+number in the response matches what the provider billed for.
+
+The prompt structure changed for this: rules and recipes moved to the
+system prompt (recipes in their own block so it can carry `cache_control`),
+the question is the user message. Same prompt text, so all five runs are
+comparable. The BM25 baseline was not re-run after this change; the first
+BM25 row in ADR-002 is the earlier prompt layout. The Haiku BM25 row uses
+the new layout and also passed 13/13, so the layout did not move accuracy.
+
+Decision: BM25 + Sonnet 5 stays the default. Hybrid and full context stay
+behind flags. Haiku is a documented `MODEL` switch, not the default, until
+the golden set is large enough to rank models on wording quality.
