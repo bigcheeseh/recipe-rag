@@ -11,10 +11,11 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, Request, Response
 from fastapi.responses import JSONResponse
 
+from app.embeddings import HybridRetriever, load_vectors, voyage_embedder
 from app.llm import LLM, UnparseableOutput
 from app.models import Answer, AskRequest, Recipe
 from app.pipeline import Pipeline
-from app.retrieval import BM25Retriever
+from app.retrieval import BM25Retriever, Retriever
 
 log = logging.getLogger("app.request")
 
@@ -23,12 +24,26 @@ def load_corpus(path: Path) -> list[Recipe]:
     return [Recipe.model_validate(r) for r in json.loads(path.read_text(encoding="utf-8"))]
 
 
+def build_retriever(recipes: list[Recipe]) -> Retriever:
+    """RETRIEVER=bm25 (default) | hybrid. Hybrid needs data/embeddings.npz and VOYAGE_API_KEY."""
+    mode = os.environ.get("RETRIEVER", "bm25")
+    if mode == "bm25":
+        return BM25Retriever(recipes)
+    if mode == "hybrid":
+        vectors, keys = load_vectors(Path(os.environ.get("EMBEDDINGS_PATH", "data/embeddings.npz")))
+        embed = voyage_embedder(
+            os.environ["VOYAGE_API_KEY"], os.environ.get("VOYAGE_MODEL", "voyage-3.5-lite")
+        )
+        return HybridRetriever(recipes, vectors, keys, embed)
+    raise ValueError(f"unknown RETRIEVER={mode!r}")
+
+
 def build_pipeline() -> Pipeline:
     """Production wiring from the environment. Tests inject a Pipeline instead."""
     load_dotenv()
     recipes = load_corpus(Path(os.environ.get("CORPUS_PATH", "data/corpus.json")))
     llm = LLM(anthropic.Anthropic(), os.environ.get("MODEL", "claude-sonnet-5"))
-    return Pipeline(llm, BM25Retriever(recipes), recipes)
+    return Pipeline(llm, build_retriever(recipes), recipes)
 
 
 def create_app(pipeline: Pipeline | None = None) -> FastAPI:

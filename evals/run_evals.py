@@ -9,6 +9,7 @@ most recent committed run fails now.
 
 import argparse
 import json
+import os
 import statistics
 import subprocess
 import sys
@@ -101,9 +102,12 @@ def pct(values: list[int], p: float) -> int:
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--label", default="bm25")
+    ap.add_argument("--retriever", default="bm25", help="bm25 | hybrid (sets RETRIEVER)")
+    ap.add_argument("--label", default=None, help="run label; defaults to the retriever")
     ap.add_argument("--runs", type=Path, default=ROOT / "evals" / "runs")
     args = ap.parse_args(argv)
+    os.environ["RETRIEVER"] = args.retriever
+    args.label = args.label or args.retriever
 
     golden = yaml.safe_load((ROOT / "evals" / "golden_set.yaml").read_text(encoding="utf-8"))
     corpus = {r.id: r for r in load_corpus(ROOT / "data" / "corpus.json")}
