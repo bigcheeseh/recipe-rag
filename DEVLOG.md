@@ -258,3 +258,16 @@ p50 5011 ms, p95 12067 ms. SPEC section 7 target updated to USD 14.23 per
 1,000. The pre-k=8 Sonnet answers file was dropped so calibration uses
 responses from the current retrieval; Haiku is re-run under k=8 for the
 same reason.
+
+## 2026-09-04 — BM25 + Haiku with top-k 8: 23/23
+
+`evals/runs/20260904T191023Z-bm25-claude-haiku-4-5.md`: 23/23, USD 0.0050
+per question (Sonnet on the same retrieval: 0.0142). Judge means (Sonnet 5
+as judge) clarity 2.91, care 2.86, language 3.00, against Sonnet's
+2.95 / 2.95 / 3.00 graded by Opus 5. The three Haiku responses below 3/3/3
+are the same pattern as before: lecturing in the safety deferral, guessed
+timings on the browsing question, and a vague multi-option answer to the
+Russian constraint question.
+
+Calibration files now: exactly one per model, both from the current
+prompts and top-k 8. Judge-vs-human agreement is not measured yet.
