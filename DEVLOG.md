@@ -197,3 +197,30 @@ human scores before it is used for a decision. The runner writes an
 `.answers.md` file with a blank `human` column; `--calibrate` prints
 per-criterion exact agreement and mean absolute difference. Judge cost is
 reported separately and is not part of `Usage.cost_usd`.
+
+## 2026-09-04 — first judged runs (BM25, Sonnet vs Haiku)
+
+Deterministic result: both 23/23 this time (Sonnet's g14 answered where the
+previous run refused; generation is not deterministic on that borderline
+question). Rubric means, clarity / care / language:
+Sonnet (judged by Opus 5) 3.00 / 2.95 / 2.91; Haiku (judged by Sonnet 5)
+2.91 / 2.82 / 3.00. Judge cost USD 0.13 and 0.05 per run.
+
+What the judge found that the string checks could not:
+- Sonnet answered g14 (an English question) in Spanish. Rule 7 of
+  prompts/generate.md ("write in the language of the question") was added
+  for the Russian questions and is evidently too loose. Tightened to name
+  English as the default and forbid switching. The deterministic `script`
+  check only covers Cyrillic, so this slip was invisible to it.
+- Haiku's safety deferral quoted "¾ cup (340 g)" of peanuts; the recipe
+  says 175 ml. A fabricated conversion inside an otherwise correct
+  deferral. The judge scored care 2 for lecturing and did not flag the
+  number, because the rubric excludes facts by design. Worth knowing when
+  reading Haiku answers: the substring checks pass, the details drift.
+- Haiku's g07 answer presented guessed timings for recipes with no stated
+  time as if they were facts (care 1). Sonnet on the same question listed
+  the two recipes with stated times and said the others are unknown.
+
+Calibration is still pending: the `.answers.md` files have an empty
+`human` column. Until they are scored, the means above are the judge's
+opinion, not a measurement.
