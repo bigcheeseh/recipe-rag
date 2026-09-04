@@ -224,3 +224,18 @@ What the judge found that the string checks could not:
 Calibration is still pending: the `.answers.md` files have an empty
 `human` column. Until they are scored, the means above are the judge's
 opinion, not a measurement.
+
+## 2026-09-04 — language fix confirmed; g14 flaps on BM25 + Sonnet
+
+Re-run after tightening rule 7 (`evals/runs/20260904T184934Z-bm25-claude-sonnet-5.md`):
+language 3.00 on all 22 judged responses, care 2.91, clarity 3.00. The
+Spanish slip did not recur.
+
+g14 refused again (22/23) and the runner now exits 1, because the previous
+committed run had passed it. Three runs on the same retrieval give
+answer, refusal, answer: on the walnut variant, which states no total
+time, Sonnet is on the fence between quoting "bake at least 1 hour" and
+declining. The gate is doing its job by flapping, but the flap is a
+retrieval problem (wrong banana bread variant in the top-5), not a
+generation one. Decision pending: k=8 or an exact-title boost, see
+ADR-002 item 5.
