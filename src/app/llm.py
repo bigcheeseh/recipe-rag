@@ -6,7 +6,7 @@ from typing import TypeVar
 import anthropic
 from pydantic import BaseModel
 
-from app.models import Query
+from app.models import Draft, Query, Recipe
 
 PROMPTS = Path(__file__).resolve().parents[2] / "prompts"
 # USD per 1M tokens (input, output). SPEC section 7.
@@ -35,6 +35,16 @@ def cost_usd(model: str, usage: TokenUsage) -> float:
     return usage.tokens_in * p_in / 1e6 + usage.tokens_out * p_out / 1e6
 
 
+def render_context(r: Recipe) -> str:
+    box = "".join(f"{k}: {v}\n" for k, v in r.infobox.items())
+    return (
+        f"id: {r.id}\nTitle: {r.title}\n{box}Ingredients:\n"
+        + "\n".join(f"- {i}" for i in r.ingredients)
+        + "\nSteps:\n"
+        + "\n".join(f"{n}. {s}" for n, s in enumerate(r.steps, 1))
+    )
+
+
 class LLM:
     def __init__(self, client: anthropic.Anthropic, model: str):
         self.client, self.model = client, model
@@ -58,3 +68,9 @@ class LLM:
     def extract_query(self, question: str) -> tuple[Query, TokenUsage]:
         prompt = (PROMPTS / "extract_query.md").read_text(encoding="utf-8")
         return self._parse(prompt.replace("{question}", question), Query, max_tokens=512)
+
+    def generate(self, question: str, recipes: list[Recipe]) -> tuple[Draft, TokenUsage]:
+        prompt = (PROMPTS / "generate.md").read_text(encoding="utf-8")
+        prompt = prompt.replace("{question}", question)
+        prompt = prompt.replace("{recipes}", "\n\n".join(render_context(r) for r in recipes))
+        return self._parse(prompt, Draft, max_tokens=1024)

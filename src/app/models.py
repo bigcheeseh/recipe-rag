@@ -79,3 +79,12 @@ class Recipe(BaseModel):
     steps: list[str]
     infobox: dict[str, str] = {}
     meta: Meta | None = None
+
+
+class Draft(BaseModel):
+    """What the generator returns. The pipeline turns source_ids into Source objects."""
+
+    answer: str | None
+    refusal: Refusal | None
+    source_ids: list[str] = []
+    conflicts: list[str] = []
