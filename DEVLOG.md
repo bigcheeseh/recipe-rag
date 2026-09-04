@@ -109,3 +109,27 @@ the deployed numbers SPEC section 6 asks for; those wait for Block 7.
 
 Every check in the runner is a string or set comparison over the response
 body plus recipe metadata. There is no model-graded scoring anywhere.
+
+## 2026-09-04 — hybrid (BM25 + Voyage vectors, RRF) vs BM25
+
+Committed run `evals/runs/20260904T171901Z-hybrid.md`: 13/13, same as
+BM25. Retrieval-level comparison on the extracted search terms of all
+in-domain golden questions plus three "described, not named" probes
+("pasta with bacon and egg", "creamy italian rice with mushrooms",
+"mexican avocado dip"): the top-ranked recipe was identical for every one
+of the 13 probes; hybrid only reordered positions 2-5 and padded short
+lists with weak neighbours (e.g. pico-de-gallo behind guacamole). The
+reason is upstream: query extraction already rewrites a described dish
+into its name, so the vector side has no vocabulary gap left to close on
+this corpus.
+
+Costs of hybrid that BM25 does not have: a second provider and key, one
+network call per request (about 300 ms measured when not rate limited),
+and on Voyage's free tier a 3-requests-per-minute cap that turned the
+retrieve stage into 20 s p50 in the eval run (the client backs off 20 s on
+429). Per-question model cost is unchanged (USD 0.0112 vs 0.0111).
+
+Decision: hybrid stays behind `RETRIEVER=hybrid`, off by default, code and
+embeddings kept. It becomes worth revisiting when the corpus grows enough
+that dish names stop being unique keys, or when questions arrive without
+the extraction step. Feeds ADR-002.
