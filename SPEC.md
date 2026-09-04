@@ -213,6 +213,12 @@ concurrent request. All values `TBD` until measured in Block 7.
 Expectation to be confirmed by measurement: `retrieve` is pure Python over
 ~50 recipes and should be well under 50 ms; the two model calls dominate.
 
+Pre-deployment reference, measured on the developer machine by the BM25
+baseline eval run (`evals/runs/20260904T170932Z-bm25.md`, 13 questions, one
+at a time, not the deployed service): extract p50 1932 / p95 2484 ms,
+retrieve 0 / 0 ms, generate 2944 / 4707 ms, total 5192 / 6299 ms. The
+deployed columns above stay TBD until Block 7.
+
 ---
 
 ## 7. Cost model
@@ -235,8 +241,9 @@ computed from those counts and the prices above. It is never estimated.
 The metadata-enrichment call at ingestion is a one-time cost and is recorded
 separately in `ingest_manifest.json`, not in per-question `Usage`.
 
-**Target for 1,000 questions:** TBD. To be filled in from the mean
-`cost_usd` of the baseline eval run multiplied by 1,000.
+**Target for 1,000 questions:** USD 11.07, from the mean `cost_usd` of the
+BM25 baseline eval run (`evals/runs/20260904T170932Z-bm25.md`, 13 questions,
+mean USD 0.0111) multiplied by 1,000.
 
 Prompt caching of the system prompt and recipe context is an optimisation
 considered only after the baseline is measured.

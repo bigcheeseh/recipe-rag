@@ -88,3 +88,24 @@ the top 3. Two things worth knowing before Block 5:
   no nuts") should be a safety deferral, but the golden set treats it as a
   filtered recommendation. The golden set is right: it asks for dishes, not
   for a medical judgement. AC-7 should be narrowed to g05.
+
+## 2026-09-04 — BM25 baseline eval
+
+First run: 12/13. g07 ("What can I cook in under 30 minutes?") failed:
+the extractor produced `search_terms="quick recipes", max_minutes=30`, the
+time filter left 23 recipes, and BM25 matched none of them because no
+recipe text contains "quick". Retrieval returned nothing and the pipeline
+refused with insufficient_context. Fix (test first): when constraints are
+active and ranking finds nothing, the filtered set itself is returned, since
+for a browsing question the filter is the answer set. Without constraints
+the empty result stands, because there is no defined answer set to fall
+back to.
+
+Second run, committed as `evals/runs/20260904T170932Z-bm25.md`: 13/13.
+Mean cost USD 0.0111 per question (USD 11.07 per 1,000). Latency on the dev
+machine, p50 / p95: extract 1932 / 2484 ms, generate 2944 / 4707 ms, total
+5192 / 6299 ms. Retrieval is 0 ms at millisecond resolution. These are not
+the deployed numbers SPEC section 6 asks for; those wait for Block 7.
+
+Every check in the runner is a string or set comparison over the response
+body plus recipe metadata. There is no model-graded scoring anywhere.
