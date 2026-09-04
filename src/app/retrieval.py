@@ -6,7 +6,7 @@ from typing import Literal
 
 from rank_bm25 import BM25Okapi
 
-from app.models import Recipe
+from app.models import Query, Recipe
 
 Section = Literal["ingredients", "steps"]
 
@@ -66,3 +66,24 @@ def bm25_rank(index: Index, query: str, candidates: list[Recipe], k: int = 5) ->
             best[chunk.recipe_id] = max(best.get(chunk.recipe_id, 0.0), score)
     ranked = sorted(best, key=lambda rid: best[rid], reverse=True)
     return [allowed[rid] for rid in ranked[:k]]
+
+
+def apply_filters(recipes: list[Recipe], query: Query) -> list[Recipe]:
+    """Hard constraints, applied before ranking so an excluded recipe can never be cited.
+    A recipe without metadata is kept only when nothing is being asked of it."""
+    constrained = bool(query.exclude_allergens or query.diet or query.max_minutes is not None)
+    out = []
+    for r in recipes:
+        m = r.meta
+        if m is None:
+            if not constrained:
+                out.append(r)
+            continue
+        if set(query.exclude_allergens) & set(m.allergens):
+            continue
+        if not set(query.diet) <= set(m.diet_tags):
+            continue
+        if query.max_minutes is not None and m.total_minutes > query.max_minutes:
+            continue
+        out.append(r)
+    return out
