@@ -19,6 +19,7 @@ from pathlib import Path
 
 import anthropic
 import yaml
+from dotenv import load_dotenv
 from fastapi.testclient import TestClient
 from pydantic import BaseModel, Field
 
@@ -224,6 +225,7 @@ def main(argv: list[str] | None = None) -> int:
     args.label = args.label or f"{args.retriever}-{args.model}"
     if args.judge is None:
         args.judge = "claude-opus-5" if args.model == "claude-sonnet-5" else "claude-sonnet-5"
+    load_dotenv()  # the app loads it at startup; the judge client is built before that
     judge_client = anthropic.Anthropic() if args.judge != "none" else None
 
     golden = yaml.safe_load((ROOT / "evals" / "golden_set.yaml").read_text(encoding="utf-8"))
