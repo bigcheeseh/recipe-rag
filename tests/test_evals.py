@@ -60,6 +60,21 @@ def test_http_status_expectation_short_circuits():
     ]
 
 
+def test_answered_requires_a_non_null_answer():
+    r = body(refusal={"reason": "safety_deferral", "message": "m"}, ids=["carbonara"])
+    assert check({"answered": True}, 200, r, BY_ID) == ["answered: got refusal safety_deferral"]
+    assert check({"answered": True}, 200, body("x", ids=["carbonara"]), BY_ID) == []
+
+
+def test_script_cyrillic_checks_answer_or_refusal_message():
+    assert check({"script": "cyrillic"}, 200, body("5 желтков", ids=["carbonara"]), BY_ID) == []
+    r = body(refusal={"reason": "out_of_domain", "message": "Нет"})
+    assert check({"script": "cyrillic"}, 200, r, BY_ID) == []
+    assert check({"script": "cyrillic"}, 200, body("5 yolks", ids=["carbonara"]), BY_ID) == [
+        "script cyrillic"
+    ]
+
+
 def test_conflicts_min():
     a = body("x", ids=["carbonara", "risotto"], conflicts=["eggs differ"])
     assert check({"cites_min": 2, "conflicts_min": 1}, 200, a, BY_ID) == []
