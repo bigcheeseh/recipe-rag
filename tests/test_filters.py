@@ -53,3 +53,11 @@ def test_unknown_meta_is_dropped_whenever_a_constraint_is_active():
     assert "unknown" not in ids(q(exclude_allergens=["soy"]))
     assert "unknown" not in ids(q(diet=["pescatarian"]))
     assert "unknown" not in ids(q(max_minutes=1000))
+
+
+def test_bm25_retriever_filters_then_ranks():
+    from app.retrieval import BM25Retriever, Retriever
+
+    r: Retriever = BM25Retriever(ALL)
+    got = r.retrieve(Query(in_domain=True, search_terms="dal omelet", exclude_allergens=["eggs"]))
+    assert [x.id for x in got] == ["dal"]
