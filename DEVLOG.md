@@ -331,3 +331,25 @@ Calibration files, one per model, current prompts and schema:
 - evals/runs/20260904T191546Z-bm25-claude-haiku-4-5.answers.md
   (Haiku run predates the refusal-schema change; the change only removed a
   refusal option Haiku never used, so its responses are unaffected.)
+
+## 2026-09-04 — 3x2 matrix on 29 questions: full context separates from retrieval
+
+Six corpus-wide questions added (quickest recipe, longest stated time,
+cookie count, vegan under 15 min, soaked overnight, quickest in Russian).
+Full matrix, all judged by Opus 5, table in ADR-002. Headline:
+Sonnet + full context 29/29; every retrieval configuration 25-26/29,
+failing exactly the questions that need the whole corpus; Haiku fails
+them even with the whole corpus (26/29 on full context), and its
+extractor classes "longest stated total time" as out_of_domain.
+
+Cost at 48 recipes is a wash: Sonnet full 0.0149 vs BM25 0.0148 per
+question. Latency is not: full context generate p95 14.9 s vs 8.4 s.
+
+One retrieval bug surfaced (g27): a constrained browsing question whose
+terms match only one of three filtered candidates returns one recipe,
+because the fallback to the filtered set fires only on zero hits. Fix is
+to pad up to k with the remaining candidates. Not applied yet.
+
+Answers files: removed. Calibration was never done and the golden set has
+changed twice since they were written; regenerate when scoring is
+actually going to happen.

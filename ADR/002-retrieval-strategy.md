@@ -9,28 +9,44 @@ Three ways to get recipes in front of the generator were built behind one
 original, 8 harder English, 2 Russian) with the same prompts
 (`evals/runs/`, 2026-09-04). Every check is deterministic.
 
-All rows: top-k 8 with exact-title promotion, generator refusals limited
-to insufficient_context / safety_deferral, rubric judge Opus 5 (clarity /
-care / language, mean of 1-3, reported only).
+All rows: 29-question golden set (13 original, 8 harder, 2 Russian, 6
+corpus-wide), top-k 8 with exact-title promotion, generator refusals
+limited to insufficient_context / safety_deferral, rubric judge Opus 5
+(clarity / care / language, mean of 1-3, reported only). Runs of
+2026-09-04, `evals/runs/2026090420*`.
 
-| Configuration | Pass | Judge c / c / l | Mean USD / question | USD / 1,000 | total p50 ms | total p95 ms | generate p50 ms |
+| Configuration | Pass | Judge c / c / l | Mean USD / question | USD / 1,000 | total p50 ms | total p95 ms | generate p95 ms |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| BM25, Sonnet 5 (default) | 23/23 | 2.95 / 2.95 / 3.00 | 0.0143 | 14.34 | 5267 | 11619 | 3327 |
-| Hybrid BM25 + Voyage vectors, Sonnet 5 | 23/23 | 2.95 / 3.00 / 3.00 | 0.0153 | 15.35 | 5546 | 69295 | 2824 |
-| Full context (48 recipes, cached), Sonnet 5 | 23/23 | 3.00 / 2.95 / 3.00 | 0.0148 | 14.83 | 5197 | 13235 | 3090 |
-| BM25, Haiku 4.5 | 23/23 | 2.95 / 2.91 / 3.00 | 0.0050 | 4.96 | 3409 | 7200 | 2052 |
+| BM25, Sonnet 5 (default) | 25/29 | 2.96 / 2.96 / 3.00 | 0.0148 | 14.75 | 5254 | 10735 | 8441 |
+| Hybrid BM25 + Voyage, Sonnet 5 | 26/29 | 2.96 / 3.00 / 3.00 | 0.0169 | 16.86 | 8652 | 67378 | 8317 |
+| Full context (cached), Sonnet 5 | **29/29** | 3.00 / 2.96 / 3.00 | 0.0149 | 14.94 | 6284 | 16913 | 14855 |
+| BM25, Haiku 4.5 | 25/29 | 2.82 / 2.71 / 2.93 | 0.0047 | 4.66 | 4092 | 7957 | 6377 |
+| Hybrid, Haiku 4.5 | 25/29 | 2.89 / 2.82 / 3.00 | 0.0052 | 5.23 | 5009 | 66917 | 5412 |
+| Full context (cached), Haiku 4.5 | 26/29 | 2.86 / 2.71 / 3.00 | 0.0046 | 4.62 | 4253 | 6942 | 5953 |
 
 Latency is from the developer machine, one request at a time; deployed
-numbers come in Block 7. The hybrid p95 is Voyage's free-tier rate limit
-(20 s back-offs on 429), not the vector math (about 300 ms when not
-limited). Earlier versions of this table (13 questions; then 23 questions
-at top-k 5, where BM25 + Sonnet was 22/23 on the two-dish question g14)
-are in git history. Full context + Haiku was measured only at top-k 5
-(23/23, USD 0.0049) and not re-run.
+numbers come in Block 7. Hybrid p95 totals are Voyage's free-tier rate
+limit, not the vector math. Earlier versions of this table (13 and 23
+questions) are in git history.
 
-Accuracy no longer separates the rows. The judge differences are one
-response each, within noise for 22 graded responses. What separates them
-is cost, latency, dependencies, and scaling.
+What the failures are:
+
+- **Corpus-wide questions (g24 quickest recipe, g25 longest stated time,
+  g29 quickest in Russian) fail on every retrieval configuration**, on
+  both models. A top-8 retriever cannot see recipes it did not retrieve;
+  BM25 returned pancakes and cookies for "quickest recipe". Only
+  Sonnet + full context answers all three. Haiku + full context misses
+  two of them: it picked bruschetta (10 min) over grilled cheese (5 min)
+  with every recipe in front of it, and its extractor classed "longest
+  stated total time" as out_of_domain on all three Haiku rows.
+- **g27 (every vegan recipe at 15 minutes or under) fails on BM25 and
+  hybrid** with one citation instead of three. The filter leaves three
+  candidates, but the search terms match only one of them and the
+  browsing fallback fires only when ranking returns nothing. Fix
+  identified, not yet applied: when constraints are active, pad the
+  ranked list with the remaining filtered candidates up to k.
+- Haiku's judge scores dropped to 2.71 on care on two rows: the
+  corpus-wide questions drew guesses and empty refusals (1/1 scores).
 
 ## Decision
 
