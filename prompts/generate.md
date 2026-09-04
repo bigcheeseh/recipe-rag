@@ -28,8 +28,4 @@ Rules:
 6. Exactly one of answer / refusal is set. conflicts is empty unless rule 3
    applies.
 
-Question:
-{question}
-
-Recipes:
-{recipes}
+The recipes follow in this system prompt; the question is the user message.

@@ -15,7 +15,7 @@ from app.embeddings import HybridRetriever, load_vectors, voyage_embedder
 from app.llm import LLM, UnparseableOutput
 from app.models import Answer, AskRequest, Recipe
 from app.pipeline import Pipeline
-from app.retrieval import BM25Retriever, Retriever
+from app.retrieval import BM25Retriever, FullContextRetriever, Retriever
 
 log = logging.getLogger("app.request")
 
@@ -25,10 +25,13 @@ def load_corpus(path: Path) -> list[Recipe]:
 
 
 def build_retriever(recipes: list[Recipe]) -> Retriever:
-    """RETRIEVER=bm25 (default) | hybrid. Hybrid needs data/embeddings.npz and VOYAGE_API_KEY."""
+    """RETRIEVER=bm25 (default) | hybrid | full.
+    Hybrid needs data/embeddings.npz and VOYAGE_API_KEY. Full sends every recipe."""
     mode = os.environ.get("RETRIEVER", "bm25")
     if mode == "bm25":
         return BM25Retriever(recipes)
+    if mode == "full":
+        return FullContextRetriever(recipes)
     if mode == "hybrid":
         vectors, keys = load_vectors(Path(os.environ.get("EMBEDDINGS_PATH", "data/embeddings.npz")))
         embed = voyage_embedder(
@@ -42,7 +45,8 @@ def build_pipeline() -> Pipeline:
     """Production wiring from the environment. Tests inject a Pipeline instead."""
     load_dotenv()
     recipes = load_corpus(Path(os.environ.get("CORPUS_PATH", "data/corpus.json")))
-    llm = LLM(anthropic.Anthropic(), os.environ.get("MODEL", "claude-sonnet-5"))
+    full = os.environ.get("RETRIEVER", "bm25") == "full"
+    llm = LLM(anthropic.Anthropic(), os.environ.get("MODEL", "claude-sonnet-5"), cache_context=full)
     return Pipeline(llm, build_retriever(recipes), recipes)
 
 

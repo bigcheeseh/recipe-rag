@@ -120,7 +120,7 @@ class Pipeline:
             conflicts=draft.conflicts,
             usage=Usage(
                 model=self.llm.model,
-                tokens_in=usage.tokens_in,
+                tokens_in=usage.total_in,
                 tokens_out=usage.tokens_out,
                 cost_usd=cost_usd(self.llm.model, usage),
                 latency_ms=ms,
@@ -130,8 +130,10 @@ class Pipeline:
             cited=[s.recipe_id for s in sources],
             refusal=None if out.refusal is None else out.refusal.reason,
             conflicts=len(out.conflicts),
-            tokens_in=usage.tokens_in,
+            tokens_in=usage.total_in,
             tokens_out=usage.tokens_out,
+            cache_write=usage.cache_write,
+            cache_read=usage.cache_read,
             cost_usd=out.usage.cost_usd,
             latency_ms=ms,
         )

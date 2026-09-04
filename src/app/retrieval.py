@@ -95,6 +95,16 @@ class Retriever(Protocol):
     def retrieve(self, query: Query) -> list[tuple[Recipe, float]]: ...
 
 
+class FullContextRetriever:
+    """No ranking: every recipe that passes the filters goes to the generator."""
+
+    def __init__(self, recipes: list[Recipe]):
+        self.recipes = recipes
+
+    def retrieve(self, query: Query) -> list[tuple[Recipe, float]]:
+        return [(r, 0.0) for r in apply_filters(self.recipes, query)]
+
+
 class BM25Retriever:
     def __init__(self, recipes: list[Recipe], k: int = 5):
         self.recipes, self.k = recipes, k
