@@ -69,6 +69,10 @@ class Query(BaseModel):
     diet: list[DietTag] = []
     max_minutes: int | None = None
 
+    @property
+    def constrained(self) -> bool:
+        return bool(self.exclude_allergens or self.diet or self.max_minutes is not None)
+
 
 class Recipe(BaseModel):
     id: str

@@ -9,6 +9,7 @@ from rank_bm25 import BM25Okapi
 from app.models import Query, Recipe
 
 Section = Literal["ingredients", "steps"]
+SECTIONS: tuple[Section, ...] = ("ingredients", "steps")
 
 
 @dataclass(frozen=True)
@@ -27,9 +28,7 @@ def to_search_text(recipe: Recipe, section: Section) -> str:
 
 def chunk_recipes(recipes: list[Recipe]) -> list[Chunk]:
     return [
-        Chunk(r.id, section, to_search_text(r, section))
-        for r in recipes
-        for section in ("ingredients", "steps")
+        Chunk(r.id, section, to_search_text(r, section)) for r in recipes for section in SECTIONS
     ]
 
 
@@ -73,12 +72,11 @@ def bm25_rank(
 def apply_filters(recipes: list[Recipe], query: Query) -> list[Recipe]:
     """Hard constraints, applied before ranking so an excluded recipe can never be cited.
     A recipe without metadata is kept only when nothing is being asked of it."""
-    constrained = bool(query.exclude_allergens or query.diet or query.max_minutes is not None)
     out = []
     for r in recipes:
         m = r.meta
         if m is None:
-            if not constrained:
+            if not query.constrained:
                 out.append(r)
             continue
         if set(query.exclude_allergens) & set(m.allergens):
@@ -103,4 +101,10 @@ class BM25Retriever:
         self.index = Index(recipes)
 
     def retrieve(self, query: Query) -> list[tuple[Recipe, float]]:
-        return bm25_rank(self.index, query.search_terms, apply_filters(self.recipes, query), self.k)
+        candidates = apply_filters(self.recipes, query)
+        hits = bm25_rank(self.index, query.search_terms, candidates, self.k)
+        if hits or not query.constrained:
+            return hits
+        # Browsing question ("what can I cook in under 30 minutes?"): the terms name no
+        # dish, so the filtered set itself is the answer set. Score 0 marks the fallback.
+        return [(r, 0.0) for r in candidates[: self.k]]
