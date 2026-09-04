@@ -54,12 +54,16 @@ two-dish questions and exact variant names compete for a fixed top-5.
    answering where Sonnet declined for lack of a stated time, so the gap is
    caution, not capability, and 23 questions are still too few to rank
    models on wording quality. Haiku stays a one-line `MODEL` switch.
-5. **Known gap, not fixed here:** BM25's top-5 for two-dish questions.
-   Candidate fixes, each about ten lines and a re-run: `k=8` (measured
-   offline to include Banana Bread I in 3 of 3 extractions, at roughly
-   +1.5k input tokens per question), or an exact-title boost when the
-   search terms contain a full recipe title. Left for a decision with
-   numbers rather than folded into this ADR.
+5. **Top-k raised to 8 and exact-title promotion added** (user decision,
+   2026-09-04) after g14 flapped on BM25 + Sonnet: two dishes competing
+   for five slots let the wrong banana bread variant through. k=8 was
+   measured offline to include Banana Bread I in 3 of 3 extractions at
+   roughly +1.5k input tokens per question. Title promotion guarantees
+   that a recipe named in full in the search terms is never outranked by
+   a neighbour that merely mentions it more often (Pad Thai vs Khao Pad
+   Thai Fried Rice). Both apply to the hybrid retriever too. The table
+   above predates this change; the row that changed is re-measured in
+   `evals/runs/` and DEVLOG.
 
 ## Where full context stops being viable
 

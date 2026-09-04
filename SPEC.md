@@ -277,8 +277,12 @@ be challenged.
    changed.
 5. **Question length.** Capped at 500 characters. Longer questions are
    rejected with `422` rather than truncated.
-6. **Top-k.** Five sections are ranked; their parent recipes (deduplicated)
-   are passed to the generator. This can yield fewer than five recipes.
+6. **Top-k.** Up to eight parent recipes (best section score each) are
+   passed to the generator; a recipe whose full title appears in the search
+   terms is placed first regardless of score. Was five; raised after the
+   two-dish question g14 showed two dishes competing for five slots
+   (ADR-002 item 5). Fewer than eight is common: zero-score recipes are
+   never included.
 7. **Filter semantics.** `exclude_allergens` excludes any recipe whose
    metadata lists that allergen. `diet` requires every requested tag to be
    present. `max_minutes` compares against `total_minutes` inclusively.

@@ -15,7 +15,7 @@ import httpx
 import numpy as np
 
 from app.models import Query, Recipe
-from app.retrieval import Index, apply_filters, bm25_rank, chunk_recipes
+from app.retrieval import TOP_K, Index, apply_filters, bm25_rank, chunk_recipes, promote_titles
 
 VOYAGE_URL = "https://api.voyageai.com/v1/embeddings"
 DEFAULT_MODEL = "voyage-3.5-lite"
@@ -74,7 +74,7 @@ class HybridRetriever:
         vectors: np.ndarray,
         keys: list[str],
         embed: Embedder,
-        k: int = 5,
+        k: int = TOP_K,
     ):
         if keys != chunk_keys(recipes):
             raise ValueError("embeddings do not match the corpus chunks; rebuild them")
@@ -101,8 +101,10 @@ class HybridRetriever:
         semantic = self._vector_rank(query.search_terms, set(by_id))
         fused = rrf([lexical, semantic])
         ranked = sorted(fused, key=lambda rid: fused[rid], reverse=True)[: self.k]
-        if ranked or not query.constrained:
-            return [(by_id[rid], round(fused[rid], 4)) for rid in ranked]
+        hits = [(by_id[rid], round(fused[rid], 4)) for rid in ranked]
+        hits = promote_titles(query.search_terms, hits, candidates, self.k)
+        if hits or not query.constrained:
+            return hits
         return [(r, 0.0) for r in candidates[: self.k]]
 
 

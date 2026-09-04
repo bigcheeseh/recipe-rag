@@ -105,14 +105,33 @@ class FullContextRetriever:
         return [(r, 0.0) for r in apply_filters(self.recipes, query)]
 
 
+TOP_K = 8  # SPEC assumption 6; raised from 5 after g14 (ADR-002 item 5)
+
+
+def promote_titles(
+    terms: str, hits: list[tuple[Recipe, float]], candidates: list[Recipe], k: int
+) -> list[tuple[Recipe, float]]:
+    """A recipe whose full title appears in the search terms goes first, whatever BM25
+    says: "pad thai" must not lose to a fried rice that mentions pad thai three times."""
+    named = [r for r in candidates if r.title.lower() in terms.lower()]
+    if not named:
+        return hits
+    scores = {r.id: s for r, s in hits}
+    top = max(scores.values(), default=0.0)
+    front = [(r, scores.get(r.id, top)) for r in named]
+    rest = [(r, s) for r, s in hits if r.id not in {n.id for n in named}]
+    return (front + rest)[:k]
+
+
 class BM25Retriever:
-    def __init__(self, recipes: list[Recipe], k: int = 5):
+    def __init__(self, recipes: list[Recipe], k: int = TOP_K):
         self.recipes, self.k = recipes, k
         self.index = Index(recipes)
 
     def retrieve(self, query: Query) -> list[tuple[Recipe, float]]:
         candidates = apply_filters(self.recipes, query)
         hits = bm25_rank(self.index, query.search_terms, candidates, self.k)
+        hits = promote_titles(query.search_terms, hits, candidates, self.k)
         if hits or not query.constrained:
             return hits
         # Browsing question ("what can I cook in under 30 minutes?"): the terms name no

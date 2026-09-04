@@ -239,3 +239,11 @@ declining. The gate is doing its job by flapping, but the flap is a
 retrieval problem (wrong banana bread variant in the top-5), not a
 generation one. Decision pending: k=8 or an exact-title boost, see
 ADR-002 item 5.
+
+## 2026-09-04 — top-k 8 and exact-title promotion (user chose both)
+
+Both fixes from ADR-002 item 5 went in test-first. Title promotion is a
+guarantee, not a scoring tweak: "pad thai" must return Pad Thai first even
+though Khao Pad Thai Fried Rice mentions the phrase more often. It only
+helps when the extractor keeps the full title, which it did not always do
+for "Banana Bread I"; k=8 is what makes that question stable.
