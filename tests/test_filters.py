@@ -61,3 +61,13 @@ def test_bm25_retriever_filters_then_ranks():
     r: Retriever = BM25Retriever(ALL)
     got = r.retrieve(Query(in_domain=True, search_terms="dal omelet", exclude_allergens=["eggs"]))
     assert [x.id for x, _ in got] == ["dal"]
+
+
+def test_browsing_question_falls_back_to_filtered_set_when_terms_match_nothing():
+    from app.retrieval import BM25Retriever
+
+    r = BM25Retriever(ALL)
+    got = r.retrieve(Query(in_domain=True, search_terms="quick recipes", max_minutes=30))
+    assert [x.id for x, _ in got] == ["pad-thai", "omelet"]
+    # Without any constraint there is no defined answer set, so nothing is returned.
+    assert r.retrieve(Query(in_domain=True, search_terms="quick recipes")) == []
