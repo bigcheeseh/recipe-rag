@@ -495,3 +495,25 @@ per-request switch. The user had not asked for Opus; it is the eval judge
 only. Removed from `MODEL_NOTES`; it stays in `llm.PRICES` so judge cost
 is still computed, and the defaults test now pins the selectable list to
 Sonnet 5 and Haiku 4.5.
+
+## 2026-09-05 — deployed; g27 flapped on the deployed run, fixed by stating metadata
+
+Fly.io deploy live at https://recipe-rag.fly.dev (release 1 had no public IP:
+Fly's launch flow failed the IPv6 allocation; `fly ips allocate-v4 --shared`
+and `fly ips allocate-v6` fixed it). Launch created two machines; scaled to
+one to match fly.toml and ADR-004.
+
+First deployed run, full context + Sonnet, judged by Opus: 28/29, mean USD
+0.0128, total p50 5.8 s / p95 11.5 s, generate p95 9.3 s. The failure was
+g27 (every vegan recipe under 15 minutes): the filter handed the generator
+three recipes, and it answered that only "Pancakes (Vegan)" was vegan,
+judging by the title. The rendered recipe text never included the
+metadata the filter had used. Passed locally earlier by luck.
+
+Fix: `render_context` now leads with Diet, Allergens, Total time and
+Cuisine (or "unknown"). Targeted rerun of g27, g05, g06, g24: all pass,
+g27 cites 3. Full-context input grows from 27,540 to 29,830 tokens per
+request (about 8%). Redeployed; the full deployed run follows.
+
+Runner gained `--only` for such reruns; a partial run prints its table and
+never writes a run file, so it cannot become the regression baseline.
