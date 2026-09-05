@@ -90,13 +90,18 @@ def apply_filters(recipes: list[Recipe], query: Query) -> list[Recipe]:
 
 
 class Retriever(Protocol):
-    """The only thing the pipeline depends on. Swap the implementation, not the pipeline."""
+    """The only thing the pipeline depends on. Swap the implementation, not the pipeline.
+    cacheable: the recipe block is the same on every request, so prompt caching pays off."""
+
+    cacheable: bool
 
     def retrieve(self, query: Query) -> list[tuple[Recipe, float]]: ...
 
 
 class FullContextRetriever:
     """No ranking: every recipe that passes the filters goes to the generator."""
+
+    cacheable = True
 
     def __init__(self, recipes: list[Recipe]):
         self.recipes = recipes
@@ -138,6 +143,8 @@ def pad_constrained(
 
 
 class BM25Retriever:
+    cacheable = False
+
     def __init__(self, recipes: list[Recipe], k: int = TOP_K):
         self.recipes, self.k = recipes, k
         self.index = Index(recipes)

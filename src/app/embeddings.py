@@ -76,6 +76,8 @@ def chunk_keys(recipes: list[Recipe]) -> list[str]:
 
 
 class HybridRetriever:
+    cacheable = False
+
     def __init__(
         self,
         recipes: list[Recipe],

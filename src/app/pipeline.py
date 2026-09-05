@@ -10,10 +10,11 @@ import logging
 import time
 import uuid
 from collections.abc import Callable
-from typing import Literal, Protocol
+from typing import Literal
 
+from app.backends import Backends, Generator
 from app.llm import TokenUsage, cost_usd
-from app.models import Answer, Draft, GeneratorRefusal, Query, Recipe, Refusal, Source, Usage
+from app.models import Answer, Draft, GeneratorRefusal, Recipe, Refusal, Source, Usage
 from app.retrieval import Retriever
 
 log = logging.getLogger("app.request")
@@ -45,20 +46,27 @@ def ground(
     return Draft(answer=None, refusal=refusal, source_ids=[]), "refused"
 
 
-class Generator(Protocol):
-    """What the pipeline needs from the model layer; LLM satisfies it, tests fake it."""
-
-    model: str
-    prompt_hash: str
-
-    def extract_query(self, question: str) -> tuple[Query, TokenUsage]: ...
-    def generate(self, question: str, recipes: list[Recipe]) -> tuple[Draft, TokenUsage]: ...
-
-
 class Pipeline:
-    def __init__(self, llm: Generator, retriever: Retriever, recipes: list[Recipe]):
-        self.llm, self.retriever = llm, retriever
+    def __init__(self, backends: Backends, recipes: list[Recipe]):
+        self.backends = backends
         self.by_id = {r.id: r for r in recipes}
+
+    def ask(
+        self,
+        question: str,
+        trace_id: str | None = None,
+        model: str | None = None,
+        retriever: str | None = None,
+    ) -> Answer:
+        llm, rname, ret = self.backends.pick(model, retriever)
+        return _Run(llm, rname, ret, self.by_id).ask(question, trace_id)
+
+
+class _Run:
+    """One request against one (model, retriever) pair."""
+
+    def __init__(self, llm: Generator, rname: str, retriever: Retriever, by_id: dict[str, Recipe]):
+        self.llm, self.rname, self.retriever, self.by_id = llm, rname, retriever, by_id
 
     def ask(self, question: str, trace_id: str | None = None) -> Answer:
         t0 = time.perf_counter()
@@ -66,6 +74,7 @@ class Pipeline:
             "trace_id": trace_id or uuid.uuid4().hex,
             "question": question,
             "model": self.llm.model,
+            "retriever": self.rname,
             "prompt_hash": self.llm.prompt_hash,
             "retrieved": [],
             "grounding": None,
@@ -87,12 +96,13 @@ class Pipeline:
             return self._finish(None, _nothing_matched(), [], [], usage, ms, t0, rec)
 
         t2 = time.perf_counter()
-        draft, u2 = self.llm.generate(question, retrieved)
+        cache = self.retriever.cacheable
+        draft, u2 = self.llm.generate(question, retrieved, cache)
         usage = usage + u2
 
         def retry() -> Draft:
             nonlocal usage
-            d, u3 = self.llm.generate(question, retrieved)
+            d, u3 = self.llm.generate(question, retrieved, cache)
             usage = usage + u3
             return d
 
@@ -129,6 +139,7 @@ class Pipeline:
             conflicts=conflicts,
             usage=Usage(
                 model=self.llm.model,
+                retriever=self.rname,
                 tokens_in=usage.total_in,
                 tokens_out=usage.tokens_out,
                 cost_usd=cost_usd(self.llm.model, usage),

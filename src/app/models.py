@@ -8,6 +8,9 @@ DietTag = Literal["vegan", "vegetarian", "pescatarian"]
 
 class AskRequest(BaseModel):
     question: str = Field(max_length=500)
+    # Optional per-request backend switch (SPEC assumption 14); ids from GET /config.
+    model: str | None = None
+    retriever: str | None = None
 
     @field_validator("question")
     @classmethod
@@ -45,6 +48,7 @@ class Citation(BaseModel):
 
 class Usage(BaseModel):
     model: str
+    retriever: str
     tokens_in: int
     tokens_out: int
     cost_usd: float

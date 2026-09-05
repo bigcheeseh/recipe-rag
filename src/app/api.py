@@ -8,10 +8,11 @@ from pathlib import Path
 
 import anthropic
 from dotenv import load_dotenv
-from fastapi import FastAPI, Request, Response
+from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
+from app.backends import MODEL_NOTES, Backends
 from app.embeddings import HybridRetriever, load_vectors, voyage_embedder
 from app.llm import LLM, UnparseableOutput
 from app.models import Answer, AskRequest, Recipe
@@ -25,35 +26,36 @@ def load_corpus(path: Path) -> list[Recipe]:
     return [Recipe.model_validate(r) for r in json.loads(path.read_text(encoding="utf-8"))]
 
 
-def retriever_mode() -> str:
-    """RETRIEVER=full (default, ADR-002) | bm25 | hybrid."""
-    return os.environ.get("RETRIEVER", "full")
-
-
-def build_retriever(recipes: list[Recipe]) -> Retriever:
-    """Full sends every filtered recipe (cached). BM25 is the fallback for corpora past
-    ~80 recipes. Hybrid needs data/embeddings.npz and VOYAGE_API_KEY."""
-    mode = retriever_mode()
-    if mode == "bm25":
-        return BM25Retriever(recipes)
-    if mode == "full":
-        return FullContextRetriever(recipes)
-    if mode == "hybrid":
-        vectors, keys = load_vectors(Path(os.environ.get("EMBEDDINGS_PATH", "data/embeddings.npz")))
+def build_retrievers(recipes: list[Recipe]) -> dict[str, Retriever]:
+    """Every retriever the environment allows. full (default, ADR-002) and bm25 always;
+    hybrid only with data/embeddings.npz and VOYAGE_API_KEY, since it calls Voyage per request."""
+    out: dict[str, Retriever] = {
+        "full": FullContextRetriever(recipes),
+        "bm25": BM25Retriever(recipes),
+    }
+    vectors_path = Path(os.environ.get("EMBEDDINGS_PATH", "data/embeddings.npz"))
+    if os.environ.get("VOYAGE_API_KEY") and vectors_path.is_file():
+        vectors, keys = load_vectors(vectors_path)
         embed = voyage_embedder(
             os.environ["VOYAGE_API_KEY"], os.environ.get("VOYAGE_MODEL", "voyage-3.5-lite")
         )
-        return HybridRetriever(recipes, vectors, keys, embed)
-    raise ValueError(f"unknown RETRIEVER={mode!r}")
+        out["hybrid"] = HybridRetriever(recipes, vectors, keys, embed)
+    return out
 
 
 def build_pipeline() -> Pipeline:
-    """Production wiring from the environment. Tests inject a Pipeline instead."""
+    """Production wiring from the environment. Tests inject a Pipeline instead.
+    MODEL and RETRIEVER set the defaults; a request may name any built pair."""
     load_dotenv()
     recipes = load_corpus(Path(os.environ.get("CORPUS_PATH", "data/corpus.json")))
-    full = retriever_mode() == "full"
-    llm = LLM(anthropic.Anthropic(), os.environ.get("MODEL", "claude-sonnet-5"), cache_context=full)
-    return Pipeline(llm, build_retriever(recipes), recipes)
+    client = anthropic.Anthropic()
+    backends = Backends(
+        models=[LLM(client, m) for m in MODEL_NOTES],
+        retrievers=build_retrievers(recipes),
+        default_model=os.environ.get("MODEL", "claude-sonnet-5"),
+        default_retriever=os.environ.get("RETRIEVER", "full"),
+    )
+    return Pipeline(backends, recipes)
 
 
 def create_app(pipeline: Pipeline | None = None) -> FastAPI:
@@ -75,9 +77,18 @@ def create_app(pipeline: Pipeline | None = None) -> FastAPI:
         response.headers["X-Trace-Id"] = request.state.trace_id
         return response
 
+    @app.get("/config")
+    def config(request: Request) -> dict:
+        return request.app.state.pipeline.backends.describe()
+
     @app.post("/ask")
     def ask(req: AskRequest, request: Request) -> Answer:
-        return request.app.state.pipeline.ask(req.question, request.state.trace_id)
+        try:
+            return request.app.state.pipeline.ask(
+                req.question, request.state.trace_id, req.model, req.retriever
+            )
+        except KeyError as e:  # unknown model / retriever, raised before any model call
+            raise HTTPException(status_code=422, detail=e.args[0]) from e
 
     @app.exception_handler(Exception)
     async def upstream_errors(request: Request, exc: Exception) -> JSONResponse:

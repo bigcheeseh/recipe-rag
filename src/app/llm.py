@@ -62,10 +62,8 @@ def render_context(r: Recipe) -> str:
 
 
 class LLM:
-    def __init__(self, client: anthropic.Anthropic, model: str, cache_context: bool = False):
-        """cache_context: mark the recipe block for prompt caching. Only pays off when the
-        same recipes are sent on every request (full-context mode)."""
-        self.client, self.model, self.cache_context = client, model, cache_context
+    def __init__(self, client: anthropic.Anthropic, model: str):
+        self.client, self.model = client, model
         blob = b"".join(p.read_bytes() for p in sorted(PROMPTS.glob("*.md")))
         self.prompt_hash = hashlib.sha256(blob).hexdigest()[:12]
 
@@ -103,13 +101,17 @@ class LLM:
         prompt = (PROMPTS / "extract_query.md").read_text(encoding="utf-8")
         return self._parse(Query, 512, prompt.replace("{question}", question), None)
 
-    def generate(self, question: str, recipes: list[Recipe]) -> tuple[Draft, TokenUsage]:
+    def generate(
+        self, question: str, recipes: list[Recipe], cache: bool = False
+    ) -> tuple[Draft, TokenUsage]:
+        """cache: mark the recipe block for prompt caching. Only pays off when the same
+        recipes are sent on every request, which the retriever knows (Retriever.cacheable)."""
         rules = (PROMPTS / "generate.md").read_text(encoding="utf-8")
         context: TextBlockParam = {
             "type": "text",
             "text": "Recipes:\n\n" + "\n\n".join(render_context(r) for r in recipes),
         }
-        if self.cache_context:
+        if cache:
             context["cache_control"] = {"type": "ephemeral"}
         system: list[TextBlockParam] = [{"type": "text", "text": rules}, context]
         return self._parse(Draft, 4096, f"Question:\n{question}", system)

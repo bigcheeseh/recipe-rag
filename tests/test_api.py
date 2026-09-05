@@ -138,13 +138,21 @@ def test_upstream_failures_map_to_status_codes(exc, status, detail):
     assert r.json()["trace_id"] == r.headers["X-Trace-Id"]
 
 
-def test_default_retriever_is_full_context(monkeypatch):
+def test_defaults_are_full_context_and_sonnet_when_env_is_unset(monkeypatch, tmp_path):
     """ADR-002, 2026-09-05: RETRIEVER unset means every filtered recipe goes to the model."""
-    from app.api import build_retriever
-    from app.retrieval import FullContextRetriever
+    from app.api import build_pipeline, build_retrievers
 
-    monkeypatch.delenv("RETRIEVER", raising=False)
-    assert isinstance(build_retriever(CORPUS), FullContextRetriever)
+    for var in ("RETRIEVER", "MODEL", "VOYAGE_API_KEY"):
+        monkeypatch.delenv(var, raising=False)
+    assert list(build_retrievers(CORPUS)) == ["full", "bm25"]  # hybrid needs a Voyage key
+
+    corpus = tmp_path / "corpus.json"
+    corpus.write_text(json.dumps([r.model_dump() for r in CORPUS]), encoding="utf-8")
+    monkeypatch.setenv("CORPUS_PATH", str(corpus))
+    monkeypatch.setenv("EMBEDDINGS_PATH", str(tmp_path / "none.npz"))  # .env may hold a Voyage key
+    monkeypatch.setattr(anthropic, "Anthropic", lambda: object())  # no key, no network
+    d = build_pipeline().backends.describe()["defaults"]
+    assert d == {"model": "claude-sonnet-5", "retriever": "full"}
 
 
 def test_ui_is_served_at_root_when_built(tmp_path, monkeypatch):

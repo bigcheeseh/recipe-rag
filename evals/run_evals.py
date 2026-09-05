@@ -264,7 +264,10 @@ def main(argv: list[str] | None = None) -> int:
     judge_usage = TokenUsage()
     with make_client(args.url) as client:
         for g in golden:
-            r = client.post("/ask", json={"question": g["q"]})
+            r = client.post(
+                "/ask",
+                json={"question": g["q"], "model": args.model, "retriever": args.retriever},
+            )
             body = (
                 r.json() if r.headers.get("content-type", "").startswith("application/json") else {}
             )
