@@ -461,3 +461,14 @@ did not match, score 0. BM25 + Sonnet: 25/29 → 26/29, g27 now cites the
 vegan-under-15 recipes; cost 0.0148 → 0.0157 per question because more
 recipes reach the generator on constrained questions. No regressions.
 The corpus-wide questions remain full-context only.
+
+## 2026-09-05 — two slash commands, no agent pipeline
+
+Considered copying the multi-agent orchestration used in another project
+(architect, designer, parallel implementers and testers). Rejected for
+this repo: it fights the block-and-stop review discipline that is graded,
+there is nothing to parallelise in a six-module pipeline, and the harness
+would be the largest thing in the repo. Kept two commands instead:
+`/review` runs the CLAUDE.md final checklist and reports; `/feature`
+encodes the order the follow-up session expects (spec, golden questions,
+failing test, code, evals, record) with two stops. Both are single-agent.
