@@ -65,13 +65,30 @@ class Usage(BaseModel):
     cost_usd: float
     latency_ms: dict[str, int]   # keys: extract, retrieve, generate, total
 
+class Citation(BaseModel):
+    title: str
+    url: str
+
 class Answer(BaseModel):
     answer: str | None
     refusal: Refusal | None
     sources: list[Source]
     conflicts: list[str] = []
     usage: Usage
+    # Assignment minimum contract. Computed from the fields above at
+    # serialisation time, so the two views can never disagree.
+    citations: list[Citation]        # = [(s.title, s.url) for s in sources]
+    refused: bool                    # = refusal is not None
+    refusal_reason: Literal["out_of_corpus", "out_of_domain", "safety"] | None
 ```
+
+The assignment's minimum schema (`citations`, `refused`, `refusal_reason`)
+is a projection of our richer one. Reason names map one-to-one:
+`insufficient_context` → `out_of_corpus`, `safety_deferral` → `safety`,
+`out_of_domain` unchanged. The eval harness checks both views on every
+response: ours by `Answer.model_validate`, theirs by comparing the three
+fields in the body against the values recomputed from `sources` and
+`refusal`. A refusal is therefore detectable from `refused: true` alone.
 
 **Invariants** — enforced by a Pydantic model validator and by the first test
 in the repository:
