@@ -79,7 +79,10 @@ def backends(*llms: FakeLLM, retriever: Retriever | None = None) -> Backends:
     """One or more scripted models plus the two zero-network retrievers; bm25 is default."""
     return Backends(
         models=list(llms),
-        retrievers={"bm25": retriever or BM25Retriever(CORPUS), "full": FullContextRetriever(CORPUS)},
+        retrievers={
+            "bm25": retriever or BM25Retriever(CORPUS),
+            "full": FullContextRetriever(CORPUS),
+        },
         default_model=llms[0].model,
         default_retriever="bm25",
     )
