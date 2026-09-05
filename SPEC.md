@@ -213,7 +213,8 @@ criterion.
   is measured by `--calibrate` and recorded in DEVLOG before the score is
   used for a decision.
 - AC-14. The baseline pass rate on the golden set is recorded in `DEVLOG.md`
-  and in the committed run table. Target: TBD until the first run.
+  and in the committed run table. Target: 29/29 on the default
+  configuration, met on the deployed service (`evals/runs/20260905T155833Z-full-claude-sonnet-5-deployed.md`).
 
 ### Operations
 
@@ -246,21 +247,34 @@ criterion.
 
 ## 6. Latency budget
 
-Measured at p50 and p95 from the deployed service, warm instance, one
-concurrent request. All values `TBD` until measured in Block 7.
+Measured at p50 and p95 from the deployed service (Fly.io `ams`, one
+machine, warm), one concurrent request, 29-question golden set, full
+context + Sonnet 5 (`evals/runs/20260905T155833Z-full-claude-sonnet-5-deployed.md`, 2026-09-05). Budgets were set after the
+measurement as the measured p95 rounded up; a later run that exceeds a
+budget is a regression to explain, not a number to edit.
 
 | Stage      | Budget (p95) | Measured p50 | Measured p95 |
 | ---------- | ------------ | ------------ | ------------ |
-| `extract`  | TBD          | TBD          | TBD          |
-| `retrieve` | TBD          | TBD          | TBD          |
-| `generate` | TBD          | TBD          | TBD          |
-| `total`    | TBD          | TBD          | TBD          |
-| cold start | TBD          | TBD          | TBD          |
+| `extract`  | 3,000 ms     | 2,060 ms     | 2,435 ms     |
+| `retrieve` | 10 ms        | 0 ms         | 0 ms         |
+| `generate` | 15,000 ms    | 3,380 ms     | 12,522 ms    |
+| `total`    | 18,000 ms    | 5,517 ms     | 14,528 ms    |
+| cold start | 10,000 ms    | 6,487 ms (1 sample) | see note |
+
+Cold start: first `GET /healthz` after the machine had idle-stopped,
+measured once on the final image (6,487 ms; an earlier image measured
+5,967 ms). A warm health request takes about 220 ms. A cold *question*
+adds the prompt-cache write to that: the first `/ask` on a fresh machine
+measured 6,478 ms total and USD 0.0717 (27,540 input tokens written to
+cache) before the metadata change grew the context to about 30,100 tokens.
+The generation p95 is the corpus-wide question g25, whose answer walks
+every recipe's time (900 output tokens, 10.4 s in this run, 21 s in a
+targeted rerun).
 
 Expectation to be confirmed by measurement: `retrieve` is pure Python over
 ~50 recipes and should be well under 50 ms; the two model calls dominate.
 
-Pre-deployment reference, measured on the developer machine by the BM25
+Earlier pre-deployment reference, measured on the developer machine by the BM25
 eval run (`evals/runs/20260904T175824Z-bm25-claude-sonnet-5.md`, 23
 questions, one at a time, not the deployed service): extract p50 2142 /
 p95 2651 ms, retrieve 0 / 0 ms, generate 2824 / 6737 ms, total 5086 /
@@ -288,12 +302,13 @@ computed from those counts and the prices above. It is never estimated.
 The metadata-enrichment call at ingestion is a one-time cost and is recorded
 separately in `ingest_manifest.json`, not in per-question `Usage`.
 
-**Target for 1,000 questions:** USD 14.94, from the mean `cost_usd` of the
-full-context + Sonnet 5 eval run on the 29-question golden set
-(`evals/runs/20260904T201858Z-full-claude-sonnet-5.md`, mean USD 0.0149) multiplied by 1,000, with the
-recipe block prompt-cached and the cache warm. BM25 + Sonnet 5 on the same
-set measured USD 14.75. ADR-002 lists the other configurations and the
-corpus size at which BM25 becomes cheaper.
+**Target for 1,000 questions:** USD 12.61, from the mean `cost_usd` of the
+final deployed run (`evals/runs/20260905T155833Z-full-claude-sonnet-5-deployed.md`, full context + Sonnet 5, 29 questions, mean
+USD 0.0126) multiplied by 1,000, with the recipe block prompt-cached and
+the cache warm for all but the first question. The pre-deployment local
+run measured USD 14.94; BM25 + Sonnet 5 measured USD 15.66 after the
+padding fix. ADR-002 lists the other configurations and the corpus size
+at which BM25 becomes cheaper.
 
 Prompt caching applies to the recipe block in full-context mode only. Cache
 writes are priced at 1.25x and reads at 0.1x the input price; both counts

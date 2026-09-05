@@ -5,8 +5,9 @@ recipes, with citations, and refuses in a machine-readable way when the
 recipes cannot answer. FastAPI backend, one-page TypeScript UI, Claude
 Sonnet 5 for the two model calls.
 
-- Deployed UI and API: **TBD** (filled in once `fly deploy` has run)
-- Container-level access for reviewers: **TBD** (Fly.io organisation invitation; see Deployment)
+- Deployed UI: https://recipe-rag.fly.dev/ and API: `POST https://recipe-rag.fly.dev/ask`
+  (`GET /healthz`, `GET /config`, OpenAPI at `/docs`)
+- Container-level access for reviewers: invitation to the Fly.io organisation (see Deployment)
 - Specification: [SPEC.md](SPEC.md). Decisions: [ADR/](ADR). Working log: [DEVLOG.md](DEVLOG.md).
 - Agent instructions and notes: [CLAUDE.md](CLAUDE.md) (as given, unchanged) and the
   "accepted vs rewritten" section of DEVLOG.md.
@@ -90,8 +91,9 @@ container-level access by invitation.
 **How a new deployment happens:** every push to `main` runs
 [.github/workflows/ci.yml](.github/workflows/ci.yml): ruff, mypy, pytest, the
 TypeScript build, a Docker build, and then `flyctl deploy --remote-only`. The job needs
-one GitHub secret, `FLY_API_TOKEN`. Running the deploy twice produces the same result.
-By hand it is the same command:
+one GitHub secret, `FLY_API_TOKEN`; until it is set the deploy job fails and the test
+job still gates. The three deployments so far were run by hand with the same command,
+which is idempotent: running it twice produces the same release.
 
 ```
 fly secrets set ANTHROPIC_API_KEY=...   # once; stored encrypted by Fly, never in git or the image
@@ -102,9 +104,11 @@ fly deploy
 (gitignored); on Fly it is the secret above. The image contains no key, and the request
 log never prints one.
 
-**Container-level access:** TBD (the reviewers' addresses are invited to the Fly
-organisation, which shows machine status, releases, and live logs; `fly logs` and
-`fly status` give the same from the CLI).
+**Container-level access:** the chosen option is an invitation to the Fly.io
+organisation, issued to the reviewers' addresses on request. The dashboard shows the
+machine's state, releases, health checks, and live logs, and each request's structured
+log line appears there; `fly logs -a recipe-rag` and `fly status -a recipe-rag` give the
+same from the CLI.
 
 ## Cost & Latency
 
@@ -115,18 +119,18 @@ still picked the wrong "quickest" recipe (ADR-002). A recipe service that invent
 numbers fails its one job, so the cheaper model is a one-line switch (`MODEL`), not the
 default. Opus 5 is used only as the eval judge.
 
-**Cost per question, measured** on the 29-question golden set, Sonnet 5, full context
-with the recipe block prompt-cached (`evals/runs/20260904T201858Z-full-claude-sonnet-5.md`):
+**Cost per question, measured** on the deployed service, 29-question golden set, Sonnet 5,
+full context with the recipe block prompt-cached (`evals/runs/20260905T155833Z-full-claude-sonnet-5-deployed.md`):
 
 | | USD |
 | --- | --- |
-| Mean per question, cache warm | 0.0149 |
-| Per 1,000 questions, cache warm | 14.94 |
-| First request after a cold cache (measured in the local container, 2026-09-05) | 0.0726 |
+| Mean per question (cache warm after the first) | 0.0126 |
+| Per 1,000 questions | 12.61 |
+| First question on a fresh machine (cache write, measured on Fly, 2026-09-05) | 0.0717 |
 
 The cold figure is the 1.25x cache write on the whole corpus. The cache lives five
 minutes, so at review traffic most requests will be cold; at steady traffic almost none
-are. BM25 top-8 on the same set costs 14.75 per 1,000 with no cache dependence.
+are. BM25 top-8 on the same set costs 15.66 per 1,000 with no cache dependence.
 
 **When the model or the retrieval changes.**
 
@@ -136,14 +140,22 @@ are. BM25 top-8 on the same set costs 14.75 per 1,000 with no cache dependence.
 - Retrieval: full context is cheaper than BM25 below about 80 recipes with a warm cache
   and more expensive above it (ADR-002). The flag is `RETRIEVER=bm25`.
 
-**Latency, measured.** Deployed numbers are TBD until the first deploy; the
-pre-deployment reference from the developer machine, one request at a time, is in
-SPEC.md section 6. On the golden set with full context, total p50 was 6.3 s and
-generation p95 14.9 s, against 8.4 s for BM25.
+**Latency, measured** on the deployed service, one request at a time (full table with
+budgets in SPEC.md section 6):
 
-**Current bottleneck:** the generation call. Extraction is about 2 to 3 s and retrieval
-is 0 ms in full-context mode, so everything above that is the model reading 26k cached
-tokens of recipes and writing a structured answer. Next optimisation, in order: lower
+| | p50 | p95 |
+| --- | --- | --- |
+| extract | 2.1 s | 2.4 s |
+| generate | 3.4 s | 12.5 s |
+| total | 5.5 s | 14.5 s |
+| cold start (first health request after idle stop, one sample) | 6.5 s | |
+| warm health request | 0.22 s | |
+
+**Current bottleneck:** the generation call. Extraction is about 2 s and retrieval
+is 0 ms in full-context mode, so everything above that is the model reading 30k cached
+tokens of recipes and writing a structured answer. The p95 is one question, "which
+recipe has the longest stated time", where the model walks every recipe's times
+(900 to 2,200 output tokens). Next optimisation, in order: lower
 the generator's thinking effort and measure the p95 change; stream the answer to the UI
 so the perceived wait drops even if the total does not; only then consider BM25 top-8 as
 the default again, which trades the three corpus-wide questions for 6 s off the p95.
