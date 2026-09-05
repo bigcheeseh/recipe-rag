@@ -137,3 +137,12 @@ def test_upstream_failures_map_to_status_codes(exc, status, detail):
     assert r.status_code == status
     assert r.json()["detail"] == detail
     assert r.json()["trace_id"] == r.headers["X-Trace-Id"]
+
+
+def test_default_retriever_is_full_context(monkeypatch):
+    """ADR-002, 2026-09-05: RETRIEVER unset means every filtered recipe goes to the model."""
+    from app.api import build_retriever
+    from app.retrieval import FullContextRetriever
+
+    monkeypatch.delenv("RETRIEVER", raising=False)
+    assert isinstance(build_retriever(CORPUS), FullContextRetriever)
