@@ -15,7 +15,15 @@ import httpx
 import numpy as np
 
 from app.models import Query, Recipe
-from app.retrieval import TOP_K, Index, apply_filters, bm25_rank, chunk_recipes, promote_titles
+from app.retrieval import (
+    TOP_K,
+    Index,
+    apply_filters,
+    bm25_rank,
+    chunk_recipes,
+    pad_constrained,
+    promote_titles,
+)
 
 VOYAGE_URL = "https://api.voyageai.com/v1/embeddings"
 DEFAULT_MODEL = "voyage-3.5-lite"
@@ -103,9 +111,7 @@ class HybridRetriever:
         ranked = sorted(fused, key=lambda rid: fused[rid], reverse=True)[: self.k]
         hits = [(by_id[rid], round(fused[rid], 4)) for rid in ranked]
         hits = promote_titles(query.search_terms, hits, candidates, self.k)
-        if hits or not query.constrained:
-            return hits
-        return [(r, 0.0) for r in candidates[: self.k]]
+        return pad_constrained(hits, candidates, query, self.k)
 
 
 def load_vectors(path: Path) -> tuple[np.ndarray, list[str]]:

@@ -123,6 +123,20 @@ def promote_titles(
     return (front + rest)[:k]
 
 
+def pad_constrained(
+    hits: list[tuple[Recipe, float]], candidates: list[Recipe], query: Query, k: int
+) -> list[tuple[Recipe, float]]:
+    """Constrained question ("vegan under 15 minutes", "what can I cook in 30 minutes?"):
+    the filtered set itself is the answer set, so fill the ranked list up to k with the
+    filtered recipes the terms did not match. Score 0 marks a padded entry. Unconstrained
+    questions have no defined answer set beyond the matches, so they are left alone."""
+    if not query.constrained or len(hits) >= k:
+        return hits
+    seen = {r.id for r, _ in hits}
+    rest = [(r, 0.0) for r in candidates if r.id not in seen]
+    return hits + rest[: k - len(hits)]
+
+
 class BM25Retriever:
     def __init__(self, recipes: list[Recipe], k: int = TOP_K):
         self.recipes, self.k = recipes, k
@@ -132,8 +146,4 @@ class BM25Retriever:
         candidates = apply_filters(self.recipes, query)
         hits = bm25_rank(self.index, query.search_terms, candidates, self.k)
         hits = promote_titles(query.search_terms, hits, candidates, self.k)
-        if hits or not query.constrained:
-            return hits
-        # Browsing question ("what can I cook in under 30 minutes?"): the terms name no
-        # dish, so the filtered set itself is the answer set. Score 0 marks the fallback.
-        return [(r, 0.0) for r in candidates[: self.k]]
+        return pad_constrained(hits, candidates, query, self.k)
