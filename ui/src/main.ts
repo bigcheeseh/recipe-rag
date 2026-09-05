@@ -1,10 +1,10 @@
 // One page, no framework: read the question, POST /ask, render the contract.
-// Types mirror SPEC.md section 2; the assignment's minimum contract fields are
+// Types mirror SPEC.md sections 1 and 2; the assignment's minimum contract fields are
 // the only ones the page needs, the rest is shown as extra detail.
 
 type Citation = { title: string; url: string };
 type Refusal = { reason: string; message: string };
-type Usage = { model: string; cost_usd: number; latency_ms: { total: number } };
+type Usage = { model: string; retriever: string; cost_usd: number; latency_ms: { total: number } };
 type Answer = {
   answer: string | null;
   refused: boolean;
@@ -14,6 +14,8 @@ type Answer = {
   conflicts: string[];
   usage: Usage;
 };
+type Option = { id: string; note: string };
+type Config = { models: Option[]; retrievers: Option[]; defaults: { model: string; retriever: string } };
 
 const REFUSAL_LABEL: Record<string, string> = {
   out_of_domain: "Not a recipe question",
@@ -30,6 +32,11 @@ function el<T extends HTMLElement>(id: string): T {
 const form = el<HTMLFormElement>("ask");
 const question = el<HTMLInputElement>("question");
 const submit = el<HTMLButtonElement>("submit");
+const switches = el<HTMLDivElement>("switches");
+const modelSelect = el<HTMLSelectElement>("model");
+const modelNote = el<HTMLElement>("model-note");
+const retrieverSelect = el<HTMLSelectElement>("retriever");
+const retrieverNote = el<HTMLElement>("retriever-note");
 const result = el<HTMLElement>("result");
 const refusal = el<HTMLParagraphElement>("refusal");
 const answer = el<HTMLParagraphElement>("answer");
@@ -40,6 +47,35 @@ const error = el<HTMLParagraphElement>("error");
 
 function fill(list: HTMLUListElement, items: string[]): void {
   list.replaceChildren(...items.map((t) => Object.assign(document.createElement("li"), { textContent: t })));
+}
+
+// A selector whose options carry the server's note as a tooltip, on the option and
+// on the "?" next to it, so the trade-off is one hover away.
+function bindSelect(select: HTMLSelectElement, note: HTMLElement, options: Option[], chosen: string): void {
+  select.replaceChildren(
+    ...options.map((o) => Object.assign(document.createElement("option"), { value: o.id, textContent: o.id, title: o.note })),
+  );
+  select.value = chosen;
+  const sync = (): void => {
+    const current = options.find((o) => o.id === select.value);
+    note.title = current?.note ?? "";
+    select.title = note.title;
+  };
+  select.addEventListener("change", sync);
+  sync();
+}
+
+async function loadConfig(): Promise<void> {
+  try {
+    const r = await fetch("/config");
+    if (!r.ok) return; // switches stay hidden; the server defaults apply
+    const c = (await r.json()) as Config;
+    bindSelect(modelSelect, modelNote, c.models, c.defaults.model);
+    bindSelect(retrieverSelect, retrieverNote, c.retrievers, c.defaults.retriever);
+    switches.hidden = false;
+  } catch {
+    // no config, no switches
+  }
 }
 
 function render(a: Answer, traceId: string | null): void {
@@ -64,7 +100,7 @@ function render(a: Answer, traceId: string | null): void {
   );
   if (a.citations.length === 0) fill(citations, ["none"]);
   meta.textContent =
-    `${a.usage.model}, ${a.usage.latency_ms.total} ms, USD ${a.usage.cost_usd.toFixed(4)}` +
+    `${a.usage.model} + ${a.usage.retriever}, ${a.usage.latency_ms.total} ms, USD ${a.usage.cost_usd.toFixed(4)}` +
     (traceId ? `, trace ${traceId}` : "");
   result.hidden = false;
 }
@@ -73,11 +109,16 @@ async function ask(q: string): Promise<void> {
   submit.disabled = true;
   error.hidden = true;
   result.hidden = true;
+  const body: Record<string, string> = { question: q };
+  if (!switches.hidden) {
+    body.model = modelSelect.value;
+    body.retriever = retrieverSelect.value;
+  }
   try {
     const r = await fetch("/ask", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ question: q }),
+      body: JSON.stringify(body),
     });
     const traceId = r.headers.get("X-Trace-Id");
     if (!r.ok) {
@@ -98,3 +139,5 @@ form.addEventListener("submit", (ev) => {
   ev.preventDefault();
   void ask(question.value);
 });
+
+void loadConfig();
