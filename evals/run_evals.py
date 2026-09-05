@@ -221,6 +221,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     ap.add_argument("--model", default="claude-sonnet-5", help="sets MODEL for this run")
     ap.add_argument("--label", default=None, help="run label; defaults to retriever-model")
+    ap.add_argument("--only", default=None, help="comma-separated ids to run; no run file")
     ap.add_argument("--runs", type=Path, default=ROOT / "evals" / "runs")
     ap.add_argument(
         "--judge",
@@ -254,6 +255,8 @@ def main(argv: list[str] | None = None) -> int:
     judge_client = anthropic.Anthropic() if args.judge != "none" else None
 
     golden = yaml.safe_load((ROOT / "evals" / "golden_set.yaml").read_text(encoding="utf-8"))
+    if args.only:
+        golden = [g for g in golden if g["id"] in args.only.split(",")]
     corpus = {r.id: r for r in load_corpus(ROOT / "data" / "corpus.json")}
     baseline = previous_passes(args.runs)
 
@@ -324,6 +327,9 @@ def main(argv: list[str] | None = None) -> int:
     ]
     args.runs.mkdir(parents=True, exist_ok=True)
     out = args.runs / f"{stamp}-{args.label}.md"
+    if args.only:  # a partial run must never become the regression baseline
+        print("\n".join(lines))
+        return 0 if passed == len(rows) else 1
     out.write_text("\n".join(lines), encoding="utf-8")
     if answers:
         answers_file = args.runs / f"{stamp}-{args.label}.answers.md"
