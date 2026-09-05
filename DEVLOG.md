@@ -452,3 +452,12 @@ Rewritten on review by the user:
 
 Still owed: the g27 padding fix on the BM25 path; judge calibration
 against human scores; the measured latency table after deploy.
+
+## 2026-09-05 — g27 padding fix on the retrieval paths
+
+`pad_constrained` replaces the zero-hit fallback in both BM25 and hybrid:
+a constrained query is filled up to k with the filtered recipes the terms
+did not match, score 0. BM25 + Sonnet: 25/29 → 26/29, g27 now cites the
+vegan-under-15 recipes; cost 0.0148 → 0.0157 per question because more
+recipes reach the generator on constrained questions. No regressions.
+The corpus-wide questions remain full-context only.

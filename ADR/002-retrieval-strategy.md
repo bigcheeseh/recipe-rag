@@ -42,9 +42,12 @@ What the failures are:
 - **g27 (every vegan recipe at 15 minutes or under) fails on BM25 and
   hybrid** with one citation instead of three. The filter leaves three
   candidates, but the search terms match only one of them and the
-  browsing fallback fires only when ranking returns nothing. Fix
-  identified, not yet applied: when constraints are active, pad the
-  ranked list with the remaining filtered candidates up to k.
+  browsing fallback fired only when ranking returned nothing. Fixed
+  2026-09-05: when constraints are active the ranked list is padded with
+  the remaining filtered candidates up to k. BM25 + Sonnet re-measured at
+  26/29 (`evals/runs/20260905T134834Z-bm25-claude-sonnet-5.md`), USD
+  0.0157 per question (padding sends more recipes); the three
+  corpus-wide questions still fail, as expected.
 - Haiku's judge scores dropped to 2.71 on care on two rows: the
   corpus-wide questions drew guesses and empty refusals (1/1 scores).
 
@@ -72,7 +75,7 @@ What the failures are:
 3. **BM25 stays behind `RETRIEVER=bm25`.** Zero network calls in
    retrieval, deterministic and unit-testable, and the cheaper choice
    above about 80 recipes. It is what the service switches to when the
-   corpus grows; the g27 padding fix (context above) is still owed to it.
+   corpus grows. With the g27 padding fix it passes 26/29.
 4. **Sonnet 5 stays the default model** (user decision, 2026-09-04).
    Haiku 4.5 passed 23/23 at about a third of the cost, but on the
    browsing question g07 it listed recipes with no stated time by guessing
