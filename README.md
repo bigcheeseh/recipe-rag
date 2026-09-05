@@ -67,7 +67,8 @@ Two selectors on the page, each with a tooltip stating the measured trade-off, s
 `GET /config` lists what the running server can offer and its defaults:
 
 ```
-curl -s localhost:8080/ask -H 'Content-Type: application/json' \n  -d '{"question": "Quickest recipe?", "model": "claude-haiku-4-5", "retriever": "bm25"}'
+curl -s localhost:8080/ask -H 'Content-Type: application/json' \
+  -d '{"question": "Quickest recipe?", "model": "claude-haiku-4-5", "retriever": "bm25"}'
 ```
 
 Server defaults come from `MODEL` and `RETRIEVER` in the environment. `hybrid` is offered
