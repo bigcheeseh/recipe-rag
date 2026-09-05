@@ -146,3 +146,20 @@ def test_default_retriever_is_full_context(monkeypatch):
 
     monkeypatch.delenv("RETRIEVER", raising=False)
     assert isinstance(build_retriever(CORPUS), FullContextRetriever)
+
+
+def test_ui_is_served_at_root_when_built(tmp_path, monkeypatch):
+    """The TypeScript page is static files; the API mounts them at / when UI_DIR exists."""
+    (tmp_path / "index.html").write_text("<title>Recipe Q&A</title>", encoding="utf-8")
+    monkeypatch.setenv("UI_DIR", str(tmp_path))
+    c = make_client(FakeLLM())
+    r = c.get("/")
+    assert r.status_code == 200 and "Recipe Q&A" in r.text
+    assert c.get("/healthz").status_code == 200  # API routes win over the static mount
+
+
+def test_missing_ui_dir_does_not_break_the_api(tmp_path, monkeypatch):
+    monkeypatch.setenv("UI_DIR", str(tmp_path / "nope"))
+    c = make_client(FakeLLM())
+    assert c.get("/").status_code == 404
+    assert c.get("/healthz").status_code == 200
