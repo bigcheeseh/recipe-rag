@@ -278,7 +278,7 @@ Earlier pre-deployment reference, measured on the developer machine by the BM25
 eval run (`evals/runs/20260904T175824Z-bm25-claude-sonnet-5.md`, 23
 questions, one at a time, not the deployed service): extract p50 2142 /
 p95 2651 ms, retrieve 0 / 0 ms, generate 2824 / 6737 ms, total 5086 /
-8346 ms. The deployed columns above stay TBD until Block 7.
+8346 ms. Superseded by the deployed table above.
 
 ---
 
