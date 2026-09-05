@@ -517,3 +517,23 @@ request (about 8%). Redeployed; the full deployed run follows.
 
 Runner gained `--only` for such reruns; a partial run prints its table and
 never writes a run file, so it cannot become the regression baseline.
+
+## 2026-09-05 — second deployed run: g27 fixed, g25 flipped
+
+`evals/runs/20260905T155036Z-full-claude-sonnet-5-deployed.md`: 28/29,
+no regressions. g27 now cites all three vegan recipes. New failure g25
+("longest stated total time"): with the metadata in the context the
+model answered hummus (870 minutes, our enrichment estimate that counts
+an overnight soak) instead of the bolognese whose own Time line says
+2 hours. The question asks what a recipe *states*; the estimate is ours.
+
+Fix: the metadata line is now "Estimated total time", and generate.md
+rule 8 says the four metadata lines come from enrichment and that a
+recipe's own "Time:" line is its stated time. Targeted rerun g25, g24,
+g28, g07: all pass. g25 now takes about 21 s of generation (2,185 output
+tokens: the model walks every recipe's times); noted as the slowest
+question for the p95. Redeployed; final deployed run and cold start follow.
+
+Cold start measured on the previous image: first request to a stopped
+machine 5.97 s (connect 0.06 s), warm 0.24 s. Re-measured on the final
+image below.
