@@ -1,0 +1,10 @@
+# Local run: `docker compose up --build`, then open http://localhost:8080.
+# Secrets come from .env (gitignored); nothing is baked into the image.
+services:
+  api:
+    build: .
+    ports:
+      - "8080:8080"
+    env_file: .env
+    environment:
+      PORT: "8080"
