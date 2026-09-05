@@ -42,7 +42,7 @@ is tested.
 ### `GET /healthz`
 
 Returns `200 {"status": "ok", "recipes": <int>}` once the corpus is loaded and
-the BM25 index is built. Used by the Docker healthcheck and Cloud Run.
+the retriever is built. Used by the Docker healthcheck and Cloud Run.
 
 ---
 
@@ -103,7 +103,8 @@ rather than the validator:
 question
   → extract_query()       LLM #1 → Query {in_domain, search_terms, exclude_allergens, diet, max_minutes}
   → apply_filters()       pure Python over recipe metadata
-  → bm25_rank()           top-5 sections within the filtered set, expanded to whole recipes
+  → retrieve()            default: every filtered recipe (full context, prompt-cached);
+                          RETRIEVER=bm25: top-8 sections expanded to whole recipes (ADR-002)
   → generate()            LLM #2 → structured {answer | refusal, sources, conflicts}
   → validate_grounding()  pure Python: cited ids ⊆ retrieved ids, else one repair, else refuse
   → Answer JSON
@@ -245,14 +246,17 @@ computed from those counts and the prices above. It is never estimated.
 The metadata-enrichment call at ingestion is a one-time cost and is recorded
 separately in `ingest_manifest.json`, not in per-question `Usage`.
 
-**Target for 1,000 questions:** USD 14.34, from the mean `cost_usd` of the
-BM25 + Sonnet 5 eval run on the 23-question golden set with top-k 8
-(`evals/runs/20260904T193941Z-bm25-claude-sonnet-5.md`, mean USD 0.0143)
-multiplied by 1,000. Top-k 5 measured USD 11.37 on the same set. ADR-002
-lists the other configurations.
+**Target for 1,000 questions:** USD 14.94, from the mean `cost_usd` of the
+full-context + Sonnet 5 eval run on the 29-question golden set
+(`evals/runs/20260904T201858Z-full-claude-sonnet-5.md`, mean USD 0.0149) multiplied by 1,000, with the
+recipe block prompt-cached and the cache warm. BM25 + Sonnet 5 on the same
+set measured USD 14.75. ADR-002 lists the other configurations and the
+corpus size at which BM25 becomes cheaper.
 
-Prompt caching of the system prompt and recipe context is an optimisation
-considered only after the baseline is measured.
+Prompt caching applies to the recipe block in full-context mode only. Cache
+writes are priced at 1.25x and reads at 0.1x the input price; both counts
+come from the provider's `usage` object and feed `cost_usd`. A request
+that arrives after the 5-minute cache has expired pays the write.
 
 ---
 
@@ -278,9 +282,11 @@ be challenged.
    changed.
 5. **Question length.** Capped at 500 characters. Longer questions are
    rejected with `422` rather than truncated.
-6. **Top-k.** Up to eight parent recipes (best section score each) are
-   passed to the generator; a recipe whose full title appears in the search
-   terms is placed first regardless of score. Was five; raised after the
+6. **Retrieval.** Default is full context: every recipe that passes the
+   filters is sent to the generator, prompt-cached (ADR-002, 2026-09-05).
+   With `RETRIEVER=bm25`, up to eight parent recipes (best section score
+   each) are passed; a recipe whose full title appears in the search terms
+   is placed first regardless of score. Was five; raised after the
    two-dish question g14 showed two dishes competing for five slots
    (ADR-002 item 5). Fewer than eight is common: zero-score recipes are
    never included.

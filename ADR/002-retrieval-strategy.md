@@ -1,6 +1,6 @@
-# ADR-002: Retrieval strategy — BM25 by default, hybrid and full-context behind flags
+# ADR-002: Retrieval strategy — full context by default, BM25 and hybrid behind flags
 
-**Status:** accepted, 2026-09-04
+**Status:** accepted, 2026-09-04; default switched to full context 2026-09-05 (user decision)
 
 ## Context
 
@@ -17,9 +17,9 @@ limited to insufficient_context / safety_deferral, rubric judge Opus 5
 
 | Configuration | Pass | Judge c / c / l | Mean USD / question | USD / 1,000 | total p50 ms | total p95 ms | generate p95 ms |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| BM25, Sonnet 5 (default) | 25/29 | 2.96 / 2.96 / 3.00 | 0.0148 | 14.75 | 5254 | 10735 | 8441 |
+| BM25, Sonnet 5 | 25/29 | 2.96 / 2.96 / 3.00 | 0.0148 | 14.75 | 5254 | 10735 | 8441 |
 | Hybrid BM25 + Voyage, Sonnet 5 | 26/29 | 2.96 / 3.00 / 3.00 | 0.0169 | 16.86 | 8652 | 67378 | 8317 |
-| Full context (cached), Sonnet 5 | **29/29** | 3.00 / 2.96 / 3.00 | 0.0149 | 14.94 | 6284 | 16913 | 14855 |
+| Full context (cached), Sonnet 5 (default) | **29/29** | 3.00 / 2.96 / 3.00 | 0.0149 | 14.94 | 6284 | 16913 | 14855 |
 | BM25, Haiku 4.5 | 25/29 | 2.82 / 2.71 / 2.93 | 0.0047 | 4.66 | 4092 | 7957 | 6377 |
 | Hybrid, Haiku 4.5 | 25/29 | 2.89 / 2.82 / 3.00 | 0.0052 | 5.23 | 5009 | 66917 | 5412 |
 | Full context (cached), Haiku 4.5 | 26/29 | 2.86 / 2.71 / 3.00 | 0.0046 | 4.62 | 4253 | 6942 | 5953 |
@@ -50,9 +50,18 @@ What the failures are:
 
 ## Decision
 
-1. **BM25 over section chunks stays the default.** Zero network calls in
-   retrieval, one provider, deterministic and unit-testable, cheapest input
-   tokens per question (about 4-5k), and the fastest total latency.
+1. **Full context on Sonnet 5 is the default** (`RETRIEVER` unset or
+   `full`; user decision, 2026-09-05, superseding the 2026-09-04 choice of
+   BM25). It is the only configuration that answers the corpus-wide
+   questions (quickest recipe, longest stated time, in either language),
+   and those are questions a real user asks. At 48 recipes its cost
+   equals BM25's (USD 0.0149 vs 0.0148 per question) because the recipe
+   block is prompt-cached, and it is the simplest pipeline: no index, no
+   ranking, no top-k to tune. What it pays is tail latency (generation
+   p95 14.9 s vs 8.4 s) and a dependence on a warm cache; both are
+   recorded in the threshold section below and re-measured on Cloud Run
+   in Block 7. BM25 stays as the documented fallback once the corpus
+   grows past the threshold.
 2. **Hybrid stays behind `RETRIEVER=hybrid`.** It found nothing BM25 missed.
    Retrieval-level comparison on the extracted terms of every in-domain
    question plus three "described, not named" probes gave the same top
@@ -60,11 +69,10 @@ What the failures are:
    extraction step, which already rewrites a described dish into its name.
    Code and `data/embeddings.npz` are kept for the day the corpus grows past
    what dish names can key.
-3. **Full context stays behind `RETRIEVER=full`.** It works at 48 recipes
-   and it is the simplest possible pipeline. At top-k 8 its cost is within
-   4% of BM25 and its judge scores match; what still argues against it is
-   the 80-recipe cost threshold below, a generation p95 that grows with
-   the corpus, and dependence on a warm cache.
+3. **BM25 stays behind `RETRIEVER=bm25`.** Zero network calls in
+   retrieval, deterministic and unit-testable, and the cheaper choice
+   above about 80 recipes. It is what the service switches to when the
+   corpus grows; the g27 padding fix (context above) is still owed to it.
 4. **Sonnet 5 stays the default model** (user decision, 2026-09-04).
    Haiku 4.5 passed 23/23 at about a third of the cost, but on the
    browsing question g07 it listed recipes with no stated time by guessing
@@ -110,11 +118,19 @@ per recipe.
 Practical threshold: full context is a reasonable choice below about 80
 recipes with warm traffic, and a poor one above that. This corpus sits just
 under the line, which is why the choice is a flag rather than a rewrite.
+The trigger to flip the flag back to BM25 is the corpus passing 80
+recipes or a measured generation p95 over the latency budget on Cloud Run.
 
 ## Consequences
 
 - The pipeline never imports a concrete retriever; `build_retriever` reads
   the flag. Switching strategy is configuration.
+- With full context the deployed service must keep the cache warm to hit
+  the cost above: the cache lives 5 minutes, so a request after a quiet
+  period pays the 1.25x write on the whole corpus (USD 0.065 at 48 recipes).
+  Block 7 measures how often that happens at the expected traffic.
+- The Voyage embedding rate limit dominates hybrid latency (p95 total
+  67 s); any future hybrid default needs a paid tier or a local embedder.
 - `evals/run_evals.py --retriever {bm25,hybrid,full} --model ...` reproduces
   every row above.
 - Voyage is optional: only the hybrid flag and the embedding build script

@@ -353,3 +353,19 @@ to pad up to k with the remaining candidates. Not applied yet.
 Answers files: removed. Calibration was never done and the golden set has
 changed twice since they were written; regenerate when scoring is
 actually going to happen.
+
+## 2026-09-05 — default switched to full context on Sonnet 5
+
+User decision after the 3x2 matrix: `RETRIEVER` unset now means full
+context, with BM25 and hybrid behind the flag. Reasons, in order: it is
+the only configuration that answers the corpus-wide questions (29/29 vs
+25-26/29); at 48 recipes it costs the same as BM25 with the recipe block
+cached (0.0149 vs 0.0148 USD per question); it is the simplest pipeline.
+Known costs: generation p95 14.9 s vs 8.4 s, and a cold cache pays 1.25x
+on the whole corpus. Both go on the Block 7 measurement list, and the
+80-recipe threshold in ADR-002 is the trigger to flip back.
+
+Changed: `build_retriever` default, `.env.example`, SPEC pipeline
+diagram, cost target (USD 14.94 per 1,000 from the 29-question full
+context run) and assumption 6, ADR-002 decision items 1 and 3. The g27
+padding fix for BM25 is still owed; it no longer affects the default path.
