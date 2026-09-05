@@ -10,6 +10,7 @@ import anthropic
 from dotenv import load_dotenv
 from fastapi import FastAPI, Request, Response
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 
 from app.embeddings import HybridRetriever, load_vectors, voyage_embedder
 from app.llm import LLM, UnparseableOutput
@@ -91,6 +92,12 @@ def create_app(pipeline: Pipeline | None = None) -> FastAPI:
         # The catch-all handler runs outside the http middleware, so set the header here.
         body = {"detail": detail, "trace_id": trace_id}
         return JSONResponse(body, status_code=status, headers={"X-Trace-Id": trace_id})
+
+    # The TypeScript page, compiled to ui/dist by `npm run build` (the Dockerfile does it).
+    # Mounted last so /ask and /healthz keep precedence; absent in unit tests and dev.
+    ui = Path(os.environ.get("UI_DIR", "ui/dist"))
+    if ui.is_dir():
+        app.mount("/", StaticFiles(directory=ui, html=True), name="ui")
 
     return app
 
