@@ -79,3 +79,15 @@ def test_full_context_retriever_returns_every_filtered_recipe():
     r = FullContextRetriever(ALL)
     assert [x.id for x, _ in r.retrieve(q())] == ["pad-thai", "dal", "omelet", "unknown"]
     assert [x.id for x, _ in r.retrieve(q(diet=["vegan"]))] == ["dal"]
+
+
+def test_constrained_query_is_padded_with_the_rest_of_the_filtered_set():
+    """g27: 'every vegan recipe under 15 minutes' whose terms match one of three
+    filtered candidates must still return all three, matched first, padded at score 0."""
+    from app.retrieval import BM25Retriever
+
+    r = BM25Retriever(ALL)
+    got = r.retrieve(Query(in_domain=True, search_terms="omelet", max_minutes=30))
+    assert [(x.id, s > 0) for x, s in got] == [("omelet", True), ("pad-thai", False)]
+    # Unconstrained: no defined answer set, so no padding.
+    assert [x.id for x, _ in r.retrieve(Query(in_domain=True, search_terms="omelet"))] == ["omelet"]
