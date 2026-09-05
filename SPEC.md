@@ -223,10 +223,13 @@ criterion.
   grounding validation result. A single record must be enough to tell a
   retrieval failure (wrong recipes) from a generation failure (right recipes,
   wrong answer).
-- AC-16. The API key is read from Secret Manager on Cloud Run and from an
-  environment variable locally. It never appears in the image, the Terraform
-  state committed to git, or any log line.
-- AC-17. Cloud Run `min_instances = 0`.
+- AC-16. The API key is read from the platform's secret store when deployed
+  (Fly.io secrets, ADR-004) and from an environment variable locally. It
+  never appears in the image, in any file committed to git, or in any log
+  line.
+- AC-17. The deployed service scales to zero when idle
+  (`min_machines_running = 0` in `fly.toml`); cold start is measured in
+  section 6.
 
 ---
 
