@@ -7,6 +7,7 @@ from tests.conftest import CORPUS
 BY_ID = {r.id: r for r in CORPUS}
 USAGE = {
     "model": "m",
+    "retriever": "bm25",
     "tokens_in": 1,
     "tokens_out": 1,
     "cost_usd": 0.0,

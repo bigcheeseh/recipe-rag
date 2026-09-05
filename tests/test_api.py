@@ -8,15 +8,14 @@ from fastapi.testclient import TestClient
 from app.api import create_app
 from app.models import Answer, Query
 from app.pipeline import Pipeline
-from app.retrieval import BM25Retriever
-from tests.conftest import CORPUS, FakeLLM, answer, refusal
+from tests.conftest import CORPUS, FakeLLM, answer, backends, refusal
 
 OUT_OF_DOMAIN = "How do I fix a flat tyre?"
 EGGS = "How many eggs in the carbonara?"
 
 
 def make_client(llm: FakeLLM) -> TestClient:
-    app = create_app(Pipeline(llm, BM25Retriever(CORPUS), CORPUS))
+    app = create_app(Pipeline(backends(llm), CORPUS))
     return TestClient(app).__enter__()  # run lifespan
 
 
@@ -130,7 +129,7 @@ class BrokenLLM(FakeLLM):
 )
 def test_upstream_failures_map_to_status_codes(exc, status, detail):
     client = TestClient(
-        create_app(Pipeline(BrokenLLM(exc), BM25Retriever(CORPUS), CORPUS)),
+        create_app(Pipeline(backends(BrokenLLM(exc)), CORPUS)),
         raise_server_exceptions=False,
     ).__enter__()
     r = client.post("/ask", json={"question": EGGS})
@@ -163,3 +162,36 @@ def test_missing_ui_dir_does_not_break_the_api(tmp_path, monkeypatch):
     c = make_client(FakeLLM())
     assert c.get("/").status_code == 404
     assert c.get("/healthz").status_code == 200
+
+
+# per-request backend switch (SPEC 1, assumption 14)
+
+
+def test_config_lists_backends_with_notes_and_defaults():
+    body = make_client(FakeLLM()).get("/config").json()
+    assert [m["id"] for m in body["models"]] == ["claude-sonnet-5"]
+    assert [r["id"] for r in body["retrievers"]] == ["bm25", "full"]
+    assert all(m["note"] for m in body["models"]) and all(r["note"] for r in body["retrievers"])
+    assert body["defaults"] == {"model": "claude-sonnet-5", "retriever": "bm25"}
+
+
+def test_request_can_pick_model_and_retriever_and_the_response_says_so():
+    sonnet = FakeLLM(drafts=[answer("s", ["carbonara"])])
+    haiku = FakeLLM(drafts=[answer("h", ["carbonara"])], model="claude-haiku-4-5")
+    app = create_app(Pipeline(backends(sonnet, haiku), CORPUS))
+    c = TestClient(app).__enter__()
+    body = {"question": EGGS, "model": "claude-haiku-4-5", "retriever": "full"}
+    a = Answer.model_validate(c.post("/ask", json=body).json())
+    assert a.answer == "h" and a.usage.model == "claude-haiku-4-5" and a.usage.retriever == "full"
+    assert haiku.cache_flags == [True]  # full context is cacheable, whatever the model
+    assert sonnet.calls == []
+    a = Answer.model_validate(c.post("/ask", json={"question": EGGS}).json())
+    assert a.answer == "s" and a.usage.retriever == "bm25" and sonnet.cache_flags == [False]
+
+
+@pytest.mark.parametrize("field, value", [("model", "gpt-9"), ("retriever", "magic")])
+def test_unknown_backend_is_422_before_any_model_call(field, value):
+    llm = FakeLLM()
+    r = make_client(llm).post("/ask", json={"question": EGGS, field: value})
+    assert r.status_code == 422 and value in r.text
+    assert llm.calls == []

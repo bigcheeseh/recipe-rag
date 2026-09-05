@@ -5,6 +5,7 @@ from app.models import Answer, AskRequest, Refusal, Source, Usage
 
 USAGE = Usage(
     model="test",
+    retriever="bm25",
     tokens_in=0,
     tokens_out=0,
     cost_usd=0.0,
