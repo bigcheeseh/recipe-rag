@@ -21,7 +21,7 @@ own stack choice, not the assignment's; the assignment lists `fly.toml`,
 | | Cloud Run + Terraform | Cloud Run, `gcloud run deploy` | Fly.io, `fly.toml` | Render, `render.yaml` |
 | --- | --- | --- | --- | --- |
 | IaC in repo | yes, ~80 lines HCL + state to manage | no (a command, not a file) | yes, one file | yes, one file |
-| Redeploy without UI steps | yes | yes | yes (`fly deploy`) | on git push, but the first blueprint is created in the dashboard |
+| Redeploy without UI steps | yes | yes | yes (`fly deploy`, or Fly's GitHub integration on push after a one-time connection) | on git push, but the first blueprint is created in the dashboard |
 | Idempotent | yes | yes | yes | yes |
 | Secrets | Secret Manager, referenced by name | Secret Manager | `fly secrets set`, encrypted store | dashboard or `sync: false` env var |
 | Container-level access for reviewers | IAM invite to project, Cloud Logging | same | org invite, `fly logs`, `fly status`, dashboard | dashboard invite |
@@ -37,8 +37,11 @@ that CI can run.
 ## Decision
 
 **Fly.io.** One committed `fly.toml`, the same Dockerfile used locally,
-`fly deploy` from a GitHub Actions job on every push to `main` after the
-test gate. The Anthropic key is set once with `fly secrets set` and reaches
+deployed on every push to `main` by Fly's GitHub integration (user decision
+2026-09-05; the original plan was a GitHub Actions job holding a Fly token,
+dropped so there is one deploy path and no Fly credential in GitHub). The
+GitHub Actions workflow is the test gate only. The Anthropic key is set once
+with `fly secrets set` and reaches
 the container as an environment variable; it is never in the repo, the
 image, or CI. Reviewers get an invitation to the Fly organisation, which
 shows machine status and logs, plus `fly logs` from the CLI. Machines stop

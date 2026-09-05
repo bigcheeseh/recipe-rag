@@ -88,12 +88,14 @@ In short: it is one container with no state, Fly needs one file and one command,
 the machine stops when idle so review traffic costs nothing, and reviewers get
 container-level access by invitation.
 
-**How a new deployment happens:** every push to `main` runs
-[.github/workflows/ci.yml](.github/workflows/ci.yml): ruff, mypy, pytest, the
-TypeScript build, a Docker build, and then `flyctl deploy --remote-only`. The job needs
-one GitHub secret, `FLY_API_TOKEN`; until it is set the deploy job fails and the test
-job still gates. The three deployments so far were run by hand with the same command,
-which is idempotent: running it twice produces the same release.
+**How a new deployment happens:** two things run on every push to `main`, independently.
+[.github/workflows/ci.yml](.github/workflows/ci.yml) is the test gate: ruff, mypy,
+pytest, the TypeScript build, and a Docker build. Fly.io's GitHub integration, connected
+to this repository in the Fly dashboard, builds the committed `Dockerfile` with `fly.toml`
+and rolls the machine (user decision, 2026-09-05: one deploy path, no Fly token in
+GitHub). No step happens in a UI after the one-time connection. The deploy is
+idempotent: the same commit deployed twice yields the same release. The first three
+releases were `fly deploy` by hand; the same command still works for a manual deploy:
 
 ```
 fly secrets set ANTHROPIC_API_KEY=...   # once; stored encrypted by Fly, never in git or the image
