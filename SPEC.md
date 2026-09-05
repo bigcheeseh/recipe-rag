@@ -357,9 +357,9 @@ be challenged.
     is bounded by the platform's concurrency limits and scale to zero.
 14. **Per-request backend switch.** `model` and `retriever` in the request
     body override the server defaults for that request only (user request,
-    2026-09-05), so the UI can compare configurations live. Every model in
-    the price table is selectable, including Opus 5 at 2.5x Sonnet's price;
-    with assumption 13 that means any caller can pick the most expensive
-    pair. Acceptable for a demo, and the first thing to restrict behind a
-    key if the endpoint outlives it. Prompt caching applies only when the
+    2026-09-05), so the UI can compare configurations live. Selectable
+    models are Sonnet 5 and Haiku 4.5; Opus 5 is priced only for the eval
+    judge and is not offered (user decision, 2026-09-05). With assumption
+    13 any caller can still pick the dearer pair, acceptable for a demo and
+    the first thing to restrict behind a key. Prompt caching applies only when the
     retriever marks its context as stable (full context), whatever the model.

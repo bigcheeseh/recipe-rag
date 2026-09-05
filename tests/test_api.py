@@ -151,8 +151,9 @@ def test_defaults_are_full_context_and_sonnet_when_env_is_unset(monkeypatch, tmp
     monkeypatch.setenv("CORPUS_PATH", str(corpus))
     monkeypatch.setenv("EMBEDDINGS_PATH", str(tmp_path / "none.npz"))  # .env may hold a Voyage key
     monkeypatch.setattr(anthropic, "Anthropic", lambda: object())  # no key, no network
-    d = build_pipeline().backends.describe()["defaults"]
-    assert d == {"model": "claude-sonnet-5", "retriever": "full"}
+    d = build_pipeline().backends.describe()
+    assert d["defaults"] == {"model": "claude-sonnet-5", "retriever": "full"}
+    assert [m["id"] for m in d["models"]] == ["claude-sonnet-5", "claude-haiku-4-5"]  # no Opus
 
 
 def test_ui_is_served_at_root_when_built(tmp_path, monkeypatch):

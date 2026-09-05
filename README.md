@@ -73,9 +73,9 @@ curl -s localhost:8080/ask -H 'Content-Type: application/json' \n  -d '{"questio
 Server defaults come from `MODEL` and `RETRIEVER` in the environment. `hybrid` is offered
 only when `VOYAGE_API_KEY` and `data/embeddings.npz` are present. The response's
 `usage.model` and `usage.retriever` and the request log say which pair answered, so a
-switched request is never ambiguous. Because the endpoint has no authentication, any
-caller can pick the most expensive pair (SPEC assumption 14); that is the first thing to
-restrict if this outlives the demo.
+switched request is never ambiguous. Selectable models are Sonnet 5 and Haiku 4.5.
+Because the endpoint has no authentication, any caller can pick the dearer pair (SPEC
+assumption 14); that is the first thing to restrict if this outlives the demo.
 
 ## Deployment
 

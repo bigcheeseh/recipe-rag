@@ -22,6 +22,7 @@ class Generator(Protocol):
     ) -> tuple[Draft, TokenUsage]: ...
 
 
+# Selectable per request. Opus 5 is priced in llm.PRICES for the eval judge only.
 MODEL_NOTES = {
     "claude-sonnet-5": (
         "Default. Passed 29/29 on the golden set with full context. USD 2 / 10 per M tokens."
@@ -29,10 +30,6 @@ MODEL_NOTES = {
     "claude-haiku-4-5": (
         "About a third of the cost. Guesses on browsing and corpus-wide questions "
         "(26/29). USD 1 / 5 per M tokens."
-    ),
-    "claude-opus-5": (
-        "The eval judge. 2.5x Sonnet's price; no measured need for it in answering. "
-        "USD 5 / 25 per M tokens."
     ),
 }
 RETRIEVER_NOTES = {

@@ -487,3 +487,11 @@ request body so `--url` runs measure the same thing as in-process runs.
 Live check: `/config` listed three models and three retrievers (Voyage key
 present locally), Haiku + BM25 answered with `usage.retriever = "bm25"`,
 an unknown model returned 422 before any model call.
+
+## 2026-09-05 — Opus removed from the selectable models
+
+I had offered every model in the price table, including Opus 5, in the
+per-request switch. The user had not asked for Opus; it is the eval judge
+only. Removed from `MODEL_NOTES`; it stays in `llm.PRICES` so judge cost
+is still computed, and the defaults test now pins the selectable list to
+Sonnet 5 and Haiku 4.5.
