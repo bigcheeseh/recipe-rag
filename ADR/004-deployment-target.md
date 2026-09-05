@@ -1,4 +1,4 @@
-# ADR-003: Deployment target — Fly.io from a committed `fly.toml`, deployed by CI
+# ADR-004: Deployment target — Fly.io from a committed `fly.toml`, deployed by CI
 
 **Status:** accepted, 2026-09-05
 
