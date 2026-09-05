@@ -97,3 +97,31 @@ def test_generator_draft_cannot_refuse_out_of_domain():
         answer=None, refusal={"reason": "insufficient_context", "message": "x"}, source_ids=[]
     )
     assert d.refusal is not None and d.refusal.reason == "insufficient_context"
+
+
+# assignment minimum contract: citations, refused, refusal_reason (derived, never set by hand)
+
+
+def test_assignment_contract_fields_for_an_answer():
+    a = Answer(answer="3 eggs", refusal=None, sources=[SOURCE], usage=USAGE)
+    body = a.model_dump(mode="json")
+    assert body["citations"] == [{"title": "Carbonara", "url": "https://example.org/carbonara"}]
+    assert body["refused"] is False
+    assert body["refusal_reason"] is None
+
+
+@pytest.mark.parametrize(
+    "ours,theirs",
+    [
+        ("out_of_domain", "out_of_domain"),
+        ("insufficient_context", "out_of_corpus"),
+        ("safety_deferral", "safety"),
+    ],
+)
+def test_assignment_contract_fields_for_a_refusal(ours, theirs):
+    sources = [] if ours == "out_of_domain" else [SOURCE]
+    a = Answer(answer=None, refusal=Refusal(reason=ours, message="m"), sources=sources, usage=USAGE)
+    body = a.model_dump(mode="json")
+    assert body["refused"] is True
+    assert body["refusal_reason"] == theirs
+    assert body["citations"] == [{"title": s.title, "url": s.url} for s in sources]

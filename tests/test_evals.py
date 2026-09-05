@@ -115,3 +115,17 @@ def test_human_scores_are_read_from_the_answers_table(tmp_path):
     )
     assert table_column(f, 2, True) == {"g01": "3/3/3", "g02": "3/2/3"}
     assert table_column(f, 3, True) == {"g01": "2/3/3"}
+
+
+def test_contract_check_rejects_inconsistent_assignment_fields():
+    """The eval verifies the assignment's minimum schema, not only our own model."""
+    ok = body("x", ids=["carbonara"])
+    ok.update(
+        citations=[{"title": "carbonara", "url": "u"}], refused=False, refusal_reason=None
+    )
+    assert check({}, 200, ok, BY_ID) == []
+    bad = dict(ok, refused=True)
+    assert check({}, 200, bad, BY_ID) == ["contract: refused True != False"]
+    missing = dict(ok)
+    del missing["citations"]
+    assert check({}, 200, missing, BY_ID)[0].startswith("contract:")
