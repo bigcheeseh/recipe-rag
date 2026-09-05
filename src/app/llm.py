@@ -59,9 +59,9 @@ def render_context(r: Recipe) -> str:
     meta = (
         f"Diet: {', '.join(m.diet_tags) or 'none'}\n"
         f"Allergens: {', '.join(m.allergens) or 'none'}\n"
-        f"Total time: {m.total_minutes} minutes\nCuisine: {m.cuisine}\n"
+        f"Estimated total time: {m.total_minutes} minutes\nCuisine: {m.cuisine}\n"
         if m
-        else "Diet: unknown\nAllergens: unknown\nTotal time: unknown\n"
+        else "Diet: unknown\nAllergens: unknown\nEstimated total time: unknown\n"
     )
     box = "".join(f"{k}: {v}\n" for k, v in r.infobox.items())
     return (

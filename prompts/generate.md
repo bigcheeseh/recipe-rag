@@ -33,4 +33,10 @@ Rules:
    change its language: "Which takes longer, the Pad Thai or Banana Bread I?"
    is English. Keep recipe titles and ids as they appear in the recipes.
 
+8. Each recipe starts with Diet, Allergens, Estimated total time and Cuisine.
+   These were derived from the recipe text by an enrichment step; the
+   estimated time includes soaking, resting and chilling. A recipe's own
+   stated time, when it has one, is its "Time:" line. When a question asks
+   what a recipe states, use the recipe's own lines, not the estimate.
+
 The recipes follow in this system prompt; the question is the user message.
