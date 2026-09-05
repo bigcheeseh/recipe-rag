@@ -1,0 +1,13 @@
+{
+  "name": "recipe-rag-ui",
+  "private": true,
+  "version": "0.1.0",
+  "description": "One-page TypeScript UI for the Recipe Q&A service; compiled by tsc, no bundler.",
+  "scripts": {
+    "build": "tsc && node -e \"require('fs').copyFileSync('index.html', 'dist/index.html')\"",
+    "check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3"
+  }
+}

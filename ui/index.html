@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Recipe Q&A</title>
+  <style>
+    body { font: 16px/1.5 system-ui, sans-serif; max-width: 44rem; margin: 2rem auto; padding: 0 1rem; color: #222; }
+    form { display: flex; gap: .5rem; }
+    input { flex: 1; padding: .5rem; font: inherit; }
+    button { padding: .5rem 1rem; font: inherit; }
+    #refusal { border-left: 4px solid #c33; padding-left: .75rem; }
+    #answer { white-space: pre-wrap; }
+    #meta { color: #666; font-size: .875rem; }
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+  <h1>Recipe Q&A</h1>
+  <p>Answers come only from 48 Wikibooks Cookbook recipes. Anything else is refused.</p>
+  <form id="ask">
+    <input id="question" name="question" maxlength="500" placeholder="How many eggs go into carbonara?" required autofocus>
+    <button id="submit" type="submit">Ask</button>
+  </form>
+  <section id="result" hidden>
+    <p id="refusal" hidden></p>
+    <p id="answer"></p>
+    <ul id="conflicts"></ul>
+    <h2>Citations</h2>
+    <ul id="citations"></ul>
+    <p id="meta"></p>
+  </section>
+  <p id="error" hidden></p>
+  <script src="main.js"></script>
+</body>
+</html>
