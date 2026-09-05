@@ -369,3 +369,86 @@ Changed: `build_retriever` default, `.env.example`, SPEC pipeline
 diagram, cost target (USD 14.94 per 1,000 from the 29-question full
 context run) and assumption 6, ADR-002 decision items 1 and 3. The g27
 padding fix for BM25 is still owed; it no longer affects the default path.
+
+## 2026-09-05 — Block 7 opened against the real assignment text
+
+The user pasted the original assignment (previously only CLAUDE.md, our
+own plan derived from it, was available). Four gaps against it, all now
+closed except the deploy itself:
+
+- Response contract: theirs is `citations[{title,url}]`, `refused`,
+  `refusal_reason ∈ {out_of_corpus, out_of_domain, safety}`. Added as
+  computed fields on `Answer`, derived from `sources`/`refusal` so the two
+  views cannot disagree; the eval checks both views on every response.
+- TypeScript UI is mandatory: `ui/` (one page, `tsc` only, no framework),
+  served by FastAPI from `ui/dist` when present. Two tests cover the mount.
+- Deployment target: the assignment accepts `fly.toml` / `render.yaml` /
+  compose + CI, so Terraform was our own choice. Fly.io chosen (ADR-004);
+  the ADR-003 slot goes to the refusal policy as CLAUDE.md planned.
+- README and the committed CLAUDE.md were missing deliverables. CLAUDE.md
+  is committed unchanged; departures from it are listed below.
+
+Local container verified end to end (healthz 48 recipes, UI at `/`, one
+/ask with the contract fields). First request in a fresh container cost
+USD 0.0726: 27,540 input tokens, the 1.25x cache write on the whole
+corpus, as ADR-002 predicted. Docker build failed once on `pip install`
+right after Docker Desktop started and passed unchanged on retry.
+
+Runner gained `--url` so the final check ("run_evals passes against the
+deployed URL") goes through the network stack, not TestClient.
+
+## 2026-09-05 — departures from CLAUDE.md (for the reviewer)
+
+CLAUDE.md is committed as it was given. Where the work departed from it:
+
+- Python 3.11, not 3.12 (2026-09-03 entry).
+- Anthropic instead of the OpenAI client the pinned requirements implied;
+  Voyage instead of `text-embedding-3-small` for the hybrid experiment.
+- Top-k 8 with title promotion instead of top-5 (ADR-002 item 5).
+- The "no LLM-as-judge" rule was lifted by the user for a reported-only
+  rubric judge; every pass/fail check is still deterministic.
+- Golden set grew from 13 to 29; the extra questions were what separated
+  the retrieval configurations.
+- Default retrieval is full context, not BM25 (2026-09-05 entry).
+- Fly.io + `fly.toml` instead of Cloud Run + Terraform (ADR-004).
+- `generate.py` became `llm.py` + `pipeline.py`: the model calls and the
+  pure-Python glue are separate files so the glue is testable with a fake.
+
+## 2026-09-05 — accepted vs rewritten agent output
+
+Honest account, per CLAUDE.md commit 40. "Accepted" means committed as
+produced after reading the diff; "rewritten" means changed on review or
+after a failing measurement.
+
+Accepted as produced: models and validators; chunking and BM25 with the
+tests; filters; the grounding validator and repair; the structured log
+record; the eval runner's deterministic checks; the Dockerfile, compose,
+`fly.toml`, CI workflow; the TypeScript page.
+
+Rewritten after measurement (each has a DEVLOG entry with numbers):
+- Browse fallback for constrained queries with zero hits (g07 failed).
+- `max_tokens` 1024 → 4096 and retry on truncated JSON (g17 crashed the
+  runner).
+- Generation rule 7 tightened after Sonnet answered an English question
+  in Spanish because a recipe title was foreign.
+- Generator output type narrowed so it cannot emit `out_of_domain`
+  (g12 failed on hybrid and full context).
+- Top-k 5 → 8 plus title promotion after g14 flapped.
+- Judge: `load_dotenv` order, `max_tokens` 512 → 4096 with low effort,
+  one judge model for every run.
+- Voyage batching and backoff after a 429 on the first embedding build.
+
+Rewritten on review by the user:
+- BM25 was to stay the default; the user asked for the retriever seam
+  first, then for the 3x2 matrix with harder questions, and finally
+  chose full context on the numbers.
+- Haiku as default was proposed on cost; the user rejected it on the
+  g07 guessed durations.
+- Golden expectations corrected against the corpus three times (g13
+  bolognese had no conflict; g14 risotto had no stated time; g16 time).
+- One misread: "both are good" was taken as approval of two retrieval
+  fixes when the user meant two answers files. The fixes stayed with an
+  offer to revert; the user kept them.
+
+Still owed: the g27 padding fix on the BM25 path; judge calibration
+against human scores; the measured latency table after deploy.
