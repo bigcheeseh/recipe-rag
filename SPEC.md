@@ -19,9 +19,30 @@ This document is the contract. Code that disagrees with it is wrong.
 { "question": "How many eggs does the carbonara use?" }
 ```
 
-| Field      | Type   | Rules                                                     |
-| ---------- | ------ | --------------------------------------------------------- |
-| `question` | string | required; after stripping whitespace must be 1–500 chars |
+| Field       | Type   | Rules                                                     |
+| ----------- | ------ | --------------------------------------------------------- |
+| `question`  | string | required; after stripping whitespace must be 1–500 chars |
+| `model`     | string | optional; one of the ids listed by `GET /config`; default is the server's `MODEL` |
+| `retriever` | string | optional; one of the ids listed by `GET /config`; default is the server's `RETRIEVER` |
+
+An unknown `model` or `retriever` is a `422` before any model call. The
+response's `usage.model` and `usage.retriever` always say which pair
+answered, so a switched request is auditable from the response and the log.
+
+### `GET /config`
+
+Returns the switchable backends and the defaults, for the UI's selectors:
+
+```json
+{
+  "models":     [{"id": "claude-sonnet-5", "note": "..."}, ...],
+  "retrievers": [{"id": "full", "note": "..."}, ...],
+  "defaults":   {"model": "claude-sonnet-5", "retriever": "full"}
+}
+```
+
+Only backends the server could build are listed: `hybrid` appears only
+when `VOYAGE_API_KEY` and the embeddings file are present.
 
 **Response `200`** — always an `Answer` object (schema in section 2), even when
 the service refuses. A refusal is a successful, well-formed response, not an
@@ -60,6 +81,7 @@ class Refusal(BaseModel):
 
 class Usage(BaseModel):
     model: str
+    retriever: str                   # which retriever produced the context
     tokens_in: int
     tokens_out: int
     cost_usd: float
@@ -332,4 +354,12 @@ be challenged.
     Russian are covered by the golden set (`g22`, `g23`); other languages
     are untested.
 13. **No authentication** on the endpoint. The deployment is a demo; abuse
-    is bounded by Cloud Run concurrency limits and `min_instances = 0`.
+    is bounded by the platform's concurrency limits and scale to zero.
+14. **Per-request backend switch.** `model` and `retriever` in the request
+    body override the server defaults for that request only (user request,
+    2026-09-05), so the UI can compare configurations live. Every model in
+    the price table is selectable, including Opus 5 at 2.5x Sonnet's price;
+    with assumption 13 that means any caller can pick the most expensive
+    pair. Acceptable for a demo, and the first thing to restrict behind a
+    key if the endpoint outlives it. Prompt caching applies only when the
+    retriever marks its context as stable (full context), whatever the model.
