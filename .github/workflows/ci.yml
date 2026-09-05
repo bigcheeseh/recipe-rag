@@ -1,5 +1,8 @@
 name: ci
 
+# Test gate only. Deployment is done by Fly.io's GitHub integration, which builds the
+# committed Dockerfile and rolls the machine on every push to main (ADR-004). Keeping
+# one deploy path means no Fly token in GitHub and no second definition of "deploy".
 on:
   push:
     branches: [main]
@@ -26,17 +29,3 @@ jobs:
       - run: npm ci --no-audit --no-fund && npm run build
         working-directory: ui
       - run: docker build -t recipe-rag .
-
-  deploy:
-    # Only main, only after the gate above. Needs the FLY_API_TOKEN repository secret;
-    # the Anthropic key lives in Fly's secret store, not in GitHub.
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    needs: test
-    runs-on: ubuntu-latest
-    concurrency: deploy
-    steps:
-      - uses: actions/checkout@v4
-      - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: flyctl deploy --remote-only
-        env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
