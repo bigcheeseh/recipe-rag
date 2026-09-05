@@ -472,3 +472,18 @@ would be the largest thing in the repo. Kept two commands instead:
 `/review` runs the CLAUDE.md final checklist and reports; `/feature`
 encodes the order the follow-up session expects (spec, golden questions,
 failing test, code, evals, record) with two stops. Both are single-agent.
+
+## 2026-09-05 — per-request model and retriever switch (user request)
+
+`Backends` (src/app/backends.py) holds every model in the price table and
+every retriever the environment can build, keyed by name, with the notes
+the UI shows as tooltips. `Pipeline` picks a pair per request; `MODEL` and
+`RETRIEVER` are now defaults, not the only choice. `usage.retriever` was
+added to the response so the pair that answered is visible. Prompt caching
+moved from an LLM constructor flag to a per-call flag driven by
+`Retriever.cacheable`, because the same model now serves both full and
+top-k contexts in one process. The eval runner names the pair in the
+request body so `--url` runs measure the same thing as in-process runs.
+Live check: `/config` listed three models and three retrievers (Voyage key
+present locally), Haiku + BM25 answered with `usage.retriever = "bm25"`,
+an unknown model returned 422 before any model call.

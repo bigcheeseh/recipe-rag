@@ -60,6 +60,23 @@ Every eval run writes a table to `evals/runs/` and exits non-zero on a regressio
 against the last committed run. Rebuild the corpus from scratch with
 `python -m app.ingest` (MediaWiki API, cached HTML, manifest of accepted and rejected pages).
 
+## Switching model and retrieval
+
+Two selectors on the page, each with a tooltip stating the measured trade-off, send
+`model` and `retriever` with the question. The API accepts the same two fields, and
+`GET /config` lists what the running server can offer and its defaults:
+
+```
+curl -s localhost:8080/ask -H 'Content-Type: application/json' \n  -d '{"question": "Quickest recipe?", "model": "claude-haiku-4-5", "retriever": "bm25"}'
+```
+
+Server defaults come from `MODEL` and `RETRIEVER` in the environment. `hybrid` is offered
+only when `VOYAGE_API_KEY` and `data/embeddings.npz` are present. The response's
+`usage.model` and `usage.retriever` and the request log say which pair answered, so a
+switched request is never ambiguous. Because the endpoint has no authentication, any
+caller can pick the most expensive pair (SPEC assumption 14); that is the first thing to
+restrict if this outlives the demo.
+
 ## Deployment
 
 **Where:** Fly.io, one machine in `ams`, from the committed [fly.toml](fly.toml) and the
