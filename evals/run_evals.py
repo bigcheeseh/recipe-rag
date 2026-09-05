@@ -128,6 +128,13 @@ def check(expect: dict, status: int, body: dict, corpus: dict[str, Recipe]) -> l
         a = Answer.model_validate(body)
     except Exception as e:  # noqa: BLE001
         return [f"schema: {e}"][:1]
+    # The assignment's minimum schema, checked against what the body literally says.
+    want = a.model_dump(mode="json")
+    for field in ("citations", "refused", "refusal_reason"):
+        if field not in body:
+            return [f"contract: missing {field}"]
+        if body[field] != want[field]:
+            return [f"contract: {field} {body[field]} != {want[field]}"]
 
     cited = [s.recipe_id for s in a.sources]
     text = (a.answer or "").lower()

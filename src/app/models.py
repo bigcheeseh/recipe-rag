@@ -1,6 +1,6 @@
 from typing import Literal
 
-from pydantic import BaseModel, Field, field_validator, model_validator
+from pydantic import BaseModel, Field, computed_field, field_validator, model_validator
 
 Allergen = Literal["nuts", "dairy", "eggs", "gluten", "shellfish", "soy"]
 DietTag = Literal["vegan", "vegetarian", "pescatarian"]
@@ -24,9 +24,23 @@ class Source(BaseModel):
     url: str
 
 
+RefusalReason = Literal["out_of_domain", "insufficient_context", "safety_deferral"]
+# The assignment's minimum contract uses its own reason names.
+ASSIGNMENT_REASON: dict[str, Literal["out_of_corpus", "out_of_domain", "safety"]] = {
+    "out_of_domain": "out_of_domain",
+    "insufficient_context": "out_of_corpus",
+    "safety_deferral": "safety",
+}
+
+
 class Refusal(BaseModel):
-    reason: Literal["out_of_domain", "insufficient_context", "safety_deferral"]
+    reason: RefusalReason
     message: str
+
+
+class Citation(BaseModel):
+    title: str
+    url: str
 
 
 class Usage(BaseModel):
@@ -43,6 +57,23 @@ class Answer(BaseModel):
     sources: list[Source]
     conflicts: list[str] = []
     usage: Usage
+
+    # Assignment minimum contract, derived from the fields above so the two can never
+    # disagree: citations (title, url), refused, refusal_reason.
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def citations(self) -> list[Citation]:
+        return [Citation(title=s.title, url=s.url) for s in self.sources]
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def refused(self) -> bool:
+        return self.refusal is not None
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def refusal_reason(self) -> Literal["out_of_corpus", "out_of_domain", "safety"] | None:
+        return ASSIGNMENT_REASON[self.refusal.reason] if self.refusal else None
 
     @model_validator(mode="after")
     def _invariants(self) -> "Answer":

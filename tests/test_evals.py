@@ -16,12 +16,17 @@ USAGE = {
 
 def body(answer=None, refusal=None, ids=(), conflicts=()):
     sources = [{"recipe_id": i, "title": i, "url": "u"} for i in ids]
+    reason = {"out_of_domain": "out_of_domain", "insufficient_context": "out_of_corpus"}
     return {
         "answer": answer,
         "refusal": refusal,
         "sources": sources,
         "conflicts": list(conflicts),
         "usage": USAGE,
+        # assignment minimum contract, as the service serialises it
+        "citations": [{"title": i, "url": "u"} for i in ids],
+        "refused": refusal is not None,
+        "refusal_reason": reason.get(refusal["reason"], "safety") if refusal else None,
     }
 
 
@@ -120,9 +125,7 @@ def test_human_scores_are_read_from_the_answers_table(tmp_path):
 def test_contract_check_rejects_inconsistent_assignment_fields():
     """The eval verifies the assignment's minimum schema, not only our own model."""
     ok = body("x", ids=["carbonara"])
-    ok.update(
-        citations=[{"title": "carbonara", "url": "u"}], refused=False, refusal_reason=None
-    )
+    ok.update(citations=[{"title": "carbonara", "url": "u"}], refused=False, refusal_reason=None)
     assert check({}, 200, ok, BY_ID) == []
     bad = dict(ok, refused=True)
     assert check({}, 200, bad, BY_ID) == ["contract: refused True != False"]
