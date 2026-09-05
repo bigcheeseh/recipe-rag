@@ -537,3 +537,24 @@ question for the p95. Redeployed; final deployed run and cold start follow.
 Cold start measured on the previous image: first request to a stopped
 machine 5.97 s (connect 0.06 s), warm 0.24 s. Re-measured on the final
 image below.
+
+## 2026-09-05 — final deployed run 29/29; measured numbers filled in
+
+`evals/runs/20260905T155833Z-full-claude-sonnet-5-deployed.md`, run
+through the network against https://recipe-rag.fly.dev: 29/29, no
+regressions, mean USD 0.0126 per question (12.61 per 1,000), total p50
+5.5 s / p95 14.5 s, generate p95 12.5 s (g25). Judge means 3.00 / 2.93 /
+3.00.
+
+Cold start on the final image: first health request after the machine
+idle-stopped 6.49 s, warm 0.22 s (earlier image: 5.97 s). One sample
+each; the SPEC table says so.
+
+Unprompted decision: the SPEC latency budgets were empty ("TBD"). I set
+each budget to the measured p95 rounded up (extract 3 s, generate 15 s,
+total 18 s, cold start 10 s) so that a future run has something to fail
+against. Recorded in SPEC section 6 as set-after-measurement.
+
+Deploy path: the CI deploy job still lacks `FLY_API_TOKEN`; the three
+deployments were `fly deploy` by hand. README says so. The user has not
+yet chosen between the CI token and Fly's GitHub integration.
