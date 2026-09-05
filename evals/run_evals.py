@@ -18,6 +18,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 import anthropic
+import httpx
 import yaml
 from dotenv import load_dotenv
 from fastapi.testclient import TestClient
@@ -201,9 +202,23 @@ def pct(values: list[int], p: float) -> int:
     return s[min(len(s) - 1, int(round(p * (len(s) - 1))))]
 
 
+def make_client(url: str | None) -> httpx.Client:
+    """In-process app by default; a real HTTP client when a deployed URL is given.
+    The deployed run is the assignment's proof, so it goes through the network stack."""
+    if url:
+        return httpx.Client(base_url=url.rstrip("/"), timeout=httpx.Timeout(180.0))
+    return TestClient(app, raise_server_exceptions=False)
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--retriever", default="bm25", help="bm25 | hybrid | full (sets RETRIEVER)")
+    ap.add_argument("--retriever", default="full", help="full | bm25 | hybrid (sets RETRIEVER)")
+    ap.add_argument(
+        "--url",
+        default=None,
+        help="base URL of a deployed service to test instead of the in-process app; "
+        "--retriever/--model then only label the run",
+    )
     ap.add_argument("--model", default="claude-sonnet-5", help="sets MODEL for this run")
     ap.add_argument("--label", default=None, help="run label; defaults to retriever-model")
     ap.add_argument("--runs", type=Path, default=ROOT / "evals" / "runs")
@@ -230,7 +245,7 @@ def main(argv: list[str] | None = None) -> int:
             )
         return 0
     os.environ["RETRIEVER"], os.environ["MODEL"] = args.retriever, args.model
-    args.label = args.label or f"{args.retriever}-{args.model}"
+    args.label = args.label or f"{args.retriever}-{args.model}" + ("-deployed" if args.url else "")
     if args.judge is None:
         args.judge = "claude-opus-5"
     if args.judge == args.model:
@@ -247,7 +262,7 @@ def main(argv: list[str] | None = None) -> int:
     costs: list[float] = []
     judged: dict[str, Judgement] = {}
     judge_usage = TokenUsage()
-    with TestClient(app, raise_server_exceptions=False) as client:
+    with make_client(args.url) as client:
         for g in golden:
             r = client.post("/ask", json={"question": g["q"]})
             body = (
