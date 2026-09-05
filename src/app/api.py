@@ -24,10 +24,15 @@ def load_corpus(path: Path) -> list[Recipe]:
     return [Recipe.model_validate(r) for r in json.loads(path.read_text(encoding="utf-8"))]
 
 
+def retriever_mode() -> str:
+    """RETRIEVER=full (default, ADR-002) | bm25 | hybrid."""
+    return os.environ.get("RETRIEVER", "full")
+
+
 def build_retriever(recipes: list[Recipe]) -> Retriever:
-    """RETRIEVER=bm25 (default) | hybrid | full.
-    Hybrid needs data/embeddings.npz and VOYAGE_API_KEY. Full sends every recipe."""
-    mode = os.environ.get("RETRIEVER", "bm25")
+    """Full sends every filtered recipe (cached). BM25 is the fallback for corpora past
+    ~80 recipes. Hybrid needs data/embeddings.npz and VOYAGE_API_KEY."""
+    mode = retriever_mode()
     if mode == "bm25":
         return BM25Retriever(recipes)
     if mode == "full":
@@ -45,7 +50,7 @@ def build_pipeline() -> Pipeline:
     """Production wiring from the environment. Tests inject a Pipeline instead."""
     load_dotenv()
     recipes = load_corpus(Path(os.environ.get("CORPUS_PATH", "data/corpus.json")))
-    full = os.environ.get("RETRIEVER", "bm25") == "full"
+    full = retriever_mode() == "full"
     llm = LLM(anthropic.Anthropic(), os.environ.get("MODEL", "claude-sonnet-5"), cache_context=full)
     return Pipeline(llm, build_retriever(recipes), recipes)
 
