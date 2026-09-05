@@ -52,9 +52,20 @@ def cost_usd(model: str, u: TokenUsage) -> float:
 
 
 def render_context(r: Recipe) -> str:
+    """The recipe as the generator sees it. Metadata comes first so diet, allergen and
+    time facts the filters relied on are stated, not left for the model to infer from
+    a title (g27: it once judged only "Pancakes (Vegan)" vegan out of three)."""
+    m = r.meta
+    meta = (
+        f"Diet: {', '.join(m.diet_tags) or 'none'}\n"
+        f"Allergens: {', '.join(m.allergens) or 'none'}\n"
+        f"Total time: {m.total_minutes} minutes\nCuisine: {m.cuisine}\n"
+        if m
+        else "Diet: unknown\nAllergens: unknown\nTotal time: unknown\n"
+    )
     box = "".join(f"{k}: {v}\n" for k, v in r.infobox.items())
     return (
-        f"id: {r.id}\nTitle: {r.title}\n{box}Ingredients:\n"
+        f"id: {r.id}\nTitle: {r.title}\n{meta}{box}Ingredients:\n"
         + "\n".join(f"- {i}" for i in r.ingredients)
         + "\nSteps:\n"
         + "\n".join(f"{n}. {s}" for n, s in enumerate(r.steps, 1))
