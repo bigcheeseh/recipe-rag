@@ -1,32 +1,34 @@
-# Fly.io app definition (ADR-003). `fly deploy` is idempotent: it builds the Dockerfile,
-# pushes the image, and rolls the machine; running it twice yields the same state.
-# Secrets: `fly secrets set ANTHROPIC_API_KEY=...` once; never in this file or the image.
-app = "recipe-rag"
-primary_region = "ams"
+# fly.toml app configuration file generated for recipe-rag on 2026-09-05T15:22:25Z
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'recipe-rag'
+primary_region = 'ams'
 
 [build]
-  dockerfile = "Dockerfile"
+  dockerfile = 'Dockerfile'
 
 [env]
-  PORT = "8080"
-  MODEL = "claude-sonnet-5"
-  RETRIEVER = "full"
-  CORPUS_PATH = "data/corpus.json"
+  CORPUS_PATH = 'data/corpus.json'
+  MODEL = 'claude-sonnet-5'
+  PORT = '8080'
+  RETRIEVER = 'full'
 
 [http_service]
   internal_port = 8080
   force_https = true
-  auto_stop_machines = "stop"    # scale to zero when idle (cold start is measured, README)
+  auto_stop_machines = 'stop'
   auto_start_machines = true
   min_machines_running = 0
 
   [[http_service.checks]]
-    interval = "30s"
-    timeout = "5s"
-    grace_period = "15s"
-    method = "GET"
-    path = "/healthz"
+    interval = '30s'
+    timeout = '5s'
+    grace_period = '15s'
+    method = 'GET'
+    path = '/healthz'
 
 [[vm]]
-  size = "shared-cpu-1x"
-  memory = "512mb"
+  size = 'shared-cpu-1x'
+  memory = '512mb'
