@@ -10,7 +10,7 @@ Sonnet 5 for the two model calls.
 - Container-level access for reviewers: invitation to the Fly.io organisation (see Deployment)
 - Specification: [SPEC.md](SPEC.md). Decisions: [ADR/](ADR). Working log: [DEVLOG.md](DEVLOG.md).
 - Agent instructions and notes: [CLAUDE.md](CLAUDE.md) (as given, unchanged) and the
-  "accepted vs rewritten" section of DEVLOG.md.
+  DEVLOG.md.
 
 ## What is not production grade yet
 

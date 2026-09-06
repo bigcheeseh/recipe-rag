@@ -1,10 +1,10 @@
 # DEVLOG
 
-Working notes: what I decided on my own, what the numbers said, and what I took from the agent as-is versus what I sent back. Newest at the bottom.
+Working notes: what I decided on my own, what the numbers said, and what the agent got sent back. Newest at the bottom.
 
 ## Setup
 
-Python 3.11, not 3.12. That's what was on the machine and nothing in the project needs 3.12, so I didn't install another interpreter. Anthropic SDK instead of OpenAI, Voyage instead of `text-embedding-3-small` for the vector experiment. CLAUDE.md is committed as it was given; the departures from it are all in here.
+Python 3.11, not 3.12. That's what was on the machine and nothing in the project needs 3.12, so I didn't install another interpreter. Anthropic models throughout, for the plain reason that I already had an Anthropic API key and no OpenAI one; that also decided Voyage instead of `text-embedding-3-small` for the vector experiment, since Anthropic has no embedding model. CLAUDE.md is committed as it was given; the departures from it are all in here.
 
 Corpus: 61 curated Wikibooks titles, 48 accepted, 13 rejected (index and disambiguation pages). Enrichment cost about USD 0.16. Reading the output by hand found 3 wrong records out of 48: one false gluten, one fish tagged as shellfish, one total time that ignored an overnight soak. Fixed by hand, logged in the manifest. The corpus already had conflicts without me adding any: two carbonaras (5 yolks vs 4 whole eggs, 60 vs 30 minutes), five cookie recipes split between 375°F and 350°F, three banana breads, three guacamoles, three risottos. My original conflict question about bolognese simmer time turned out to be no conflict at all (both say one hour), so it became a carbonara question instead. A test pins these corpus facts so a refresh that breaks the golden set fails CI.
 
@@ -39,6 +39,24 @@ Cost at 48 recipes was a wash (USD 0.0149 full vs 0.0148 BM25 per question). Lat
 
 Haiku as default I rejected on quality, not on the score. On the browsing question it listed recipes with no stated time and invented durations for them, presented as facts. Sonnet named the two recipes with times and said the rest are unknown. A recipe service that makes up numbers fails at its one job, whatever it saves. Haiku stays as a one-line switch.
 
+## How the evals work
+
+One golden set, 29 questions in `evals/golden_set.yaml`, each with an `expect` block that a script can check without any model: which recipe ids must be cited (`cites`, `cites_min`), a substring the answer must contain, the exact refusal reason, that sources are empty for out-of-domain, that a conflict list is non-empty, a 422 for the empty question, a Cyrillic script check for the Russian questions, and three metadata checks that look up the cited recipes in the corpus (never cites a recipe with the excluded allergen, every cited recipe carries the required diet tag, every cited recipe is under the time limit). Coverage: plain facts, diet and allergen and time constraints, two refusals, two conflicts, the empty question, a dish that isn't in the corpus, a prompt injection, and six corpus-wide questions. Every response is also validated against the Pydantic contract before any check runs, so a malformed body is a fail, not a crash.
+
+The runner sends the whole set through the app (in-process, or over the network with `--url`), writes a table per run to `evals/runs/`, and exits non-zero if any question that passed in the last committed run now fails. That's the regression gate; the committed run files are the history. `--only` reruns a few ids and prints without writing, so a partial run can't become the baseline.
+
+Retrieval is measured on the same set, not separately, because a retrieval failure shows up as a wrong or missing citation on a question where the right recipe exists. The log line for each request carries the retrieved ids with scores next to the cited ids, so for any failing row I can tell whether the right recipe never reached the model (retrieval) or reached it and was ignored (generation). The one purely retrieval-level probe I ran was the hybrid vs BM25 comparison: the top-ranked recipe for the extracted terms of every in-domain question plus three "described, not named" dishes, which came out identical for all 13.
+
+Final 3x2 matrix on 29 questions (dev machine, Opus judge, full table in ADR-002), pass rate and mean USD per question:
+
+| | Sonnet 5 | Haiku 4.5 |
+| --- | --- | --- |
+| BM25 top-8 | 25/29, 0.0148 | 25/29, 0.0047 |
+| Hybrid | 26/29, 0.0169 | 25/29, 0.0052 |
+| Full context, cached | 29/29, 0.0149 | 26/29, 0.0046 |
+
+So Haiku is about a third of Sonnet's price on every retriever (USD 4.62 vs 14.94 per 1,000 on full context) and fails the same corpus-wide questions plus the ones where it guesses. Deployed, Sonnet full context came down to USD 0.0126 per question because the cache stayed warm across the run.
+
 ## The judge
 
 The deterministic checks prove facts, citations and refusals, but they can't see wording, and wording was the one thing still separating Sonnet from Haiku. So I lifted my own "no LLM-as-judge" rule with three conditions: the score is reported, never gating; the judge is never the model under test (Opus 5 grades everything); and it's meant to be calibrated against human scores before it decides anything. The calibration hasn't been done, so the rubric means are the judge's opinion, not a measurement.
@@ -62,13 +80,5 @@ Deploys: CI is the test gate only, and Fly's GitHub integration is meant to depl
 ## Model and retriever switch
 
 Added a `Backends` registry so the UI and the API can pick model and retriever per request, with the measured trade-offs as tooltips. Caching became a per-call flag driven by the retriever, since one process now serves both full and top-k contexts. The agent offered Opus in the list too; I hadn't asked for it and it's the judge only, so it went. Also considered copying a multi-agent workflow from another project and decided against it: nothing to parallelise in six modules, and it fights the block-and-stop review this project is graded on. Two single-agent slash commands instead.
-
-## Accepted vs rewritten
-
-Taken as produced after reading the diff: models and validators, chunking, BM25 and filters with their tests, the grounding validator and repair, the structured log line, the eval runner's deterministic checks, Dockerfile, compose, `fly.toml`, CI, the TypeScript page.
-
-Sent back after a measurement: everything in the "things that broke" list above, plus Voyage batching after a 429 and the judge's token limit.
-
-Sent back on review: the agent wanted to keep BM25 as default; I asked for the seam and the harder questions first and decided on the numbers. It proposed Haiku on cost; I rejected it on the invented durations. Three golden questions were wrong against the corpus and got corrected. One misread the other way: "both are good" was taken as approval of two retrieval fixes when I meant two answers files; the fixes were fine, so they stayed.
 
 Still owed: judge calibration against human scores, and the first push-triggered Fly release.
