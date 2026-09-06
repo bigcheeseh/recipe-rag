@@ -156,8 +156,8 @@ budgets in SPEC.md section 6):
 **Current bottleneck:** the generation call. Extraction is about 2 s and retrieval
 is 0 ms in full-context mode, so everything above that is the model reading 30k cached
 tokens of recipes and writing a structured answer. The p95 is one question, "which
-recipe has the longest stated time", where the model walks every recipe's times
-(900 to 2,200 output tokens). Next optimisation, in order: lower
+recipe has the longest stated time", where the model walks every recipe's times.
+Next optimisation, in order: lower
 the generator's thinking effort and measure the p95 change; stream the answer to the UI
 so the perceived wait drops even if the total does not; only then consider BM25 top-8 as
 the default again, which trades the three corpus-wide questions for 6 s off the p95.
