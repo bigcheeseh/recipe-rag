@@ -32,6 +32,22 @@ chunk whose text only says "stir the rice".
 - Alternative deferred: no retrieval at all, full corpus in context. To be
   measured in Commit 31 against this baseline (see DEVLOG, "The pivot").
 
+## Conditions that invalidate this decision
+
+- The default retriever is full context (ADR-002), so chunking only acts
+  when `RETRIEVER=bm25` or `hybrid`. If those flags are removed, this ADR
+  is moot and the chunk index should go with them.
+- A recipe too long to pass whole to the generator. At 48 recipes the
+  average is about 546 tokens and the top-8 context is roughly 4,500
+  tokens; parent-child stops working once a single parent no longer fits
+  the generation budget, which would require child-level context instead.
+- Recipes whose useful text is not in Ingredients or Procedure (notes,
+  variations, equipment). The parser keeps only those two sections, so a
+  question answered by a third section would need a third chunk type.
+- An eval question where the section split loses: a retrieval failure in
+  `evals/runs/` where the right recipe ranks below k with section chunks
+  but above k with one document per recipe. None observed on 29 questions.
+
 ## Addendum, 2026-09-04: retrieval seam
 
 The pipeline depends only on `Retriever.retrieve(query) -> list[Recipe]`.

@@ -62,7 +62,7 @@ What the failures are:
    block is prompt-cached, and it is the simplest pipeline: no index, no
    ranking, no top-k to tune. What it pays is tail latency (generation
    p95 14.9 s vs 8.4 s) and a dependence on a warm cache; both are
-   recorded in the threshold section below and re-measured on Cloud Run
+   recorded in the invalidation section below and re-measured on Fly
    in Block 7. BM25 stays as the documented fallback once the corpus
    grows past the threshold.
 2. **Hybrid stays behind `RETRIEVER=hybrid`.** It found nothing BM25 missed.
@@ -95,7 +95,7 @@ What the failures are:
    above predates this change; the row that changed is re-measured in
    `evals/runs/` and DEVLOG.
 
-## Where full context stops being viable
+## Conditions that invalidate this decision
 
 Measured: the 48-recipe context is 26,186 cached tokens, about 546 tokens
 per recipe.
@@ -122,7 +122,7 @@ Practical threshold: full context is a reasonable choice below about 80
 recipes with warm traffic, and a poor one above that. This corpus sits just
 under the line, which is why the choice is a flag rather than a rewrite.
 The trigger to flip the flag back to BM25 is the corpus passing 80
-recipes or a measured generation p95 over the latency budget on Cloud Run.
+recipes or a measured generation p95 over the latency budget in SPEC section 6.
 
 ## Consequences
 
