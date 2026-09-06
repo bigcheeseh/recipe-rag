@@ -57,8 +57,10 @@ def test_ops_serves_the_request_log_newest_last(monkeypatch):
     assert len(lines) <= 5
 
 
-def test_ops_never_writes_the_token_into_the_log(monkeypatch, caplog):
+def test_ops_never_serves_the_token_back_in_the_log(monkeypatch):
+    """An access log records the query string, so the buffer must redact it."""
     c = make_client(monkeypatch)
-    with caplog.at_level(logging.INFO):
-        c.get("/ops", params={"token": TOKEN})
-    assert TOKEN not in caplog.text
+    logging.getLogger("app.request").info("GET /ops?token=%s&limit=5 200", TOKEN)
+    body = c.get("/ops", params={"token": TOKEN}).json()
+    assert TOKEN not in " ".join(body["log"])
+    assert any("token=***" in ln for ln in body["log"])

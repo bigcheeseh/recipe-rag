@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import time
 import uuid
 from collections.abc import AsyncIterator, Callable
 from contextlib import asynccontextmanager
@@ -16,6 +17,7 @@ from app.backends import MODEL_NOTES, Backends
 from app.embeddings import HybridRetriever, load_vectors, voyage_embedder
 from app.llm import LLM, UnparseableOutput
 from app.models import Answer, AskRequest, Recipe
+from app.opslog import authorised, install, machine
 from app.pipeline import Pipeline
 from app.retrieval import BM25Retriever, FullContextRetriever, Retriever
 
@@ -62,6 +64,8 @@ def create_app(pipeline: Pipeline | None = None) -> FastAPI:
     @asynccontextmanager
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         app.state.pipeline = pipeline or build_pipeline()
+        app.state.oplog = install()
+        app.state.started_at = time.monotonic()
         yield
 
     app = FastAPI(title="Recipe RAG", lifespan=lifespan)
@@ -76,6 +80,23 @@ def create_app(pipeline: Pipeline | None = None) -> FastAPI:
         response = await call_next(request)
         response.headers["X-Trace-Id"] = request.state.trace_id
         return response
+
+    @app.get("/ops")
+    def ops(request: Request, token: str | None = None, limit: int = 200) -> dict:
+        """Container-level visibility for reviewers (README, Deployment). Off unless
+        OPS_TOKEN is set; read-only; the log holds questions and ids, never the API key."""
+        expected = os.environ.get("OPS_TOKEN")
+        if not expected:
+            raise HTTPException(status_code=404, detail="not found")
+        if not authorised(token, request.headers.get("authorization"), expected):
+            raise HTTPException(status_code=401, detail="ops token required")
+        return {
+            "status": "ok",
+            "recipes": len(request.app.state.pipeline.by_id),
+            "machine": machine(),
+            "uptime_s": int(time.monotonic() - request.app.state.started_at),
+            "log": request.app.state.oplog.tail(max(1, min(limit, 1000))),
+        }
 
     @app.get("/config")
     def config(request: Request) -> dict:
