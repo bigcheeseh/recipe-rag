@@ -68,7 +68,7 @@ What the failures are:
 2. **Hybrid stays behind `RETRIEVER=hybrid`.** It found nothing BM25 missed.
    Retrieval-level comparison on the extracted terms of every in-domain
    question plus three "described, not named" probes gave the same top
-   recipe in all 13 cases (DEVLOG 2026-09-04). The reason is the query
+   recipe in all 13 cases (DEVLOG, "BM25 first"). The reason is the query
    extraction step, which already rewrites a described dish into its name.
    Code and `data/embeddings.npz` are kept for the day the corpus grows past
    what dish names can key.

@@ -30,7 +30,7 @@ chunk whose text only says "stir the rice".
 - Alternative rejected: one document per recipe. Simpler, but the two
   sections have very different lengths and vocabulary, which skews BM25.
 - Alternative deferred: no retrieval at all, full corpus in context. To be
-  measured in Commit 31 against this baseline (see DEVLOG open question).
+  measured in Commit 31 against this baseline (see DEVLOG, "The pivot").
 
 ## Addendum, 2026-09-04: retrieval seam
 

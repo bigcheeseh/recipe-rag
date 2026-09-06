@@ -1,560 +1,74 @@
 # DEVLOG
 
-Unprompted architectural decisions, measured numbers, and notes on what agent
-output was accepted as-is versus rewritten.
+Working notes: what I decided on my own, what the numbers said, and what I took from the agent as-is versus what I sent back. Newest at the bottom.
 
-## 2026-09-03 — open question: full context on a cheaper model
+## Setup
 
-Raised during Block 1 review: could Haiku 4.5 with the whole corpus in the
-prompt beat Sonnet 5 with retrieval on cost and speed?
+Python 3.11, not 3.12. That's what was on the machine and nothing in the project needs 3.12, so I didn't install another interpreter. Anthropic SDK instead of OpenAI, Voyage instead of `text-embedding-3-small` for the vector experiment. CLAUDE.md is committed as it was given; the departures from it are all in here.
 
-Back-of-envelope at list prices, token counts unmeasured: Haiku full context
-(~40k input tokens at $1/M) is roughly six times the input cost of Sonnet
-retrieval (~3.5k tokens at $2/M). With prompt caching of the corpus (cached
-reads at ~0.1x) full context on either model becomes competitive with
-retrieval. Quality on the conflict and allergy cases is the unknown.
+Corpus: 61 curated Wikibooks titles, 48 accepted, 13 rejected (index and disambiguation pages). Enrichment cost about USD 0.16. Reading the output by hand found 3 wrong records out of 48: one false gluten, one fish tagged as shellfish, one total time that ignored an overnight soak. Fixed by hand, logged in the manifest. The corpus already had conflicts without me adding any: two carbonaras (5 yolks vs 4 whole eggs, 60 vs 30 minutes), five cookie recipes split between 375°F and 350°F, three banana breads, three guacamoles, three risottos. My original conflict question about bolognese simmer time turned out to be no conflict at all (both say one hour), so it became a carbonara question instead. A test pins these corpus facts so a refresh that breaks the golden set fails CI.
 
-Decision: keep retrieval on Sonnet as the baseline. In Commit 31 the
-comparison table gets extra rows: Sonnet full context with caching, Haiku
-full context with caching. ADR-002 must state the corpus size at which full
-context stops being viable.
+## BM25 first
 
-## 2026-09-03 — Python 3.11 instead of 3.12
+Started with BM25 over section chunks (ingredients and steps indexed separately, whole recipe sent to the model). Before wiring any LLM I fed the golden questions in raw and learned two things. Raw questions are noisy: "How many eggs go into carbonara?" ranked a cookie recipe first because "go", "into" and "eggs" score everywhere, while "carbonara eggs" ranks both carbonaras 1–2. So the extractor has to return bare content terms. And BM25 has no idea of "nothing relevant": "flat tyre" still returns five low-score recipes. Refusals therefore come from the extractor (`in_domain`) and the generator (`insufficient_context`), never from a score cutoff, because BM25 scores aren't comparable across queries.
 
-Only 3.11.6 is installed on the dev machine. CLAUDE.md said 3.12; the user
-chose to stay on 3.11 rather than install another interpreter.
-`requires-python`, the ruff target, and the future Docker base image all
-say 3.11. No 3.12-only features are used. The package is installed into the
-venv in editable mode (`pip install -e .`) so `app` imports resolve outside
-pytest as well.
+First baseline run: 12/13. "What can I cook in under 30 minutes?" produced `max_minutes=30` and search terms "quick recipes", the filter left 23 recipes, and BM25 matched none of them because no recipe says "quick". Fix, test first: when constraints are active and ranking finds nothing, the filtered set is the answer set. Second run 13/13, USD 0.0111 per question.
 
-## 2026-09-03 — corpus review and conflict variants
+Hybrid (BM25 + Voyage vectors, RRF) was next: also 13/13, and on every probe the top recipe was identical to BM25's; vectors only reordered positions 2–5. The reason is upstream: the extractor already rewrites "pasta with bacon and egg" into "carbonara", so there's no vocabulary gap left for embeddings to close on 48 recipes. Meanwhile hybrid adds a second provider, a network call per request, and on Voyage's free tier a 3-per-minute cap that made retrieval 20 s p50. Kept behind a flag, off.
 
-Ingestion: 61 curated titles, 48 accepted, 13 rejected (all index or
-disambiguation pages). Enrichment 48 calls, 67,529 tokens in, 2,639 out,
-~USD 0.16. Hand review found 3 metadata errors in 48 records (6%): one
-false gluten, one false shellfish (fish confused with shellfish), one
-total_minutes that ignored an overnight soak. All corrected and logged in
-the manifest.
+## The pivot: BM25 → full context
 
-Conflict variants present in the corpus without adding anything:
-- carbonara: 5 egg yolks vs 4 whole eggs; 60 vs 30 minutes
-- chocolate chip cookies: 375°F (I, II) vs 350°F (III, vegan, gluten-free)
-- banana bread ×3, guacamole ×3, risotto ×3 with smaller differences
+The question that nagged from day one was whether retrieval was needed at all. The whole corpus is about 27k tokens. With prompt caching (writes at 1.25x, reads at 0.1x) putting all of it in the system prompt costs about the same as sending five recipes uncached. So I built a retriever seam and measured instead of guessing.
 
-The bolognese pair I originally chose for g13 both simmer for one hour, so
-there was no conflict to detect. g13 now asks about carbonara eggs. g01
-and g03 were narrowed to a specific recipe so they stay plain factual
-questions rather than accidental conflict cases. tests/test_corpus.py pins
-these facts so a corpus refresh that breaks the golden set fails CI.
+The options on the table:
 
-## 2026-09-04 — retrieval demo before wiring the LLM
+- **BM25 top-k, Sonnet 5.** Cheapest dependency-wise, fast, but it only sees what the query terms hit.
+- **Hybrid BM25 + vectors.** Same top hits as BM25 here, plus a provider and a rate limit. No reason to pay for it at this corpus size.
+- **Full context, Sonnet 5.** Every recipe in the prompt, cached. Simplest pipeline, no retrieval failures possible, but the model reads 27k tokens per answer.
+- **Full context, Haiku 4.5.** About a third of the cost. Tempting.
 
-BM25 over 96 section chunks, golden-set questions fed in raw (no query
-extraction yet). Every in-domain question puts the right recipe family in
-the top 3. Two things worth knowing before Block 5:
+On the first 13 questions every configuration passed and the decision was a coin toss, so I grew the golden set. At 23 questions BM25 started flapping on a two-dish comparison (the wrong banana bread in the top-5); k=8 plus an exact-title promotion fixed that, at +25% cost per question. Still nothing separated the options on accuracy.
 
-- Raw questions carry noise. "How many eggs go into carbonara?" ranks a
-  cookie recipe first because "go"/"into"/"eggs" score across many chunks;
-  the extracted form "carbonara eggs" ranks both carbonara variants 1–2.
-  The extract_query prompt must return bare content terms, not the question.
-- Out-of-domain and absent-dish questions ("flat tyre", "Beef Wellington")
-  still return five low-score recipes. BM25 has no notion of "nothing
-  relevant". Refusals therefore have to come from extract_query (in_domain)
-  and from the generator (insufficient_context), never from a score cutoff.
-  A score threshold was considered and rejected: BM25 scores are not
-  comparable across queries.
-- Unknown metadata is treated as failing any active filter. Every corpus
-  record currently has metadata, so this only matters for future refreshes.
+Then I added six corpus-wide questions: quickest recipe, longest stated time, how many cookie recipes, vegan under 15 minutes, anything soaked overnight, quickest in Russian. That's where it split. On 29 questions:
 
-## 2026-09-04 — Block 5 decisions
+- Sonnet + full context: 29/29
+- Sonnet + BM25 or hybrid: 25–26/29, failing exactly the questions that need the whole corpus
+- Haiku + full context: 26/29, and its extractor classed "longest stated total time" as out of domain
 
-- Query extraction adds a probable dish name when the user describes a dish
-  without naming it ("pasta with bacon and egg" -> "carbonara bacon egg
-  time", observed live). This is the cheap answer to BM25's vocabulary
-  problem; the eval will show whether it is enough.
-- The generator sometimes fills both `answer` and `refusal` on a safety
-  deferral (observed live on the pad thai question). The pipeline lets the
-  refusal win rather than failing the request; the test pins this.
-- Thinking effort is left at the provider default for both calls, as SPEC
-  assumption 4 says. Measured live latency is roughly 2-3 s for extraction
-  and 3-5 s for generation on single requests; the eval run will give real
-  p50/p95 figures, so nothing is written into SPEC section 6 yet.
-- Every response carries an `X-Trace-Id` header matching the log record and
-  the error body, so a user report can be tied to one JSON line.
-- `prompt_hash` is the SHA-256 of all files under `prompts/`, truncated, so
-  the log tells which prompt version produced an answer.
-- Open mismatch to resolve in Block 6: SPEC AC-7 says g06 ("vegan main with
-  no nuts") should be a safety deferral, but the golden set treats it as a
-  filtered recommendation. The golden set is right: it asks for dishes, not
-  for a medical judgement. AC-7 should be narrowed to g05.
+Cost at 48 recipes was a wash (USD 0.0149 full vs 0.0148 BM25 per question). Latency was not: generation p95 14.9 s vs 8.4 s, because the model actually walks all the recipes for the corpus-wide questions. I switched the default to full context on Sonnet anyway. Reasons in order: it's the only configuration that answers everything, it costs the same, and it's the simplest pipeline. BM25 and hybrid stay behind `RETRIEVER=`. The flip-back trigger is in ADR-002: around 80 recipes the cached full context gets dearer than top-8, and the p95 grows with the corpus.
 
-## 2026-09-04 — BM25 baseline eval
+Haiku as default I rejected on quality, not on the score. On the browsing question it listed recipes with no stated time and invented durations for them, presented as facts. Sonnet named the two recipes with times and said the rest are unknown. A recipe service that makes up numbers fails at its one job, whatever it saves. Haiku stays as a one-line switch.
 
-First run: 12/13. g07 ("What can I cook in under 30 minutes?") failed:
-the extractor produced `search_terms="quick recipes", max_minutes=30`, the
-time filter left 23 recipes, and BM25 matched none of them because no
-recipe text contains "quick". Retrieval returned nothing and the pipeline
-refused with insufficient_context. Fix (test first): when constraints are
-active and ranking finds nothing, the filtered set itself is returned, since
-for a browsing question the filter is the answer set. Without constraints
-the empty result stands, because there is no defined answer set to fall
-back to.
+## The judge
 
-Second run, committed as `evals/runs/20260904T170932Z-bm25.md`: 13/13.
-Mean cost USD 0.0111 per question (USD 11.07 per 1,000). Latency on the dev
-machine, p50 / p95: extract 1932 / 2484 ms, generate 2944 / 4707 ms, total
-5192 / 6299 ms. Retrieval is 0 ms at millisecond resolution. These are not
-the deployed numbers SPEC section 6 asks for; those wait for Block 7.
+The deterministic checks prove facts, citations and refusals, but they can't see wording, and wording was the one thing still separating Sonnet from Haiku. So I lifted my own "no LLM-as-judge" rule with three conditions: the score is reported, never gating; the judge is never the model under test (Opus 5 grades everything); and it's meant to be calibrated against human scores before it decides anything. The calibration hasn't been done, so the rubric means are the judge's opinion, not a measurement.
 
-Every check in the runner is a string or set comparison over the response
-body plus recipe metadata. There is no model-graded scoring anywhere.
+It earned its keep once. The judge caught Sonnet answering an English question in Spanish because a recipe title was Spanish; the string checks only looked for Cyrillic. Rule 7 in the generate prompt got tightened. It also caught Haiku inventing a gram conversion inside an otherwise correct allergy deferral.
 
-## 2026-09-04 — hybrid (BM25 + Voyage vectors, RRF) vs BM25
+## Things that broke and got fixed with a number
 
-Committed run `evals/runs/20260904T171901Z-hybrid.md`: 13/13, same as
-BM25. Retrieval-level comparison on the extracted search terms of all
-in-domain golden questions plus three "described, not named" probes
-("pasta with bacon and egg", "creamy italian rice with mushrooms",
-"mexican avocado dip"): the top-ranked recipe was identical for every one
-of the 13 probes; hybrid only reordered positions 2-5 and padded short
-lists with weak neighbours (e.g. pico-de-gallo behind guacamole). The
-reason is upstream: query extraction already rewrites a described dish
-into its name, so the vector side has no vocabulary gap left to close on
-this corpus.
+- A long answer overran `max_tokens=1024`, the SDK raised, the app returned 500, the runner died. Now 4096, truncation retried once, a 500 is a failed row.
+- Hybrid and full context both refused "Beef Wellington" as `out_of_domain`. The generator had picked that reason from the shared enum even though only the extractor should ever say it. The generator's output type now has two refusal reasons, so it can't.
+- A constrained question whose terms matched only one of three filtered candidates returned one recipe. Now the filtered set pads the hit list up to k. BM25 went 25 → 26/29.
+- First deployed run: 28/29. "Every vegan recipe under 15 minutes" got three recipes from the filter and the model said only "Pancakes (Vegan)" was vegan, judging by the title, because the rendered recipe text never included the metadata the filter had used. Passed locally by luck. The context now leads each recipe with diet, allergens, estimated time and cuisine.
+- That fix flipped another question: "longest stated time" now answered hummus (our 870-minute estimate counting an overnight soak) instead of the bolognese whose own Time line says 2 hours. The metadata line became "Estimated total time" and rule 8 says a recipe's own "Time:" line is its stated time. Final deployed run 29/29.
 
-Costs of hybrid that BM25 does not have: a second provider and key, one
-network call per request (about 300 ms measured when not rate limited),
-and on Voyage's free tier a 3-requests-per-minute cap that turned the
-retrieve stage into 20 s p50 in the eval run (the client backs off 20 s on
-429). Per-question model cost is unchanged (USD 0.0112 vs 0.0111).
+## Deployment
 
-Decision: hybrid stays behind `RETRIEVER=hybrid`, off by default, code and
-embeddings kept. It becomes worth revisiting when the corpus grows enough
-that dish names stop being unique keys, or when questions arrive without
-the extraction step. Feeds ADR-002.
+The real assignment text arrived after Block 6 and accepted `fly.toml` as IaC, so Terraform for Cloud Run was my own over-engineering and I dropped it for Fly.io (ADR-004). The launch flow failed to allocate an IPv6, so release 1 had no public address; `fly ips allocate-v4 --shared` and `allocate-v6` fixed it. It also created two machines; scaled to one. Measured on the deployed service: USD 0.0126 per question (12.61 per 1,000), first question on a cold machine USD 0.0717 for the cache write, total p50 5.5 s / p95 14.5 s, cold start 6.5 s on one sample. The SPEC latency budgets were empty until then; I set each to the measured p95 rounded up so a future run has something to fail against.
 
-## 2026-09-04 — retrieval vs full-context comparison (Block 6 close)
+Deploys: CI is the test gate only, and Fly's GitHub integration is meant to deploy on push. The first three releases were `fly deploy` by hand; the first push-triggered release gets noted here once it shows up in `fly releases`.
 
-Five configurations, all 13/13 on the golden set. Table and thresholds in
-ADR-002. Headline numbers (mean USD per question / total p50 ms):
-BM25+Sonnet 0.0111 / 5192; hybrid+Sonnet 0.0112 / 25296 (Voyage free-tier
-rate limit); full+Sonnet 0.0122 / 5870; full+Haiku 0.0063 / 4428;
-BM25+Haiku 0.0040 / 3675.
+## Model and retriever switch
 
-Full context with prompt caching works as expected: the first question
-wrote 26,186 tokens to the cache, every later one read them back. Cost
-accounting now prices cache writes at 1.25x and reads at 0.1x of input,
-and `Usage.tokens_in` reports total input including cached tokens, so the
-number in the response matches what the provider billed for.
+Added a `Backends` registry so the UI and the API can pick model and retriever per request, with the measured trade-offs as tooltips. Caching became a per-call flag driven by the retriever, since one process now serves both full and top-k contexts. The agent offered Opus in the list too; I hadn't asked for it and it's the judge only, so it went. Also considered copying a multi-agent workflow from another project and decided against it: nothing to parallelise in six modules, and it fights the block-and-stop review this project is graded on. Two single-agent slash commands instead.
 
-The prompt structure changed for this: rules and recipes moved to the
-system prompt (recipes in their own block so it can carry `cache_control`),
-the question is the user message. Same prompt text, so all five runs are
-comparable. The BM25 baseline was not re-run after this change; the first
-BM25 row in ADR-002 is the earlier prompt layout. The Haiku BM25 row uses
-the new layout and also passed 13/13, so the layout did not move accuracy.
+## Accepted vs rewritten
 
-Decision: BM25 + Sonnet 5 stays the default. Hybrid and full context stay
-behind flags. Haiku is a documented `MODEL` switch, not the default, until
-the golden set is large enough to rank models on wording quality.
+Taken as produced after reading the diff: models and validators, chunking, BM25 and filters with their tests, the grounding validator and repair, the structured log line, the eval runner's deterministic checks, Dockerfile, compose, `fly.toml`, CI, the TypeScript page.
 
-## 2026-09-04 — golden set grown to 23; first question that separates configs
+Sent back after a measurement: everything in the "things that broke" list above, plus Voyage batching after a 429 and the judge's token limit.
 
-Added eight harder English questions (two-dish comparison, negative fact,
-described dish, two constraints at once, contains-vs-safe, near-miss dish,
-doubling arithmetic, prompt injection) and two Russian ones (factual and
-allergen constraint, checked for a Cyrillic answer). Prompts now force
-English search terms and answer in the question's language; SPEC
-assumption 12 updated.
+Sent back on review: the agent wanted to keep BM25 as default; I asked for the seam and the harder questions first and decided on the numbers. It proposed Haiku on cost; I rejected it on the invented durations. Three golden questions were wrong against the corpus and got corrected. One misread the other way: "both are good" was taken as approval of two retrieval fixes when I meant two answers files; the fixes were fine, so they stayed.
 
-Two questions had to be corrected against the corpus before they were
-fair: g16 asked for a time conflict between the two carbonaras, but only
-one states a time, so it now checks the stated "1 hour"; g14 first
-compared against Risotto ai Funghi, which states no time, and Sonnet
-refused correctly, so it now compares against banana bread.
-
-Two bugs surfaced and were fixed: a long answer (g17 listed five recipes)
-overran `max_tokens=1024`, the SDK raised a validation error the wrapper
-did not catch, and the eval runner died with the app's 500. Now: cap 4096,
-truncation is caught and retried once, then 502; the runner records a
-500 as a failed row.
-
-Results on 23 questions: BM25+Sonnet 22/23, every other configuration
-23/23. The failing question is g14, and the cause is BM25's fixed top-5
-under a two-dish query (details in ADR-002). This is the first time the
-golden set has separated the options, which is what it is for. The fix is
-a decision (k=8 vs exact-title boost), left open.
-
-## 2026-09-04 — rubric judge added (user decision, lifts the "no LLM-as-judge" rule)
-
-The deterministic checks prove facts, citations and refusals but cannot
-grade wording, which is the one thing that still separates Sonnet from
-Haiku. The user chose to add a model-graded score with three conditions:
-it is reported, never gating; the judge is never the model under test
-(Opus 5 grades Sonnet, Sonnet grades Haiku); and it is calibrated against
-human scores before it is used for a decision. The runner writes an
-`.answers.md` file with a blank `human` column; `--calibrate` prints
-per-criterion exact agreement and mean absolute difference. Judge cost is
-reported separately and is not part of `Usage.cost_usd`.
-
-## 2026-09-04 — first judged runs (BM25, Sonnet vs Haiku)
-
-Deterministic result: both 23/23 this time (Sonnet's g14 answered where the
-previous run refused; generation is not deterministic on that borderline
-question). Rubric means, clarity / care / language:
-Sonnet (judged by Opus 5) 3.00 / 2.95 / 2.91; Haiku (judged by Sonnet 5)
-2.91 / 2.82 / 3.00. Judge cost USD 0.13 and 0.05 per run.
-
-What the judge found that the string checks could not:
-- Sonnet answered g14 (an English question) in Spanish. Rule 7 of
-  prompts/generate.md ("write in the language of the question") was added
-  for the Russian questions and is evidently too loose. Tightened to name
-  English as the default and forbid switching. The deterministic `script`
-  check only covers Cyrillic, so this slip was invisible to it.
-- Haiku's safety deferral quoted "¾ cup (340 g)" of peanuts; the recipe
-  says 175 ml. A fabricated conversion inside an otherwise correct
-  deferral. The judge scored care 2 for lecturing and did not flag the
-  number, because the rubric excludes facts by design. Worth knowing when
-  reading Haiku answers: the substring checks pass, the details drift.
-- Haiku's g07 answer presented guessed timings for recipes with no stated
-  time as if they were facts (care 1). Sonnet on the same question listed
-  the two recipes with stated times and said the others are unknown.
-
-Calibration is still pending: the `.answers.md` files have an empty
-`human` column. Until they are scored, the means above are the judge's
-opinion, not a measurement.
-
-## 2026-09-04 — language fix confirmed; g14 flaps on BM25 + Sonnet
-
-Re-run after tightening rule 7 (`evals/runs/20260904T184934Z-bm25-claude-sonnet-5.md`):
-language 3.00 on all 22 judged responses, care 2.91, clarity 3.00. The
-Spanish slip did not recur.
-
-g14 refused again (22/23) and the runner now exits 1, because the previous
-committed run had passed it. Three runs on the same retrieval give
-answer, refusal, answer: on the walnut variant, which states no total
-time, Sonnet is on the fence between quoting "bake at least 1 hour" and
-declining. The gate is doing its job by flapping, but the flap is a
-retrieval problem (wrong banana bread variant in the top-5), not a
-generation one. Decision pending: k=8 or an exact-title boost, see
-ADR-002 item 5.
-
-## 2026-09-04 — top-k 8 and exact-title promotion (user chose both)
-
-Both fixes from ADR-002 item 5 went in test-first. Title promotion is a
-guarantee, not a scoring tweak: "pad thai" must return Pad Thai first even
-though Khao Pad Thai Fried Rice mentions the phrase more often. It only
-helps when the extractor keeps the full title, which it did not always do
-for "Banana Bread I"; k=8 is what makes that question stable.
-
-## 2026-09-04 — BM25 + Sonnet with top-k 8: 23/23, no regression
-
-`evals/runs/20260904T190742Z-bm25-claude-sonnet-5.md`: 23/23, g14 answered
-with Banana Bread I in context. Judge means clarity 2.95, care 2.95,
-language 3.00. Cost rose from USD 0.0114 to 0.0142 per question (+25%),
-which is the price of three more recipes in every generation call; total
-p50 5011 ms, p95 12067 ms. SPEC section 7 target updated to USD 14.23 per
-1,000. The pre-k=8 Sonnet answers file was dropped so calibration uses
-responses from the current retrieval; Haiku is re-run under k=8 for the
-same reason.
-
-## 2026-09-04 — BM25 + Haiku with top-k 8: 23/23
-
-`evals/runs/20260904T191023Z-bm25-claude-haiku-4-5.md`: 23/23, USD 0.0050
-per question (Sonnet on the same retrieval: 0.0142). Judge means (Sonnet 5
-as judge) clarity 2.91, care 2.86, language 3.00, against Sonnet's
-2.95 / 2.95 / 3.00 graded by Opus 5. The three Haiku responses below 3/3/3
-are the same pattern as before: lecturing in the safety deferral, guessed
-timings on the browsing question, and a vague multi-option answer to the
-Russian constraint question.
-
-Calibration files now: exactly one per model, both from the current
-prompts and top-k 8. Judge-vs-human agreement is not measured yet.
-
-## 2026-09-04 — one judge for every run
-
-The first judged runs used Opus 5 to grade Sonnet and Sonnet 5 to grade
-Haiku, which made the two score columns incomparable (different graders,
-possibly different strictness). The runner now defaults to Opus 5 for
-every run and refuses a judge equal to the model under test. The Haiku
-run is re-judged by Opus so the Sonnet/Haiku comparison uses one grader.
-
-## 2026-09-04 — Sonnet vs Haiku, both judged by Opus 5
-
-Same prompts, same retrieval (BM25, top-k 8), same grader:
-Sonnet 23/23, clarity 2.95, care 2.95, language 3.00, USD 0.0142/question.
-Haiku 23/23, clarity 2.95, care 2.91, language 3.00, USD 0.0050/question.
-Opus was slightly kinder to Haiku than Sonnet had been (care 2.91 vs
-2.86), which is exactly why one grader is required. The remaining gap is
-one response: Haiku's browsing answer (g07) lists recipes with no stated
-time by guessing durations, care 1. Sonnet on the same question names the
-two recipes with stated times and says the rest are unknown.
-
-Files for human calibration, one per model, both from the current
-prompts, retrieval and grader:
-- evals/runs/20260904T190742Z-bm25-claude-sonnet-5.answers.md
-- evals/runs/20260904T191546Z-bm25-claude-haiku-4-5.answers.md
-
-## 2026-09-04 — model decision: Sonnet 5 stays the default
-
-The user judged Haiku's g07 behaviour (durations guessed for recipes that
-state none, presented as a list of facts) a serious problem. A recipe
-service that invents numbers fails its one job, whatever the cost saving.
-Sonnet 5 remains the default; Haiku remains `MODEL=claude-haiku-4-5` for
-anyone who accepts that trade. Hybrid and full context are re-measured
-under top-k 8 with the Opus judge so ADR-002's table is consistent.
-
-## 2026-09-04 — generator could refuse out_of_domain; now it cannot
-
-Hybrid and full-context runs both failed g12 (Beef Wellington) with
-`out_of_domain`. The extractor was not at fault (6/6 in_domain when
-probed); the generator, seeing many recipes and none matching, picked
-`out_of_domain` from the shared Refusal enum. That reason belongs to the
-extractor alone: the generator always has recipes in front of it, so its
-only honest refusals are insufficient_context and safety_deferral. The
-Draft schema now uses a two-value GeneratorRefusal, so the structured
-output cannot express the wrong reason, and rule 1 of generate.md says a
-missing dish is insufficient_context. All three Sonnet configurations are
-re-run under the new schema.
-
-## 2026-09-04 — final Block 6 table: all three Sonnet configurations 23/23
-
-After the generator-refusal fix, BM25 / hybrid / full on Sonnet 5 all pass
-23/23 with Opus-judged means within one response of each other
-(ADR-002 table rebuilt). Costs USD 0.0143 / 0.0153 / 0.0148 per question.
-Retrieval strategy no longer moves accuracy or wording on this corpus;
-BM25 stays the default on cost, latency and dependencies.
-
-Calibration files, one per model, current prompts and schema:
-- evals/runs/20260904T193941Z-bm25-claude-sonnet-5.answers.md
-- evals/runs/20260904T191546Z-bm25-claude-haiku-4-5.answers.md
-  (Haiku run predates the refusal-schema change; the change only removed a
-  refusal option Haiku never used, so its responses are unaffected.)
-
-## 2026-09-04 — 3x2 matrix on 29 questions: full context separates from retrieval
-
-Six corpus-wide questions added (quickest recipe, longest stated time,
-cookie count, vegan under 15 min, soaked overnight, quickest in Russian).
-Full matrix, all judged by Opus 5, table in ADR-002. Headline:
-Sonnet + full context 29/29; every retrieval configuration 25-26/29,
-failing exactly the questions that need the whole corpus; Haiku fails
-them even with the whole corpus (26/29 on full context), and its
-extractor classes "longest stated total time" as out_of_domain.
-
-Cost at 48 recipes is a wash: Sonnet full 0.0149 vs BM25 0.0148 per
-question. Latency is not: full context generate p95 14.9 s vs 8.4 s.
-
-One retrieval bug surfaced (g27): a constrained browsing question whose
-terms match only one of three filtered candidates returns one recipe,
-because the fallback to the filtered set fires only on zero hits. Fix is
-to pad up to k with the remaining candidates. Not applied yet.
-
-Answers files: removed. Calibration was never done and the golden set has
-changed twice since they were written; regenerate when scoring is
-actually going to happen.
-
-## 2026-09-05 — default switched to full context on Sonnet 5
-
-User decision after the 3x2 matrix: `RETRIEVER` unset now means full
-context, with BM25 and hybrid behind the flag. Reasons, in order: it is
-the only configuration that answers the corpus-wide questions (29/29 vs
-25-26/29); at 48 recipes it costs the same as BM25 with the recipe block
-cached (0.0149 vs 0.0148 USD per question); it is the simplest pipeline.
-Known costs: generation p95 14.9 s vs 8.4 s, and a cold cache pays 1.25x
-on the whole corpus. Both go on the Block 7 measurement list, and the
-80-recipe threshold in ADR-002 is the trigger to flip back.
-
-Changed: `build_retriever` default, `.env.example`, SPEC pipeline
-diagram, cost target (USD 14.94 per 1,000 from the 29-question full
-context run) and assumption 6, ADR-002 decision items 1 and 3. The g27
-padding fix for BM25 is still owed; it no longer affects the default path.
-
-## 2026-09-05 — Block 7 opened against the real assignment text
-
-The user pasted the original assignment (previously only CLAUDE.md, our
-own plan derived from it, was available). Four gaps against it, all now
-closed except the deploy itself:
-
-- Response contract: theirs is `citations[{title,url}]`, `refused`,
-  `refusal_reason ∈ {out_of_corpus, out_of_domain, safety}`. Added as
-  computed fields on `Answer`, derived from `sources`/`refusal` so the two
-  views cannot disagree; the eval checks both views on every response.
-- TypeScript UI is mandatory: `ui/` (one page, `tsc` only, no framework),
-  served by FastAPI from `ui/dist` when present. Two tests cover the mount.
-- Deployment target: the assignment accepts `fly.toml` / `render.yaml` /
-  compose + CI, so Terraform was our own choice. Fly.io chosen (ADR-004);
-  the ADR-003 slot goes to the refusal policy as CLAUDE.md planned.
-- README and the committed CLAUDE.md were missing deliverables. CLAUDE.md
-  is committed unchanged; departures from it are listed below.
-
-Local container verified end to end (healthz 48 recipes, UI at `/`, one
-/ask with the contract fields). First request in a fresh container cost
-USD 0.0726: 27,540 input tokens, the 1.25x cache write on the whole
-corpus, as ADR-002 predicted. Docker build failed once on `pip install`
-right after Docker Desktop started and passed unchanged on retry.
-
-Runner gained `--url` so the final check ("run_evals passes against the
-deployed URL") goes through the network stack, not TestClient.
-
-## 2026-09-05 — departures from CLAUDE.md (for the reviewer)
-
-CLAUDE.md is committed as it was given. Where the work departed from it:
-
-- Python 3.11, not 3.12 (2026-09-03 entry).
-- Anthropic instead of the OpenAI client the pinned requirements implied;
-  Voyage instead of `text-embedding-3-small` for the hybrid experiment.
-- Top-k 8 with title promotion instead of top-5 (ADR-002 item 5).
-- The "no LLM-as-judge" rule was lifted by the user for a reported-only
-  rubric judge; every pass/fail check is still deterministic.
-- Golden set grew from 13 to 29; the extra questions were what separated
-  the retrieval configurations.
-- Default retrieval is full context, not BM25 (2026-09-05 entry).
-- Fly.io + `fly.toml` instead of Cloud Run + Terraform (ADR-004).
-- `generate.py` became `llm.py` + `pipeline.py`: the model calls and the
-  pure-Python glue are separate files so the glue is testable with a fake.
-
-## 2026-09-05 — accepted vs rewritten agent output
-
-Honest account, per CLAUDE.md commit 40. "Accepted" means committed as
-produced after reading the diff; "rewritten" means changed on review or
-after a failing measurement.
-
-Accepted as produced: models and validators; chunking and BM25 with the
-tests; filters; the grounding validator and repair; the structured log
-record; the eval runner's deterministic checks; the Dockerfile, compose,
-`fly.toml`, CI workflow; the TypeScript page.
-
-Rewritten after measurement (each has a DEVLOG entry with numbers):
-- Browse fallback for constrained queries with zero hits (g07 failed).
-- `max_tokens` 1024 → 4096 and retry on truncated JSON (g17 crashed the
-  runner).
-- Generation rule 7 tightened after Sonnet answered an English question
-  in Spanish because a recipe title was foreign.
-- Generator output type narrowed so it cannot emit `out_of_domain`
-  (g12 failed on hybrid and full context).
-- Top-k 5 → 8 plus title promotion after g14 flapped.
-- Judge: `load_dotenv` order, `max_tokens` 512 → 4096 with low effort,
-  one judge model for every run.
-- Voyage batching and backoff after a 429 on the first embedding build.
-
-Rewritten on review by the user:
-- BM25 was to stay the default; the user asked for the retriever seam
-  first, then for the 3x2 matrix with harder questions, and finally
-  chose full context on the numbers.
-- Haiku as default was proposed on cost; the user rejected it on the
-  g07 guessed durations.
-- Golden expectations corrected against the corpus three times (g13
-  bolognese had no conflict; g14 risotto had no stated time; g16 time).
-- One misread: "both are good" was taken as approval of two retrieval
-  fixes when the user meant two answers files. The fixes stayed with an
-  offer to revert; the user kept them.
-
-Still owed: the g27 padding fix on the BM25 path; judge calibration
-against human scores; the measured latency table after deploy.
-
-## 2026-09-05 — g27 padding fix on the retrieval paths
-
-`pad_constrained` replaces the zero-hit fallback in both BM25 and hybrid:
-a constrained query is filled up to k with the filtered recipes the terms
-did not match, score 0. BM25 + Sonnet: 25/29 → 26/29, g27 now cites the
-vegan-under-15 recipes; cost 0.0148 → 0.0157 per question because more
-recipes reach the generator on constrained questions. No regressions.
-The corpus-wide questions remain full-context only.
-
-## 2026-09-05 — two slash commands, no agent pipeline
-
-Considered copying the multi-agent orchestration used in another project
-(architect, designer, parallel implementers and testers). Rejected for
-this repo: it fights the block-and-stop review discipline that is graded,
-there is nothing to parallelise in a six-module pipeline, and the harness
-would be the largest thing in the repo. Kept two commands instead:
-`/review` runs the CLAUDE.md final checklist and reports; `/feature`
-encodes the order the follow-up session expects (spec, golden questions,
-failing test, code, evals, record) with two stops. Both are single-agent.
-
-## 2026-09-05 — per-request model and retriever switch (user request)
-
-`Backends` (src/app/backends.py) holds every model in the price table and
-every retriever the environment can build, keyed by name, with the notes
-the UI shows as tooltips. `Pipeline` picks a pair per request; `MODEL` and
-`RETRIEVER` are now defaults, not the only choice. `usage.retriever` was
-added to the response so the pair that answered is visible. Prompt caching
-moved from an LLM constructor flag to a per-call flag driven by
-`Retriever.cacheable`, because the same model now serves both full and
-top-k contexts in one process. The eval runner names the pair in the
-request body so `--url` runs measure the same thing as in-process runs.
-Live check: `/config` listed three models and three retrievers (Voyage key
-present locally), Haiku + BM25 answered with `usage.retriever = "bm25"`,
-an unknown model returned 422 before any model call.
-
-## 2026-09-05 — Opus removed from the selectable models
-
-I had offered every model in the price table, including Opus 5, in the
-per-request switch. The user had not asked for Opus; it is the eval judge
-only. Removed from `MODEL_NOTES`; it stays in `llm.PRICES` so judge cost
-is still computed, and the defaults test now pins the selectable list to
-Sonnet 5 and Haiku 4.5.
-
-## 2026-09-05 — deployed; g27 flapped on the deployed run, fixed by stating metadata
-
-Fly.io deploy live at https://recipe-rag.fly.dev (release 1 had no public IP:
-Fly's launch flow failed the IPv6 allocation; `fly ips allocate-v4 --shared`
-and `fly ips allocate-v6` fixed it). Launch created two machines; scaled to
-one to match fly.toml and ADR-004.
-
-First deployed run, full context + Sonnet, judged by Opus: 28/29, mean USD
-0.0128, total p50 5.8 s / p95 11.5 s, generate p95 9.3 s. The failure was
-g27 (every vegan recipe under 15 minutes): the filter handed the generator
-three recipes, and it answered that only "Pancakes (Vegan)" was vegan,
-judging by the title. The rendered recipe text never included the
-metadata the filter had used. Passed locally earlier by luck.
-
-Fix: `render_context` now leads with Diet, Allergens, Total time and
-Cuisine (or "unknown"). Targeted rerun of g27, g05, g06, g24: all pass,
-g27 cites 3. Full-context input grows from 27,540 to 29,830 tokens per
-request (about 8%). Redeployed; the full deployed run follows.
-
-Runner gained `--only` for such reruns; a partial run prints its table and
-never writes a run file, so it cannot become the regression baseline.
-
-## 2026-09-05 — second deployed run: g27 fixed, g25 flipped
-
-`evals/runs/20260905T155036Z-full-claude-sonnet-5-deployed.md`: 28/29,
-no regressions. g27 now cites all three vegan recipes. New failure g25
-("longest stated total time"): with the metadata in the context the
-model answered hummus (870 minutes, our enrichment estimate that counts
-an overnight soak) instead of the bolognese whose own Time line says
-2 hours. The question asks what a recipe *states*; the estimate is ours.
-
-Fix: the metadata line is now "Estimated total time", and generate.md
-rule 8 says the four metadata lines come from enrichment and that a
-recipe's own "Time:" line is its stated time. Targeted rerun g25, g24,
-g28, g07: all pass. g25 now takes about 21 s of generation (2,185 output
-tokens: the model walks every recipe's times); noted as the slowest
-question for the p95. Redeployed; final deployed run and cold start follow.
-
-Cold start measured on the previous image: first request to a stopped
-machine 5.97 s (connect 0.06 s), warm 0.24 s. Re-measured on the final
-image below.
-
-## 2026-09-05 — final deployed run 29/29; measured numbers filled in
-
-`evals/runs/20260905T155833Z-full-claude-sonnet-5-deployed.md`, run
-through the network against https://recipe-rag.fly.dev: 29/29, no
-regressions, mean USD 0.0126 per question (12.61 per 1,000), total p50
-5.5 s / p95 14.5 s, generate p95 12.5 s (g25). Judge means 3.00 / 2.93 /
-3.00.
-
-Cold start on the final image: first health request after the machine
-idle-stopped 6.49 s, warm 0.22 s (earlier image: 5.97 s). One sample
-each; the SPEC table says so.
-
-Unprompted decision: the SPEC latency budgets were empty ("TBD"). I set
-each budget to the measured p95 rounded up (extract 3 s, generate 15 s,
-total 18 s, cold start 10 s) so that a future run has something to fail
-against. Recorded in SPEC section 6 as set-after-measurement.
-
-Deploy path: the CI deploy job still lacks `FLY_API_TOKEN`; the three
-deployments were `fly deploy` by hand. README says so. The user has not
-yet chosen between the CI token and Fly's GitHub integration.
+Still owed: judge calibration against human scores, and the first push-triggered Fly release.

@@ -51,7 +51,7 @@ who refuses when, and how the reader tells the cases apart.
   failed after one repair), `safety_deferral` (generator, cites the
   reported recipe). The generator's output type cannot express
   `out_of_domain`; that removed a class of wrong refusals seen on the
-  hybrid and full-context runs (DEVLOG 2026-09-04).
+  hybrid and full-context runs (DEVLOG, "Things that broke").
 - The assignment's minimum contract is derived from these: `refused` is
   `refusal is not None`, `refusal_reason` maps `insufficient_context` to
   `out_of_corpus` and `safety_deferral` to `safety` (SPEC section 2).
