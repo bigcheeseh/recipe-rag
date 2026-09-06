@@ -63,7 +63,21 @@ is tested.
 ### `GET /healthz`
 
 Returns `200 {"status": "ok", "recipes": <int>}` once the corpus is loaded and
-the retriever is built. Used by the Docker healthcheck and Cloud Run.
+the retriever is built. Used by the Docker healthcheck and Fly's service check.
+
+### `GET /ops`
+
+Container-level visibility for reviewers who have no seat in the hosting
+organisation. Returns `200` with machine id, region, release, uptime, recipe
+count, and the tail of the in-process request log (`?limit=`, default 200,
+maximum 1000). Requires the token in `OPS_TOKEN`, sent either as
+`Authorization: Bearer <token>` or `?token=<token>`; compared in constant time.
+`401` without it, `404` when `OPS_TOKEN` is unset, which is the default
+everywhere except the deployed service. Read-only: it exposes no state and
+takes no input beyond the limit. The buffer holds the last 500 records in
+memory, is lost when the machine stops, and rewrites any `token=` it sees to
+`token=***` so an access log cannot leak the credential that serves it. The
+request log never contains the model API key (assumption 15).
 
 ---
 

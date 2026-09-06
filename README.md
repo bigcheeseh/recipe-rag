@@ -106,11 +106,21 @@ fly deploy
 (gitignored); on Fly it is the secret above. The image contains no key, and the request
 log never prints one.
 
-**Container-level access:** the chosen option is an invitation to the Fly.io
-organisation, issued to the reviewers' addresses on request. The dashboard shows the
-machine's state, releases, health checks, and live logs, and each request's structured
-log line appears there; `fly logs -a recipe-rag` and `fly status -a recipe-rag` give the
-same from the CLI.
+**Container-level access:** the assignment offers two options, a dashboard invitation or
+access to logs and container status. This service takes the second, because the app runs
+in a Fly personal organisation, which cannot hold additional members. `GET /ops` serves
+machine id, region, release, uptime, recipe count, and the tail of the structured request
+log, protected by the token in `OPS_TOKEN`. Nothing to install: open
+
+```
+https://recipe-rag.fly.dev/ops?token=<token>&limit=200
+```
+
+in a browser, or send the token as `Authorization: Bearer <token>`. The token is handed
+to reviewers separately and can be rotated with `fly secrets set OPS_TOKEN=...`; unsetting
+it makes the endpoint return 404. The buffer is the last 500 log records, held in memory
+and lost when the machine stops, with any `token=` redacted. From the owner's side the
+same data comes from `fly logs -a recipe-rag` and `fly status -a recipe-rag`.
 
 ## Cost & Latency
 

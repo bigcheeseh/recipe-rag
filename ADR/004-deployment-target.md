@@ -43,8 +43,14 @@ dropped so there is one deploy path and no Fly credential in GitHub). The
 GitHub Actions workflow is the test gate only. The Anthropic key is set once
 with `fly secrets set` and reaches
 the container as an environment variable; it is never in the repo, the
-image, or CI. Reviewers get an invitation to the Fly organisation, which
-shows machine status and logs, plus `fly logs` from the CLI. Machines stop
+image, or CI. Reviewers get the second of the assignment's two visibility
+options, access to logs and container status, through `GET /ops` behind
+`OPS_TOKEN` (README, Deployment). The dashboard invitation was the first
+choice and was dropped for a fact learned late: the app lives in a Fly
+personal organisation, and a personal organisation cannot take members.
+Moving the app to a new organisation would mean a second billing account and
+re-allocating the public IPs, which is the step that already failed once on
+this app, so the cost outweighed a nicer viewing experience. Machines stop
 when idle and start on the first request; the cold-start cost is measured
 and recorded in the README and SPEC section 6.
 
