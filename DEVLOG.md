@@ -77,7 +77,7 @@ It earned its keep once. The judge caught Sonnet answering an English question i
 
 The real assignment text arrived after Block 6 and accepted `fly.toml` as IaC, so Terraform for Cloud Run was my own over-engineering and I dropped it for Fly.io (ADR-004). The launch flow failed to allocate an IPv6, so release 1 had no public address; `fly ips allocate-v4 --shared` and `allocate-v6` fixed it. It also created two machines; scaled to one. Measured on the deployed service: USD 0.0126 per question (12.61 per 1,000), first question on a cold machine USD 0.0717 for the cache write, total p50 5.5 s / p95 14.5 s, cold start 6.5 s on one sample. The SPEC latency budgets were empty until then; I set each to the measured p95 rounded up so a future run has something to fail against.
 
-Deploys: CI is the test gate only, and Fly's GitHub integration is meant to deploy on push. The first three releases were `fly deploy` by hand; the first push-triggered release gets noted here once it shows up in `fly releases`.
+Deploys: CI is the test gate only; Fly's GitHub integration deploys on push. The first three releases were `fly deploy` by hand. After connecting the integration, releases v4 through v8 each came from a push to `main` with no command run (2026-09-06, `fly releases`), so the no-manual-steps requirement is met and checked.
 
 ## Model and retriever switch
 
