@@ -79,6 +79,12 @@ The real assignment text arrived after Block 6 and accepted `fly.toml` as IaC, s
 
 Deploys: CI is the test gate only; Fly's GitHub integration deploys on push. The first three releases were `fly deploy` by hand. After connecting the integration, releases v4 through v8 each came from a push to `main` with no command run (2026-09-06, `fly releases`), so the no-manual-steps requirement is met and checked.
 
+## Giving reviewers the container
+
+The plan was an invitation to the Fly organisation. It does not work: the app sits in a personal organisation, and Fly does not let those take members. Moving it to a real organisation means a second billing account and re-allocating the public IPs, the step that already broke once on this app, so I took the assignment's other option, access to logs and container status.
+
+`GET /ops` returns machine id, region, release, uptime, recipe count and the tail of the request log, behind the token in `OPS_TOKEN`. A reviewer opens a URL in a browser, no CLI, no account. Two things I did not want to get wrong: the endpoint returns 404 when the token is unset, so it does not exist anywhere except the deployed service, and the buffer rewrites any `token=` it sees, because the access log for the request that reads the log would otherwise store the credential inside the very buffer it serves. Test first, seven of them.
+
 ## Model and retriever switch
 
 Added a `Backends` registry so the UI and the API can pick model and retriever per request, with the measured trade-offs as tooltips. Caching became a per-call flag driven by the retriever, since one process now serves both full and top-k contexts. The agent offered Opus in the list too; I hadn't asked for it and it's the judge only, so it went. Also considered copying a multi-agent workflow from another project and decided against it: nothing to parallelise in six modules, and it fights the block-and-stop review this project is graded on. Two single-agent slash commands instead.
@@ -88,5 +94,7 @@ Added a `Backends` registry so the UI and the API can pick model and retriever p
 Accepted as the agent wrote it, after reading the diff: the Pydantic models and their validators, the HTML parser, the filters, BM25 over section chunks, the groundedness check, the structured request log, the eval runner, the Dockerfile, and the UI. All of it small enough to read in one sitting, and the tests were written first where CLAUDE.md said so.
 
 Sent back or replaced: the Cloud Run + Terraform infra (my own plan, dropped for `fly.toml` once the real brief arrived); Opus in the model selector (removed, judge only); Haiku as the default (rejected on invented durations, not on the score); a proposed multi-agent workflow (declined, nothing to parallelise); the bolognese conflict question (no conflict existed, became carbonara); three enrichment records (fixed by hand); the generator's refusal enum (it could say `out_of_domain`, now it can't); the 1024 token cap; and the "no LLM-as-judge" rule itself, which I lifted with the conditions above. Every number in the docs I either watched being measured or re-ran myself.
+
+The GitHub repository is public for the review window and goes back to private afterwards, at the reviewer's suggestion.
 
 Still owed: judge calibration against human scores.
