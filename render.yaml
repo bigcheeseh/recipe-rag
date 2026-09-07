@@ -1,0 +1,27 @@
+# Render blueprint. The unit of deployment stays the committed Dockerfile, so moving off
+# Fly is a change of infrastructure files, not of the service (ADR-004 addendum).
+# `autoDeployTrigger: commit` keeps the assignment's "no manual steps" property: a push to
+# main rebuilds and rolls the service, exactly as Fly's GitHub integration did.
+services:
+  - type: web
+    name: recipe-rag
+    runtime: docker
+    plan: free           # 512 MB / 0.1 CPU, sleeps after 15 min idle; cold start is measured in README
+    region: frankfurt    # closest free region to the previous ams
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /healthz
+    autoDeployTrigger: commit
+    envVars:
+      # PORT is injected by Render; the Dockerfile CMD already binds to it.
+      - key: MODEL
+        value: claude-sonnet-5
+      - key: RETRIEVER
+        value: full
+      - key: CORPUS_PATH
+        value: data/corpus.json
+      # sync: false — Render prompts for these once and stores them encrypted.
+      # Never in this file, never in the image, never in git.
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: OPS_TOKEN
+        sync: false
