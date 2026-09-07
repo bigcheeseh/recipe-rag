@@ -63,7 +63,7 @@ is tested.
 ### `GET /healthz`
 
 Returns `200 {"status": "ok", "recipes": <int>}` once the corpus is loaded and
-the retriever is built. Used by the Docker healthcheck and Fly's service check.
+the retriever is built. Used by the Docker healthcheck and Render's health check.
 
 ### `GET /ops`
 
@@ -239,12 +239,12 @@ criterion.
   retrieval failure (wrong recipes) from a generation failure (right recipes,
   wrong answer).
 - AC-16. The API key is read from the platform's secret store when deployed
-  (Fly.io secrets, ADR-004) and from an environment variable locally. It
+  (Render environment variables marked `sync: false`, ADR-004) and from an environment variable locally. It
   never appears in the image, in any file committed to git, or in any log
   line.
-- AC-17. The deployed service scales to zero when idle
-  (`min_machines_running = 0` in `fly.toml`); cold start is measured in
-  section 6.
+- AC-17. The deployed service costs nothing while idle: the Render free
+  instance sleeps after 15 minutes without traffic and wakes on the first
+  request; the wake cost is measured in section 6.
 
 ---
 
@@ -261,29 +261,34 @@ criterion.
 
 ## 6. Latency budget
 
-Measured at p50 and p95 from the deployed service (Fly.io `ams`, one
-machine, warm), one concurrent request, 29-question golden set, full
-context + Sonnet 5 (`evals/runs/20260905T155833Z-full-claude-sonnet-5-deployed.md`, 2026-09-05). Budgets were set after the
-measurement as the measured p95 rounded up; a later run that exceeds a
-budget is a regression to explain, not a number to edit.
+Measured at p50 and p95 from the deployed service (Render free instance,
+`frankfurt`, one instance), one concurrent request, 29-question golden set,
+full context + Sonnet 5 (`evals/runs/20260907T170625Z-full-claude-sonnet-5-render.md`, 2026-09-07). Budgets were set after the
+first deployed measurement as the measured p95 rounded up; a later run that
+exceeds a budget is a regression to explain, not a number to edit. The move
+from Fly to Render (ADR-004 addendum) did not breach any of them.
 
 | Stage      | Budget (p95) | Measured p50 | Measured p95 |
 | ---------- | ------------ | ------------ | ------------ |
-| `extract`  | 3,000 ms     | 2,060 ms     | 2,435 ms     |
+| `extract`  | 3,000 ms     | 2,030 ms     | 2,381 ms     |
 | `retrieve` | 10 ms        | 0 ms         | 0 ms         |
-| `generate` | 15,000 ms    | 3,380 ms     | 12,522 ms    |
-| `total`    | 18,000 ms    | 5,517 ms     | 14,528 ms    |
-| cold start | 10,000 ms    | 6,487 ms (1 sample) | see note |
+| `generate` | 15,000 ms    | 3,874 ms     | 13,256 ms    |
+| `total`    | 18,000 ms    | 5,933 ms     | 14,769 ms    |
+| idle wake  | 10,000 ms    | 592 ms (1 sample, no spin-down observed) | see note |
 
-Cold start: first `GET /healthz` after the machine had idle-stopped,
-measured once on the final image (6,487 ms; an earlier image measured
-5,967 ms). A warm health request takes about 220 ms. A cold *question*
-adds the prompt-cache write to that: the first `/ask` on a fresh machine
-measured 6,478 ms total and USD 0.0717 (27,540 input tokens written to
-cache) before the metadata change grew the context to about 30,100 tokens.
-The generation p95 is the corpus-wide question g25, whose answer walks
-every recipe's time (900 output tokens, 10.4 s in this run, 21 s in a
-targeted rerun).
+Idle wake: Render documents that a free instance spins down after 15
+minutes without traffic and takes about a minute to wake. Measured on this
+service, the first `GET /healthz` after 17 idle minutes returned in 592 ms
+and a warm one in 560 ms, so the instance had not spun down; the health
+check configured in `render.yaml` is the likely reason. One sample over one
+idle period is not proof that it never spins down, and the budget row is
+kept for the case where it does. The equivalent measurement on Fly was a
+real cold start: 6,487 ms for the first health request after an idle stop,
+with a warm request at about 220 ms. A cold *question* additionally pays the
+prompt-cache write on the whole corpus: the first `/ask` of the Render run
+measured USD 0.0760, and the same event on Fly measured 6,478 ms and USD
+0.0717. The generation p95 is the corpus-wide question g25, whose answer
+walks every recipe's time.
 
 Expectation to be confirmed by measurement: `retrieve` is pure Python over
 ~50 recipes and should be well under 50 ms; the two model calls dominate.
@@ -316,12 +321,15 @@ computed from those counts and the prices above. It is never estimated.
 The metadata-enrichment call at ingestion is a one-time cost and is recorded
 separately in `ingest_manifest.json`, not in per-question `Usage`.
 
-**Target for 1,000 questions:** USD 12.61, from the mean `cost_usd` of the
-final deployed run (`evals/runs/20260905T155833Z-full-claude-sonnet-5-deployed.md`, full context + Sonnet 5, 29 questions, mean
-USD 0.0126) multiplied by 1,000, with the recipe block prompt-cached and
-the cache warm for all but the first question. The pre-deployment local
-run measured USD 14.94; BM25 + Sonnet 5 measured USD 15.66 after the
-padding fix. ADR-002 lists the other configurations and the corpus size
+**Target for 1,000 questions:** USD 16.29, from the mean `cost_usd` of the
+latest deployed run (`evals/runs/20260907T170625Z-full-claude-sonnet-5-render.md`, full context + Sonnet 5, 29 questions, mean
+USD 0.0163) multiplied by 1,000, with the recipe block prompt-cached and
+the cache warm for all but the questions whose filters build a different
+recipe block. Earlier deployed runs of the same configuration measured USD
+12.61 (2026-09-05) and 15.87 (2026-09-06); the spread is answer length and
+the number of cache writes, and it is independent of the host. The
+pre-deployment local run measured USD 14.94; BM25 + Sonnet 5 measured USD
+15.66 after the padding fix. ADR-002 lists the other configurations and the corpus size
 at which BM25 becomes cheaper.
 
 Prompt caching applies to the recipe block in full-context mode only. Cache

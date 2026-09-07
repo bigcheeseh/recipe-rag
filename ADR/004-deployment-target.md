@@ -70,6 +70,54 @@ loses the no-UI-steps rule on first creation and has the slowest wake.
   `min_machines_running = 1` (still one line of `fly.toml`) and accept the
   idle cost.
 
+## Addendum, 2026-09-07: moved to Render
+
+Fly's trial ended and the account now refuses every write, including
+`apps destroy`: "trial has ended, please add a credit card". A second Fly
+account behaves the same way, because Fly asks for a card before it will
+create an app in any new organisation. The service was suspended and the
+public URL was dead, which is a hard failure two days before review.
+
+**The condition that fired was not on the list above.** The three
+invalidation conditions were about traffic, cloud affinity and cold-start
+latency; none of them anticipated the host withdrawing its free tier. That
+is the honest lesson of this ADR: for a deliverable that must stay reachable
+without a payment method, "cost at review traffic" belongs in the criteria
+with the same weight as the technical rows, and the Fly row of the table
+already said "card required".
+
+**New decision: Render**, from a committed [render.yaml](../render.yaml),
+the same Dockerfile, on the free plan in `frankfurt`. Everything that
+mattered about the Fly setup survives the move:
+
+- The unit of deployment is still the committed image. No application code
+  changed; the Dockerfile already binds to `$PORT`, which is what Render
+  injects.
+- Redeploy still happens with no UI step: `autoDeployTrigger: commit` in the
+  blueprint rebuilds and rolls the service on every push to `main`. Verified
+  on the commit that fixed `/ops`, which reached the running service without
+  anyone touching the dashboard.
+- Secrets are still outside the repository and the image: `sync: false`
+  marks `ANTHROPIC_API_KEY` and `OPS_TOKEN` as values Render asks for once
+  and stores encrypted.
+- Reviewer visibility is unchanged, `GET /ops` behind `OPS_TOKEN`, and now
+  also the Render dashboard's own logs and status.
+
+What is worse, stated plainly: the free instance is 512 MB and 0.1 CPU
+against Fly's shared CPU, and it sleeps after 15 minutes of inactivity with
+a wake that is much slower than Fly's machine start. The cold-start figure
+in the README and SPEC section 6 is re-measured on Render; the earlier Fly
+numbers are kept alongside, labelled, because they are the evidence for the
+comparison. The blueprint's first creation was a dashboard step, which is
+the one row of the table where Render is genuinely weaker and the reason it
+lost the original decision.
+
+**This decision is invalid if** the review window closes and the service
+needs a warm p95 (Render's free plan has no always-on option, so that means
+paying on Render or returning to Fly with a card), if traffic ever exceeds
+the 750 free instance hours a month, or if the 512 MB limit stops fitting
+the corpus and the index.
+
 ## Consequences
 
 - `docker compose up` locally and `fly deploy` remotely build the same

@@ -79,6 +79,18 @@ The real assignment text arrived after Block 6 and accepted `fly.toml` as IaC, s
 
 Deploys: CI is the test gate only; Fly's GitHub integration deploys on push. The first three releases were `fly deploy` by hand. After connecting the integration, releases v4 through v8 each came from a push to `main` with no command run (2026-09-06, `fly releases`), so the no-manual-steps requirement is met and checked.
 
+## The host swap: Fly → Render
+
+2026-09-07, two days before review, Fly's trial ended. The account then refused every write, including `fly apps destroy`, and the app went to `suspended` with the public URL dead. A second Fly account did not help: Fly asks for a card before creating an app in any organisation. So the choice was a card or another host, and I moved to Render, which takes a Dockerfile and does not ask for one.
+
+The move cost one file. `render.yaml` declares the same image, `autoDeployTrigger: commit` keeps deploys running on push, and `sync: false` keeps both secrets out of the repository. No application code changed — the Dockerfile already bound to `$PORT`, which is exactly what Render injects. One real bug did surface: `/ops` read `FLY_MACHINE_ID` and friends, so on Render it reported `local`. Fixed to read Render's own variables, with a test, and the deployed commit is now visible in the status, which is more useful than what Fly reported.
+
+Numbers on the new host, full golden set against the deployed URL: 29/29, no regressions, mean USD 0.0163 per question (16.29 per 1,000), total p50 5.9 s / p95 14.8 s. Nothing breached the latency budgets set on Fly. The cost difference against the 12.61 measured on 2026-09-05 is not the host: an intermediate run on Fly measured 15.87, and the spread is answer length plus how many questions pay a cache write.
+
+The idle behaviour did not match the documentation, and I am recording it as measured rather than as expected. Render says a free instance spins down after 15 minutes and wakes in about a minute; after 17 idle minutes the first health request came back in 0.59 s, so it had not spun down. Most likely the health check in the blueprint keeps it awake. One sample, one idle period, so the budget row for a wake stays in SPEC.
+
+What the swap says about ADR-004 is in its addendum: the condition that actually invalidated the decision — the host withdrawing its free tier — was not one of the three I had listed, even though the alternatives table already carried "card required" in the Fly column.
+
 ## Giving reviewers the container
 
 The plan was an invitation to the Fly organisation. It does not work: the app sits in a personal organisation, and Fly does not let those take members. Moving it to a real organisation means a second billing account and re-allocating the public IPs, the step that already broke once on this app, so I took the assignment's other option, access to logs and container status.
