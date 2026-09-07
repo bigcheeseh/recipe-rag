@@ -15,6 +15,9 @@ services:
       # PORT is injected by Render; the Dockerfile CMD already binds to it.
       - key: MODEL
         value: claude-sonnet-5
+      # Render exposes no region variable; /ops reports the one declared above.
+      - key: REGION
+        value: frankfurt
       - key: RETRIEVER
         value: full
       - key: CORPUS_PATH

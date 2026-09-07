@@ -52,9 +52,13 @@ def authorised(token: str | None, header: str | None, expected: str) -> bool:
 
 
 def machine() -> dict[str, str]:
-    """Fly sets these in the container; unknown when running locally."""
+    """Whatever the host tells the container about itself; "local" off a host.
+    Render names the instance and the deployed commit but exposes no region, so the
+    region it was created in is passed as REGION in render.yaml. Fly is kept because
+    fly.toml is still committed and the image is identical on both."""
     return {
-        "id": os.environ.get("FLY_MACHINE_ID", "local"),
-        "region": os.environ.get("FLY_REGION", "local"),
-        "release": os.environ.get("FLY_MACHINE_VERSION", "unknown"),
+        "id": os.environ.get("RENDER_INSTANCE_ID") or os.environ.get("FLY_MACHINE_ID", "local"),
+        "region": os.environ.get("REGION") or os.environ.get("FLY_REGION", "local"),
+        "release": os.environ.get("RENDER_GIT_COMMIT")
+        or os.environ.get("FLY_MACHINE_VERSION", "unknown"),
     }

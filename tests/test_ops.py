@@ -49,6 +49,20 @@ def test_ops_reports_machine_status(monkeypatch):
     assert isinstance(body["uptime_s"], int)
 
 
+def test_ops_reports_the_render_instance_and_deployed_commit(monkeypatch):
+    """Render names its own variables; without this the status reads "local" in production."""
+    c = make_client(monkeypatch)
+    monkeypatch.setenv("RENDER_INSTANCE_ID", "srv-d3abc-xyz")
+    monkeypatch.setenv("RENDER_GIT_COMMIT", "946e09b")
+    monkeypatch.setenv("REGION", "frankfurt")
+    body = c.get("/ops", params={"token": TOKEN}).json()
+    assert body["machine"] == {
+        "id": "srv-d3abc-xyz",
+        "region": "frankfurt",
+        "release": "946e09b",
+    }
+
+
 def test_ops_serves_the_request_log_newest_last(monkeypatch):
     c = make_client(monkeypatch)
     c.post("/ask", json={"question": "How many eggs in the carbonara?"})
